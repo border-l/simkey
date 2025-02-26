@@ -1,0 +1,4 @@
+# Testing modes, Requires D.speeds/std #
+mode = $FAST
+mode = $NORMAL
+mode = $SLOW

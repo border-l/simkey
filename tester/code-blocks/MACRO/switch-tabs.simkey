@@ -1,0 +1,3 @@
+# Requires F.switch-tabs, tests the function #
+@switch_tab [1]
+@switch_tab [4]

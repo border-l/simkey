@@ -1,0 +1,25 @@
+# Requires V.base/std, D.levels/std, S.logs/std, I.types/std and I.basic/std, tests calling imported functions #
+
+# Testing types, first - NUM #
+@takesNUM [10]
+@takesNUM [$S]
+@takesNUM [$TO5:3]
+# Test VECTOR #
+@takesVECTOR [$S]
+@takesVECTOR [$TO5]
+# Test STR #
+@takesSTR ["String example"]
+@takesSTR [" More complicated \n "]
+# Test BOOL #
+@takesBOOL [$HIGH]
+@takesBOOL [$DEFAULT]
+# Test LOOSE #
+@takesLOOSE [LooseWord]
+@takesLOOSE [ Loose string of values, NUM, BOOL, $DEFAULT ]
+
+# Test basic keyc functions #
+@type ["caabbc"]
+@cursor_smooth [50, 50, 200, 200]
+@loop_if ["r", 5, $HIGH]
+@loop_if ["r", 5, $DEFAULT]
+@loop_if ["r", 5, $LOG_A]

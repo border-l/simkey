@@ -1,0 +1,11 @@
+# Requires F.draw-square, F.choose-tool, V.tool-locations, V.vertices, draws then erases square using @for loop #
+@for [0, 3, 1, $turn] {
+    @if @e[$turn:0 % 2 == 0] {
+        @choose_tool [TRUE]
+        @draw_square [$vertex_1, $vertex_2, $vertex_3, $vertex_4]
+    }
+    @else {
+        @choose_tool [FALSE]
+        @draw_square [$vertex_1, $vertex_2, $vertex_3, $vertex_4]
+    }
+}

@@ -1,0 +1,3 @@
+# Tool locations for erasing and drawing #
+$brushes_location = 350,75
+$eraser_location = 235,100

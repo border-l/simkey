@@ -1,0 +1,53 @@
+# Testing elements of vectors using indices as inputs #
+
+<VECTORS>
+	# Base values for the sake of it #
+	$S = 0
+	$S1 = 1
+	$TO5 = 0,1,2,3,4,5
+	$TO10 = 0,1,2,3,4,5,6,7,8,9,10
+	# Actual delay vectors #
+	$NONE_DELAY = 0,0
+	$FAST_DELAY = 1,1
+	$NORMAL_DELAY = 50,50
+	$SLOW_DELAY = 150,150
+
+<IMPORTS>
+	# Adjust later, but must implement for testing #
+	@takesSTR testing/types/takesSTR
+	@takesNUM testing/types/takesNUM
+	@takesBOOL testing/types/takesBOOL
+	@takesLOOSE testing/types/takesLOOSE
+	@takesVECTOR testing/types/takesVECTOR
+
+<MACRO>
+	# Requires V.base/std & V.delays/std & I.types/std, tests indices everywhere applicable #
+	
+	# Delays #
+	@hold [$TO5:5]
+	@wait [$TO10:10]
+	a
+	@hold [$TO5:-5]
+	@wait [$TO10:-1]
+	a
+	
+	# Inline delays #
+	<$TO5:2>abc<$TO10:-3>
+	<$NORMAL_DELAY:-1>abc
+	<$FAST_DELAY:-2>abc
+	<$TO10:5>abc<$TO10:2>
+	
+	# Imported #
+	@takesNUM [$TO10:7]
+	
+	# Repeat #
+	@repeat [$TO5:0] {
+	    r
+	}
+	@repeat [$TO5:-6] {
+	    r
+	}
+	@repeat [$TO5:5] {
+	    r
+	}
+

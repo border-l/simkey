@@ -1,0 +1,19 @@
+# Requires V.tool_locations, selects between tool_1 and tool_2 #
+@click_tool_1 {
+    @cursor [$brushes_location]
+    [MB_LEFT]
+}
+
+@click_tool_2 {
+    @cursor [$eraser_location]
+    [MB_LEFT]
+}
+
+@choose_tool [$is_one -> BOOL] {
+    @if $is_one {
+        @click_tool_1
+    }
+    @else {
+        @click_tool_2
+    }
+}

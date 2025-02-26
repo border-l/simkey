@@ -1,0 +1,10 @@
+{
+    "scripts": {
+        "test": "node tester/test.js"
+    },
+    "dependencies": {
+        "chalk": "^4.1.2",
+        "commander": ">=12.1.0",
+        "expr-eval": "^2.0.2"
+    }
+}

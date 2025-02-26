@@ -1,0 +1,15 @@
+# Put after the function call #
+a
+@end
+
+$$FLAG1
+b
+@end
+
+$$FLAG2
+c
+@end
+
+$$FLAG3
+d
+@end

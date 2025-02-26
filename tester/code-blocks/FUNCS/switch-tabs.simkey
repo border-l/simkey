@@ -1,0 +1,12 @@
+# Switches tabs $num_tabs times #
+@switch_tab [$num_tabs] {
+    |[ALT]
+
+    @repeat [$num_tabs] {
+        [TAB]
+        <100>
+    }
+
+    |[ALT]
+    <50>
+}

@@ -1,0 +1,16 @@
+# Checkers #
+$CHECK_SPEED
+$CHECK_LEVEL
+$CHECK_COMMANDS
+
+# Commands #
+$REPEAT
+$END
+$DO_A
+$DO_B
+$DO_C
+
+# LOGS #
+$LOG_A
+$LOG_B
+$LOG_C

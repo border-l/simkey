@@ -1,0 +1,21 @@
+# Functions to represent expressions #
+@abc {
+    abc
+}
+
+@run {
+    <0>w
+    |w|
+}
+
+@walk {
+    |w|
+}
+
+@sit {
+    d
+}
+
+@complex {
+    \<50>123abcd[MB_LEFT]|[SHIFT]
+}

@@ -1,0 +1,5 @@
+# Base values for the sake of it (off for testing errors) #
+$S = 0
+$S1 = 1
+$TO5 = 2
+$TO10 = 10

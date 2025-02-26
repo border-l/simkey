@@ -1,0 +1,4 @@
+# Basic functions for adding to keyc #
+@type testing/type
+@loop_if testing/loop_if
+@cursor_smooth testing/cursor_smooth

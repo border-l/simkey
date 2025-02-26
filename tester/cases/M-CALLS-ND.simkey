@@ -1,0 +1,25 @@
+# Testing error from calling non defined function #
+
+<MACRO>
+	# Requires F.delay, F.expressions, F.flags, F.switches, D.levels and D.speeds/std, V.delays/std add M.flags #
+	
+	# Click w/ delay #
+	@getDelay
+	[MB_LEFT]
+	
+	# Expressions #
+	@run
+	|w|
+	@run
+	@walk
+	@walk
+	@sit
+	@abc
+	@complex
+	
+	# Conditional tests #
+	@switches
+	
+	# Test flags #
+	@flags
+

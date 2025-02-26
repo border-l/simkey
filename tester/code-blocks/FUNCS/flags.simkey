@@ -1,0 +1,12 @@
+# Requires D.levels, uses conditions to test flags #
+@flags {
+    @if $HIGH {
+        @goto $$FLAG1
+    }
+    @elseif $MED {
+        @goto $$FLAG2
+    }
+    @else {
+        @goto $$FLAG3
+    }
+}

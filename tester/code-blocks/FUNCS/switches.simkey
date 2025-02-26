@@ -1,0 +1,26 @@
+# Requires S.commands/std, tests them #
+@switches {
+    @if $END {
+        @end
+    }
+
+    r
+
+    @if $REPEAT {
+        @repeat [4] {
+            r
+        }
+    }
+    
+    @if $DO_A {
+        a
+    }
+
+    @if $DO_B {
+        b
+    }
+
+    @if $DO_C {
+        c
+    }
+}

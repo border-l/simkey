@@ -1,0 +1,5 @@
+# Actual delay vectors #
+$NONE_DELAY = 0,0
+$FAST_DELAY = 1,1
+$NORMAL_DELAY = 50,50
+$SLOW_DELAY = 150,150

@@ -1,0 +1,32 @@
+# Requires V.std, tests setting delays, cursor, and repeat amount with vectors #
+
+# Testing whole delay #
+@delay [$FAST_DELAY]
+a
+@delay [$NORMAL_DELAY]
+b
+@delay [$NONE_DELAY]
+c
+
+# Individual delays #
+@hold [$NORMAL_DELAY]
+@wait [$FAST_DELAY]
+a
+
+# Inline delays #
+<$NORMAL_DELAY>abc<$FAST_DELAY>
+<$NORMAL_DELAY>abc
+<$FAST_DELAY>abc
+
+# Cursors #
+@cursor [$START_C]
+@cursor [$POSITIVE_C]
+@cursor [$NEGATIVE_C]
+
+# Repeat #
+@repeat [$S] {
+    r
+}
+@repeat [$REPEAT] {
+    r
+}

@@ -1,0 +1,48 @@
+# Testing error from indices #
+
+<VECTORS>
+	# Base values for the sake of it (off for testing errors) #
+	$S = 0
+	$S1 = 1
+	$TO5 = 2
+	$TO10 = 10
+
+<IMPORTS>
+	# Adjust later, but must implement for testing #
+	@takesSTR testing/types/takesSTR
+	@takesNUM testing/types/takesNUM
+	@takesBOOL testing/types/takesBOOL
+	@takesLOOSE testing/types/takesLOOSE
+	@takesVECTOR testing/types/takesVECTOR
+
+<MACRO>
+	# Requires V.base/std & V.delays/std & I.types/std, tests indices everywhere applicable #
+	
+	# Delays #
+	@hold [$TO5:5]
+	@wait [$TO10:10]
+	a
+	@hold [$TO5:-5]
+	@wait [$TO10:-1]
+	a
+	
+	# Inline delays #
+	<$TO5:2>abc<$TO10:-3>
+	<$NORMAL_DELAY:-1>abc
+	<$FAST_DELAY:-2>abc
+	<$TO10:5>abc<$TO10:2>
+	
+	# Imported #
+	@takesNUM [$TO10:7]
+	
+	# Repeat #
+	@repeat [$TO5:0] {
+	    r
+	}
+	@repeat [$TO5:-6] {
+	    r
+	}
+	@repeat [$TO5:5] {
+	    r
+	}
+

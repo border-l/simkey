@@ -1,0 +1,71 @@
+name: Test Simkey
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Dependencies
+      run: |
+        npm install chalk@4.1.2
+
+    - name: Run Tests
+      run: node tester/test.js
+      continue-on-error: true
+
+    - name: Extract Test Results (Pass/Fail)
+      id: extract_results
+      run: |
+        # Extract the number of passed and failed tests from overview.txt (assuming format is "Successful tests: 32/32")
+        PASS=$(grep -oP 'Successful tests: \K[0-9]+' tester/results/overview.txt)
+        TOTAL=$(grep -oP '/\K[0-9]+' tester/results/overview.txt)
+        echo "PASS=$PASS" >> $GITHUB_ENV
+        echo "TOTAL=$TOTAL" >> $GITHUB_ENV
+        echo "Test results: $PASS/$TOTAL"
+
+    - name: Commit and Push Test Results
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        
+        # Add modified files
+        git add README.md tester/results/overview.txt tester/results/fail.txt tester/results/pass.txt
+        
+        # Use GitHub token for pushing changes
+        if [[ `git diff --cached --name-only` != "" ]]; then
+          PASS=$(grep -oP 'Successful tests: \K[0-9]+' tester/results/overview.txt)
+          TOTAL=$(grep -oP '/\K[0-9]+' tester/results/overview.txt)
+          git commit -m "Test results: [${PASS}/${TOTAL}]"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:${{ github.ref }}
+        else
+          echo "No changes in results to commit."
+        fi
+
+    - name: Check if fail.txt has content and fail intentionally
+      run: |
+        if [ -s tester/results/fail.txt ]; then
+          echo "Tests failed. Triggering intentional error."
+          exit 1  # This will intentionally fail the workflow if fail.txt is not empty
+        else
+          echo "No failures detected."
+        fi

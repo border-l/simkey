@@ -1,0 +1,18 @@
+# Levels #
+$HIGH
+$MED
+$LOW
+
+# Commands #
+$RUN
+$WALK
+$SIT
+$STAND
+
+# Speeds #
+$FAST
+$NORMAL
+$SLOW
+
+# GLOBAL LOG #
+$LOG_ALL
