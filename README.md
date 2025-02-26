@@ -5,6 +5,8 @@ Simkey is a simple language to write repetitive macros. While there are certainl
 
 You can press, hold, and release keys, as well as move the cursor and scroll, while controlling the timing and parallelization, in a very concise syntax.
 
+What we will go over is in the first page of the documentation [available on our website](https://simkey.wiki).
+
 ## Basic Syntax
 
 Simkey aims to strike a balance between conciseness and capability. The most fundamental part to understand, are `key expressions` and `delays`.  **Note: unlike most other languages, every form of whitespace is treated the same as a new line.**
