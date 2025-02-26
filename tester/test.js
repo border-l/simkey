@@ -97,7 +97,7 @@ function runCases() {
 
                 // Error, failed
                 else {
-                    saveToFail(testCase + optionString + "FAILED, ERROR: " + stderr)
+                    saveToFail(testCase + optionString + "FAILED, ERROR: " + errorMessage)
                     passed = false
                 }
             }

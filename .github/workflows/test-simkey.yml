@@ -20,6 +20,9 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    - name: Set execute permissions
+      run: chmod +x cli/simkey
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
