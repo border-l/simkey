@@ -15,6 +15,3 @@
 @printINFO ./printINFO
 @scroll ./scroll
 @type ./type
-@press ./press
-@release ./release
-@keyc ./keyc
