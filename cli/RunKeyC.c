@@ -43,6 +43,26 @@ KeyMap keyMap[] = {
 
 int keyMapSize = sizeof(keyMap) / sizeof(KeyMap);
 
+void exitError(char* msg, FILE* file) {
+    printf("%s", msg);
+    fclose(file);
+    exit(1);
+}
+
+int isValidInteger(const char* str, int positive) {
+    if (*str == '\0') return 0;
+    if (*str == '-' && !positive) str++;
+
+    while (*str) {
+        if (!isdigit(*str)) {
+            return 0;
+        }
+        str++;
+    }
+
+    return 1;
+}
+
 KeyMap* findKey(const char* key) {
     for (int i = 0; i < keyMapSize; i++) {
         if (strcmp(keyMap[i].key, key) == 0)
@@ -51,13 +71,13 @@ KeyMap* findKey(const char* key) {
     return NULL;
 }
 
-void pressKey(const char* key, int *isShiftDown) {
+int pressKey(const char* key, int *isShiftDown) {
     KeyMap* km = findKey(key);
     if (!km) {
         printf("Invalid key: %s\n", key);
-        exit(1);
+        return 0;
     }
-    
+
     if (km->isMouse) {
         mouse_event(km->mapping, 0, 0, 0, 0);
     } 
@@ -66,7 +86,7 @@ void pressKey(const char* key, int *isShiftDown) {
         int prefix = mappingValue / 10000;
         int code = mappingValue % 10000;
 
-        if (strcmp(key, "SHIFT")) {
+        if (strcmp(key, "SHIFT") == 0) {
             *isShiftDown = 1;
         }
         else if (prefix == 1 && !*isShiftDown) {
@@ -75,13 +95,15 @@ void pressKey(const char* key, int *isShiftDown) {
 
         keybd_event(code, 0, 0, 0);
     }
+
+    return 1;
 }
 
-void releaseKey(const char* key, int *isShiftDown) {
+int releaseKey(const char* key, int *isShiftDown) {
     KeyMap* km = findKey(key);
     if (!km) {
         printf("Invalid key: %s\n", key);
-        exit(1);
+        return 0;
     }
     
     if (km->isMouse) {
@@ -110,6 +132,8 @@ void releaseKey(const char* key, int *isShiftDown) {
             keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
         }
     }
+
+    return 1;
 }
 
 void scroll(int amount) {
@@ -137,19 +161,25 @@ void parseAndRun(const char* filename, int repeat) {
 
             switch (command) {
                 case 'p':
-                    pressKey(argument, &isShiftDown);
+                    if (!pressKey(argument, &isShiftDown)) {
+                        exitError("", file);
+                    }
                     break;
                 case 'r':
-                    releaseKey(argument, &isShiftDown);
+                    if (!releaseKey(argument, &isShiftDown)) {
+                        exitError("", file);
+                    }
                     break;
                 case 'w':
+                    if (!isValidInteger(argument, 1)) {
+                        exitError("Invalid integer given to wait command\n", file);
+                    }
                     Sleep(atoi(argument));
                     break;
                 case 'c': {
                     int x, y;
                     if (sscanf(argument, "%d,%d", &x, &y) != 2) {
-                        printf("Invalid cursor move command\n");
-                        exit(1);
+                        exitError("Invalid cursor move command\n", file);
                     }
                     SetCursorPos(x, y);
                     break;
@@ -159,7 +189,7 @@ void parseAndRun(const char* filename, int repeat) {
                     break;
                 default:
                     printf("Invalid command: %c\n", command);
-                    exit(1);
+                    exitError("", file);
             }
         }
 
