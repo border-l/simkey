@@ -28,12 +28,12 @@ KeyMap keyMap[] = {
     {"MB_RIGHT", MOUSEEVENTF_RIGHTDOWN, 1}, {"MB_MIDDLE", MOUSEEVENTF_MIDDLEDOWN, 1}, 
     {"!", 10000 + '1', 0}, {"@", 10000 + '2', 0}, {"#", 10000 + '3', 0}, {"$", 10000 + '4', 0}, 
     {"%", 10000 + '5', 0}, {"^", 10000 + '6', 0}, {"&", 10000 + '7', 0}, {"*", 10000 + '8', 0}, 
-    {"(", 10000 + '9', 0}, {")", 10000 + '0', 0}, {"_", 10000 + VK_OEM_PLUS, 0}, 
-    {"+", 10000 + VK_OEM_MINUS, 0}, {"~", 10000 + VK_OEM_3, 0}, {"{", 10000 + VK_OEM_4, 0}, 
-    {"}", 10000 + VK_OEM_6, 0}, {"|", 10000 + VK_OEM_102, 0}, {":", 10000 + VK_OEM_1, 0}, 
+    {"(", 10000 + '9', 0}, {")", 10000 + '0', 0}, {"_", 10000 + VK_OEM_MINUS, 0}, 
+    {"+", VK_OEM_PLUS, 0}, {"~", 10000 + VK_OEM_3, 0}, {"{", 10000 + VK_OEM_4, 0}, 
+    {"}", 10000 + VK_OEM_6, 0}, {"|", 10000 + VK_OEM_5, 0}, {":", 10000 + VK_OEM_1, 0}, 
     {"\"", 10000 + VK_OEM_7, 0}, {"<", 10000 + VK_OEM_COMMA, 0}, {">", 10000 + VK_OEM_PERIOD, 0}, 
     {"?", 10000 + VK_OEM_2, 0}, {"=", VK_OEM_PLUS, 0}, {"-", VK_OEM_MINUS, 0}, {"`", VK_OEM_3, 0}, 
-    {"[", VK_OEM_4, 0}, {"]", VK_OEM_5, 0}, {"\\", VK_OEM_102, 0}, {";", VK_OEM_1, 0}, 
+    {"[", VK_OEM_4, 0}, {"\\", VK_OEM_5, 0}, {"]", VK_OEM_6, 0}, {";", VK_OEM_1, 0}, 
     {"'", VK_OEM_7, 0}, {",", VK_OEM_COMMA, 0}, {".", VK_OEM_PERIOD, 0}, {"/", VK_OEM_2, 0}, 
     {"CMD", VK_LWIN, 0}, {"WIN", VK_LWIN, 0}, {"CAPS", VK_CAPITAL, 0}, {"TAB", VK_TAB, 0}, 
     {"LIST", VK_APPS, 0}, {"END", VK_END, 0}, {"PRNTSCR", VK_SNAPSHOT, 0}, {"SCRL_LOCK", VK_SCROLL, 0}, 
@@ -43,6 +43,26 @@ KeyMap keyMap[] = {
 
 int keyMapSize = sizeof(keyMap) / sizeof(KeyMap);
 
+void exitError(char* msg, FILE* file) {
+    printf("%s", msg);
+    fclose(file);
+    exit(1);
+}
+
+int isValidInteger(const char* str, int positive) {
+    if (*str == '\0') return 0;
+    if (*str == '-' && !positive) str++;
+
+    while (*str) {
+        if (!isdigit(*str)) {
+            return 0;
+        }
+        str++;
+    }
+
+    return 1;
+}
+
 KeyMap* findKey(const char* key) {
     for (int i = 0; i < keyMapSize; i++) {
         if (strcmp(keyMap[i].key, key) == 0)
@@ -51,11 +71,11 @@ KeyMap* findKey(const char* key) {
     return NULL;
 }
 
-void pressKey(const char* key, int *isShiftDown) {
+int pressKey(const char* key, int *isShiftDown) {
     KeyMap* km = findKey(key);
     if (!km) {
         printf("Invalid key: %s\n", key);
-        exit(1);
+        return 0;
     }
     
     if (km->isMouse) {
@@ -66,7 +86,7 @@ void pressKey(const char* key, int *isShiftDown) {
         int prefix = mappingValue / 10000;
         int code = mappingValue % 10000;
 
-        if (strcmp(key, "SHIFT")) {
+        if (strcmp(key, "SHIFT") == 0) {
             *isShiftDown = 1;
         }
         else if (prefix == 1 && !*isShiftDown) {
@@ -75,13 +95,15 @@ void pressKey(const char* key, int *isShiftDown) {
 
         keybd_event(code, 0, 0, 0);
     }
+
+    return 1;
 }
 
-void releaseKey(const char* key, int *isShiftDown) {
+int releaseKey(const char* key, int *isShiftDown) {
     KeyMap* km = findKey(key);
     if (!km) {
         printf("Invalid key: %s\n", key);
-        exit(1);
+        return 0;
     }
     
     if (km->isMouse) {
@@ -92,7 +114,7 @@ void releaseKey(const char* key, int *isShiftDown) {
         else if (km->mapping == MOUSEEVENTF_RIGHTDOWN)
             releaseEvent = MOUSEEVENTF_RIGHTUP;
         else
-            releaseEvent = MOUSEEVENTF_MIDDLEDOWN;
+            releaseEvent = MOUSEEVENTF_MIDDLEUP;
 
         mouse_event(releaseEvent, 0, 0, 0, 0);
     } 
@@ -103,65 +125,150 @@ void releaseKey(const char* key, int *isShiftDown) {
 
         keybd_event(code, 0, KEYEVENTF_KEYUP, 0);
 
-        if (strcmp(key, "SHIFT")) {
+        if (strcmp(key, "SHIFT") == 0) {
             *isShiftDown = 0;
         }
         else if (prefix == 1 && !*isShiftDown) {
             keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, 0);
         }
     }
+
+    return 1;
 }
 
 void scroll(int amount) {
     mouse_event(MOUSEEVENTF_WHEEL, 0, 0, amount * WHEEL_DELTA, 0);
 }
 
+char* handleInstruction(char* nesting, FILE* file, int cursor[2], int *isShiftDown, int skip) {
+    if (strlen(nesting) > 40) {
+        exitError("Exceeded maximum nesting size for `i` and `t` instructions\n", file);
+    }
+
+    char line[100];
+
+    while (fgets(line, sizeof(line), file)) {
+        if (line[strlen(line) - 1] != '\n') {
+            exitError("A line exceeds 100 characters\n", file);
+        }
+        line[strcspn(line, "\n")] = 0;
+        
+        if (cursor[0] != -505050 && (!strstr(line, nesting) || strstr(line, nesting) == line)) {
+            return line;
+        }
+        if (skip) {
+            continue;
+        }
+
+        char command = strlen(nesting) == 0 ? line[0] : line[strcspn(line, nesting)];
+
+        while (command == 'i' || command == 't') {
+            char newNest[50];
+            strcpy(newNest, nesting);
+            char commandCat[2] = {(char) toupper(command), '\0'};
+            strcat(newNest, commandCat);
+
+            /* Getting arguments in between here */
+            // Some sort of call --> int newSkip = command == 'i' ? findImage(...) : findText(...);
+            // Manage dealing with cursor --> newCursor = ... ? cursor : ...;
+            int newSkip = 1;
+            int newCursor[] = {0, 0};
+
+            strncpy(line, handleInstruction(newNest, file, newCursor, isShiftDown, newSkip), 100);
+
+            if (strcmp(line, "END") == 0) {
+                return "END";
+            }
+
+            command = strlen(nesting) == 0 ? line[0] : line[strcspn(line, nesting)];
+        }
+
+        char* argument = strlen(nesting) == 0 ? line + 1 : line + strcspn(line, nesting) + 1;
+
+        if (strcmp(argument, "END") == 0) {
+            return "END";
+        }
+
+        switch (command) {
+            case 'E':
+                return "END";
+            case 'p':
+                if (!pressKey(argument, isShiftDown)) {
+                    exitError("", file);
+                }
+                break;
+            case 'r':
+                if (!releaseKey(argument, isShiftDown)) {
+                    exitError("", file);
+                }
+                break;
+            case 'w':
+                if (!isValidInteger(argument, 1)) {
+                    exitError("Invalid integer given to wait command\n", file);
+                }
+                Sleep(atoi(argument));
+                break;
+            case 'c': {
+                if (strcmp(argument, "i") == 0) {
+                    if (cursor[0] == -505050) {
+                        exitError("Attempted to set cursor to position of image outside any block", file);
+                    }
+                    SetCursorPos(cursor[0], cursor[1]);
+                    break;
+                }
+
+                int x, y;
+                if (sscanf(argument, "%d,%d", &x, &y) != 2) {
+                    exitError("Invalid cursor move command\n", file);
+                }
+                SetCursorPos(x, y);
+                break;
+            }
+            case 's':
+                if (!isValidInteger(argument, 0)) {
+                    exitError("Invalid integer given to scroll command\n", file);
+                }
+                scroll(atoi(argument));
+                break;
+            case 'a':
+                /* Do some looping and wait till image is found 
+                // CHECK ARGUMENT VALIDITY HERE (make a function I guess)
+                int foundPos[2] = {-505050, -505050};
+    
+                // Keep checking until the image is found
+                while (foundPos[0] == -505050 && foundPos[1] == -505050) {
+                    foundPos[0] = findImage(argument, foundPos + 1);
+                    Sleep(50); // Prevent CPU overuse, adjust delay as needed
+                }
+
+                cursor[0] = foundPos[0];
+                cursor[1] = foundPos[1];
+                */
+                break;
+            default:
+                printf("Invalid command: %c\n", command);
+                exitError("", file);
+        }
+    }
+
+    return "END";
+}
+
 void parseAndRun(const char* filename, int repeat) {
-    FILE* file = fopen(filename, "r");
+    FILE *file = fopen(filename, "r");
     if (!file) {
         printf("Error opening file: %s\n", filename);
         exit(1);
     }
 
-    char line[256];
     int loopCount = 0;
-
     while (repeat < 0 || loopCount < repeat) {
         rewind(file);
         int isShiftDown = 0;
 
-        while (fgets(line, sizeof(line), file)) {
-            char command = line[0];
-            char* argument = line + 1;
-            argument[strcspn(argument, "\n")] = 0;
+        int placeholderCursor[] = {-505050,0};
 
-            switch (command) {
-                case 'p':
-                    pressKey(argument, &isShiftDown);
-                    break;
-                case 'r':
-                    releaseKey(argument, &isShiftDown);
-                    break;
-                case 'w':
-                    Sleep(atoi(argument));
-                    break;
-                case 'c': {
-                    int x, y;
-                    if (sscanf(argument, "%d,%d", &x, &y) != 2) {
-                        printf("Invalid cursor move command\n");
-                        exit(1);
-                    }
-                    SetCursorPos(x, y);
-                    break;
-                }
-                case 's':
-                    scroll(atoi(argument));
-                    break;
-                default:
-                    printf("Invalid command: %c\n", command);
-                    exit(1);
-            }
-        }
+        handleInstruction("", file, placeholderCursor, &isShiftDown, 0);
 
         loopCount++;
     }

@@ -15,3 +15,7 @@
 @printINFO ./printINFO
 @scroll ./scroll
 @type ./type
+@awaitImage ./awaitImage
+@ifImage ./ifImage
+@ifText ./ifText
+@clickImage ./clickImage

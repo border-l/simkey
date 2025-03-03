@@ -2,9 +2,10 @@ const organize = require("../organize/organize")
 const checkFunctionReferences = require("../helpers/checkFunctionReferences")
 const getInstructionList = require("./getInstructionList")
 const compileExpressionObject = require("./compileExpressionObject")
-const checkValidImportReturn = require("../helpers/checkValidImportReturn")
+// const checkValidImportReturn = require("../helpers/checkValidImportReturn") /* IMPORTANT: THIS IS EXPERIMENTAL (for basic screen reading and OCR) */
 const solveConditional = require("./solveConditional")
 const handleSET = require("./handleSET")
+const nestInstructions = require("../helpers/nestInstructions")
 const ThrowError = require("../errors/ThrowError")
 
 const fs = require("fs")
@@ -30,13 +31,17 @@ module.exports = (context, fileName) => {
 
     const sharedSpace = {}
 
+    /* IMPORTANT: THIS IS EXPERIMENTAL (for basic screen reading and OCR) */
+    let nested = ""
+
     // Handle each instruction
     for (let i = 0; i < instructionList.length; i++) {
         const instruction = instructionList[i]
 
         // Key expression object
         if (instruction instanceof Object && !Array.isArray(instruction)) {
-            code += compileExpressionObject(instruction, heldKeys, def)
+            /* IMPORTANT: THIS IS EXPERIMENTAL (for basic screen reading and OCR) */
+            code += nestInstructions(compileExpressionObject(instruction, heldKeys, def), nested)
             continue
         }
 
@@ -45,6 +50,16 @@ module.exports = (context, fileName) => {
         // End
         if (instruction === "@end") {
             break
+        }
+
+        /* IMPORTANT: THIS IS EXPERIMENTAL (for basic screen reading and OCR) */
+        if (instruction === "START_I" || instruction === "START_T") {
+            nested += instruction.slice(-1)
+            continue
+        }
+        if (instruction === "END_T" || instruction === "END_I") {
+            nested = nested.slice(0, -1)
+            continue
         }
 
         // Otherwise, handle imported function call
@@ -126,7 +141,7 @@ module.exports = (context, fileName) => {
         }
 
         // Check the return value
-        checkValidImportReturn(result, func.length === 1 ? instruction : func)
+        // checkValidImportReturn(result, func.length === 1 ? instruction : func) /* IMPORTANT: THIS IS EXPERIMENTAL (for basic screen reading and OCR) */
 
         // No result, continue
         if (!result) {
@@ -136,14 +151,19 @@ module.exports = (context, fileName) => {
         // Set code all to this
         if (result.startsWith("START")) {
             code = result
+
+            /* IMPORTANT: THIS IS EXPERIMENTAL (for basic screen reading and OCR) */
+            nested = ""
         }
         // Append to code
         else if (result.startsWith("\n")) {
-            code += result
+            /* IMPORTANT: THIS IS EXPERIMENTAL (for basic screen reading and OCR) */
+            code += nestInstructions(result, nested)
         }
         // Append to code and new line
         else {
-            code += "\n" + result
+            /* IMPORTANT: THIS IS EXPERIMENTAL (for basic screen reading and OCR) */
+            code += "\n" + nestInstructions(result, nested)
         }
     }
 
