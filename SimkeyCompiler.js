@@ -12,6 +12,8 @@ const compile = require("./compiler/compile/compile")
 const setSettings = require("./compiler/compile/setSettings")
 const setInputVectors = require('./compiler/compile/setInputVectors')
 
+const ThrowError = require("./compiler/errors/ThrowError")
+
 const fs = require("fs")
 
 class Compiler {
@@ -68,8 +70,6 @@ class Compiler {
         parseImports(this.#context)
         parseSettings(this.#context)
         parseVectors(this.#context)
-
-        console.log(this.#inputVectors)
         
         // Imported function to scan over document and parse before this handling
         if (this.#model.IMPORTS["CALL.BEFORE"]) {
