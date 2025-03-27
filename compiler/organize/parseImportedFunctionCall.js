@@ -134,10 +134,10 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
     }
 
     // Get optional index for finding needed length right after
-    let optionalIndex = importParams.reduce((foundIndex, elementArray) => {
+    let optionalIndex = importParams.reduce((foundIndex, elementArray, curIndex) => {
                             if (foundIndex !== -1) return foundIndex;
                             const index = elementArray.findIndex((val) => val.endsWith(":OPTIONAL"));
-                            return index !== -1 ? index : foundIndex;
+                            return index !== -1 ? curIndex : -1;
                         }, -1)
     let neededLength = optionalIndex > -1 ? optionalIndex : importParams.length
 
