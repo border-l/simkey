@@ -1,5 +1,6 @@
 *.class
 *.exe
+*.dll
 /*.simkey
 /*.keyc
 /.autoimport

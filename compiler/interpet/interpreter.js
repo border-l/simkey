@@ -1,42 +1,16 @@
-const organize = require("../organize/organize")
-const checkFunctionReferences = require("../helpers/checkFunctionReferences")
 const getInstructionList = require("./getInstructionList")
-const compileExpressionObject = require("./compileExpressionObject")
-const checkValidImportReturn = require("../helpers/checkValidImportReturn")
+const runExpressionObject = require("./runExpressionObject")
 const solveConditional = require("./solveConditional")
 const handleSET = require("./handleSET")
 const ThrowError = require("../errors/ThrowError")
 
-const fs = require("fs")
-
-// Compiles the file
-module.exports = (context, fileName) => {
-    // Settings must be set first
-    if (!context.settings) {
-        return
-    }
-
-    // Organize and check that function references are valid
-    organize(context)
-    checkFunctionReferences(context)
-
-    // Get instruction list and set object for info shared between imports
-    const instructionList = getInstructionList(context, context.model.MACRO, "MACRO")
-
-    // Info for parsing sequences
-    let def = [100, 100]
-    let code = "START"
-    let heldKeys = []
-
-    const sharedSpace = {}
-
-    // Handle each instruction
+async function interpreter(context, passedInfo, instructionList) {
     for (let i = 0; i < instructionList.length; i++) {
         const instruction = instructionList[i]
 
         // Key expression object
         if (instruction instanceof Object && !Array.isArray(instruction)) {
-            code += compileExpressionObject(instruction, heldKeys, def)
+            await runExpressionObject(instruction, passedInfo.HELD, passedInfo.DEF)
             continue
         }
 
@@ -49,19 +23,6 @@ module.exports = (context, fileName) => {
 
         // Otherwise, handle imported function call
         let result
-
-        const passedInfo = {
-            DEF: def,
-            LIST: instructionList,
-            INDEX: i,
-            IMPORTS: context.model.IMPORTS,
-            SETTINGS: context.settings,
-            MODES: context.model.MODES,
-            SWITCHES: context.model.SWITCHES,
-            VECTORS: context.model.VECTORS,
-            CODE: code,
-            SHARED: sharedSpace
-        }
 
         // No arguments
         if (func.length === 1 && typeof func === "string") {
@@ -76,9 +37,11 @@ module.exports = (context, fileName) => {
                     continue
                 }
 
-                // Add block of branch
-                instructionList.splice(i + 1, 0, ...getInstructionList(context, instruction[2][x], "MACRO"))
+                interpreter(context, passedInfo, getInstructionList(context, instruction[2][x], "MACRO"))
                 break
+                // // Add block of branch
+                // instructionList.splice(i + 1, 0, ...getInstructionList(context, instruction[2][x], "MACRO"))
+                // break
             }
         }
 
@@ -103,7 +66,7 @@ module.exports = (context, fileName) => {
                 if (typeof instruction[1][ind] === "function") {
                     newInstructions[ind] = instruction[1][ind]()
                 }
-                // Push as is since it is not a function
+                // Push since it is not a function
                 else {
                     newInstructions.push(instruction[1][ind])
                 }
@@ -118,41 +81,18 @@ module.exports = (context, fileName) => {
             if (instruction[2] !== undefined) {
                 // Get the instructions or not depending on DONT_PARSE_BLOCK
                 const passedBlock = context.model.IMPORTS[func].DONT_PARSE_BLOCK ? instruction[2] : getInstructionList(context, instruction[2], "MACRO")
-                result = context.model.IMPORTS[func.substring(1)](passedInfo, passedBlock, ...newInstructions)
+                result = await context.model.IMPORTS[func.substring(1)](passedInfo, passedBlock, ...newInstructions)
             }
             else {
-                result = context.model.IMPORTS[func.substring(1)](passedInfo, ...newInstructions)
+                result = await context.model.IMPORTS[func.substring(1)](passedInfo, ...newInstructions)
             }
         }
-
-        // Check the return value
-        checkValidImportReturn(result, func.length === 1 ? instruction : func)
 
         // No result, continue
         if (!result) {
             continue
         }
-
-        // Set code all to this
-        if (result.startsWith("START")) {
-            code = result
-        }
-        // Append to code
-        else if (result.startsWith("\n")) {
-            code += result
-        }
-        // Append to code and new line
-        else {
-            code += "\n" + result
-        }
     }
-
-    // Release all held down keys
-    for (const key of heldKeys) {
-        code += "\nr" + (key.endsWith("|") ? key.substring(0, key.length - 1) : key)
-    }
-
-    // Save to file and return its name
-    fs.writeFileSync(fileName, code.substring(6))
-    return fileName
 }
+
+module.exports = interpreter

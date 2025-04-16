@@ -5,6 +5,8 @@
     "dependencies": {
         "chalk": "^4.1.2",
         "commander": ">=12.1.0",
-        "expr-eval": "^2.0.2"
+        "expr-eval": "^2.0.2",
+        "ffi-napi": "^4.0.3",
+        "ref-napi": "^3.0.3"
     }
 }

@@ -1,9 +1,8 @@
 const ThrowError = require("../errors/ThrowError")
+const [send, setCursor, scroll, sleep] = require("../robot/robot")
 
-// Compiles expression object to KeyC
-module.exports = (expression, heldKeys, def) => {
-    let code = ""
-
+// Runs expression object directly
+async function runExpressionObject (expression, heldKeys, def) {
     // Get hold and wait
     let hold = expression.hold === "DEF" ? def[0] : expression.hold
     let wait = expression.wait === "DEF" ? def[1] : expression.wait
@@ -23,7 +22,9 @@ module.exports = (expression, heldKeys, def) => {
     
     // Simple wait expression
     if (expression.keysHeld.length === 0 && expression.keysPressed.length === 0 && expression.wait === 'DEF') { 
-        return "\nw" + hold
+        await sleep(hold)
+        // "w" + hold + "\n"
+        return
     }
 
     // Held down keys for release at end
@@ -32,21 +33,23 @@ module.exports = (expression, heldKeys, def) => {
     // Held part of expression
     for (const key of expression.keysHeld) {
         // Held already and key ends with "|"
-        if (heldKeys.includes(key.slice(0,-1)) && key.endsWith("|")) {
+        if (key.endsWith("|") && heldKeys.includes(key.slice(0,-1))) {
             releaseLater.push(key.slice(0,-1))
             continue
         }
 
         if (heldKeys.includes(key)) {
-            code += '\nr' + key
-
+            // code += '\nr' + key
+            send([key, false])
             heldKeys.splice(heldKeys.indexOf(key), 1)
             continue
         }
 
         // Press key
-        code += '\np' + (key.endsWith("|") ? key.slice(0, -1) : key)
-        heldKeys.push(key.endsWith("|") ? key.slice(0, -1) : key)
+        // code += '\np' + (key.endsWith("|") ? key.slice(0, -1) : key)
+        const adj = key.endsWith("|") ? key.slice(0, -1) : key
+        send([adj, true])
+        heldKeys.push(adj)
     }
 
     // Press each pressed key
@@ -55,25 +58,31 @@ module.exports = (expression, heldKeys, def) => {
             ThrowError(1210, { AT: key })
         }
 
-        code += "\np" + key
+        // code += "\np" + key
+        send([key, true])
     }
 
     // Hold for period
-    code += hold > 0 ? "\nw" + hold : ""
+    // code += hold > 0 ? "\nw" + hold : ""
+    hold > 0 ? await sleep(hold) : 0
 
     // Release all pressed keys
     for (const key of expression.keysPressed) {
-        code += "\nr" + key
+        // code += "\nr" + key
+        send([key, false])
     }
     
     // Release all held keys to be released
     for (const key of releaseLater) {
         heldKeys.splice(heldKeys.indexOf(key), 1)
-        code += "\nr" + key
+        send([key, false])
+        // code += "\nr" + key
     }
 
     // Wait for period
-    code += (wait > 0 ? "\nw" + wait : '')
-
-    return code
+    // code += (wait > 0 ? "\nw" + wait : '')
+    // return code
+    wait > 0 ? await sleep(wait) : 0
 }
+
+module.exports = runExpressionObject

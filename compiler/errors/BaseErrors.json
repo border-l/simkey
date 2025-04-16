@@ -47,6 +47,7 @@
     "AssignedVectorNonNumber": 2400,
     "AssignedVectorEmpty": 2405,
     "NegativeHoldOrWait": 2500,
+    "KeyNotExist": 2600,
     "NonExistentFlag": 3000,
     "NonExistentVariable": 3005,
     "NonExistentVector": 3010,

@@ -23,7 +23,9 @@ const FORMAT = {
     AssignedVectorNonNumber: ({ AT }) => `Assignment for VECTOR does not include any numbers. AT: ${AT}`,
     AssignedVectorEmpty: ({ AT }) => `Value in VECTOR assignment is not a number. AT ${AT}`,
 
-    NegativeHoldOrWait: ({ VALUES }) => `Negative hold or wait in key expression. VALUES: ${VALUES}`
+    NegativeHoldOrWait: ({ VALUES }) => `Negative hold or wait in key expression. VALUES: ${VALUES}`,
+
+    KeyNotExist: ({ AT }) => `Key is invalid (not mapped by Simkey). AT: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }
