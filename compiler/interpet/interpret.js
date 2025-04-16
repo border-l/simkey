@@ -2,12 +2,7 @@ const organize = require("../organize/organize")
 const checkFunctionReferences = require("../helpers/checkFunctionReferences")
 const getInstructionList = require("./getInstructionList")
 const interpreter = require("./interpreter")
-const [send] = require("../robot/robot")
-// const runExpressionObject = require("./runExpressionObject")
-// const checkValidImportReturn = require("../helpers/checkValidImportReturn")
-// const solveConditional = require("./solveConditional")
-// const handleSET = require("./handleSET")
-// const ThrowError = require("../errors/ThrowError")
+const robot = require("../robot/robot")
 
 // Interprets the file
 async function interpret(context) {
@@ -25,6 +20,7 @@ async function interpret(context) {
     const def = [100, 100]
     const heldKeys = []
 
+    // Interpret list
     await interpreter(context, {
         DEF: def,
         HELD: heldKeys,
@@ -33,14 +29,14 @@ async function interpret(context) {
         MODES: context.model.MODES,
         SWITCHES: context.model.SWITCHES,
         VECTORS: context.model.VECTORS,
+        ROBOT: robot,
         INTERPRET: interpreter,
         SHARED: {}
     }, instructionList)
 
     // Release all held down keys
     for (const key of heldKeys) {
-        // code += "\nr" + (key.endsWith("|") ? key.substring(0, key.length - 1) : key)
-        send([key, false])
+        robot.send([key, false])
     }
 }
 

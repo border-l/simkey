@@ -13,11 +13,11 @@ const robot = ffi.Library(libPath, {
     'scroll': ['void', ['int']]
 })
 
-function wait(ms) {
+function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-function sendInput(input) {
+function send(input) {
     const [key, down] = input
     const map = mapping[key]
     if (!map) ThrowError(2600, { AT: key })
@@ -32,4 +32,4 @@ function sendInput(input) {
     send(map.code)
 }
 
-module.exports = [sendInput, robot.setCursor, robot.scroll, wait]
+module.exports = {send, cursor: robot.setCursor, scroll: robot.scroll, sleep}

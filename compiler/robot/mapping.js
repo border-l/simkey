@@ -167,5 +167,4 @@ for (let i = 65; i <= 90; i++) {
     mapping[String.fromCharCode(i + 32)] = { code: i, shift: false }
 }
 
-console.log(mapping)
 module.exports = mapping

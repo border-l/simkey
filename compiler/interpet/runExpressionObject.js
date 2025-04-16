@@ -1,8 +1,7 @@
 const ThrowError = require("../errors/ThrowError")
-const [send, setCursor, scroll, sleep] = require("../robot/robot")
 
 // Runs expression object directly
-async function runExpressionObject (expression, heldKeys, def) {
+async function runExpressionObject (expression, heldKeys, def, { send, sleep }) {
     // Get hold and wait
     let hold = expression.hold === "DEF" ? def[0] : expression.hold
     let wait = expression.wait === "DEF" ? def[1] : expression.wait
@@ -23,7 +22,6 @@ async function runExpressionObject (expression, heldKeys, def) {
     // Simple wait expression
     if (expression.keysHeld.length === 0 && expression.keysPressed.length === 0 && expression.wait === 'DEF') { 
         await sleep(hold)
-        // "w" + hold + "\n"
         return
     }
 
@@ -39,14 +37,12 @@ async function runExpressionObject (expression, heldKeys, def) {
         }
 
         if (heldKeys.includes(key)) {
-            // code += '\nr' + key
             send([key, false])
             heldKeys.splice(heldKeys.indexOf(key), 1)
             continue
         }
 
         // Press key
-        // code += '\np' + (key.endsWith("|") ? key.slice(0, -1) : key)
         const adj = key.endsWith("|") ? key.slice(0, -1) : key
         send([adj, true])
         heldKeys.push(adj)
@@ -58,17 +54,14 @@ async function runExpressionObject (expression, heldKeys, def) {
             ThrowError(1210, { AT: key })
         }
 
-        // code += "\np" + key
         send([key, true])
     }
 
     // Hold for period
-    // code += hold > 0 ? "\nw" + hold : ""
     hold > 0 ? await sleep(hold) : 0
 
     // Release all pressed keys
     for (const key of expression.keysPressed) {
-        // code += "\nr" + key
         send([key, false])
     }
     
@@ -76,12 +69,9 @@ async function runExpressionObject (expression, heldKeys, def) {
     for (const key of releaseLater) {
         heldKeys.splice(heldKeys.indexOf(key), 1)
         send([key, false])
-        // code += "\nr" + key
     }
 
     // Wait for period
-    // code += (wait > 0 ? "\nw" + wait : '')
-    // return code
     wait > 0 ? await sleep(wait) : 0
 }
 

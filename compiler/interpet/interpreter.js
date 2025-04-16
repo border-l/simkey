@@ -10,7 +10,7 @@ async function interpreter(context, passedInfo, instructionList) {
 
         // Key expression object
         if (instruction instanceof Object && !Array.isArray(instruction)) {
-            await runExpressionObject(instruction, passedInfo.HELD, passedInfo.DEF)
+            await runExpressionObject(instruction, passedInfo.HELD, passedInfo.DEF, passedInfo.ROBOT)
             continue
         }
 
