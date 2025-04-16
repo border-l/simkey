@@ -1,5 +1,5 @@
-const checkVariableName = require("../../compiler/helpers/checkVariableName")
-const evaluateExpr = require("../../compiler/helpers/evaluateExpr")
+const checkVariableName = require("../../interpreter/helpers/checkVariableName")
+const evaluateExpr = require("../../interpreter/helpers/evaluateExpr")
 
 // Set a boolean to evaluated expression
 function setBool(INFO, boolAndExpression) {

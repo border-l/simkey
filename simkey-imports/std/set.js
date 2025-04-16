@@ -1,5 +1,5 @@
-const checkVariableName = require("../../compiler/helpers/checkVariableName")
-const evaluateExpr = require("../../compiler/helpers/evaluateExpr")
+const checkVariableName = require("../../interpreter/helpers/checkVariableName")
+const evaluateExpr = require("../../interpreter/helpers/evaluateExpr")
 
 // Set index 0 of vector to evaluated expression
 function set(INFO, vectorAndExpression) {

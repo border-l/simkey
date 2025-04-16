@@ -1,22 +1,22 @@
-const autoImport = require("./compiler/importing/autoImport")
-const tokenize = require("./compiler/organize/tokenize")
+const autoImport = require("./interpreter/importing/autoImport")
+const tokenize = require("./interpreter/organize/tokenize")
 
-const clearComments = require("./compiler/organize/clearComments")
+const clearComments = require("./interpreter/organize/clearComments")
 
-const parseVectors = require('./compiler/sections/parseVectors')
-const parseImports = require("./compiler/sections/parseImports")
-const parseSettings = require("./compiler/sections/parseSettings")
-const parseModesAndSwitches = require("./compiler/sections/parseModesAndSwitches")
+const parseVectors = require('./interpreter/sections/parseVectors')
+const parseImports = require("./interpreter/sections/parseImports")
+const parseSettings = require("./interpreter/sections/parseSettings")
+const parseModesAndSwitches = require("./interpreter/sections/parseModesAndSwitches")
 
-const interpret = require("./compiler/interpet/interpret")
-const setSettings = require("./compiler/interpet/setSettings")
-const setInputVectors = require('./compiler/interpet/setInputVectors')
+const interpret = require("./interpreter/interpet/interpret")
+const setSettings = require("./interpreter/interpet/setSettings")
+const setInputVectors = require('./interpreter/interpet/setInputVectors')
 
-const ThrowError = require("./compiler/errors/ThrowError")
+const ThrowError = require("./interpreter/errors/ThrowError")
 
 const fs = require("fs")
 
-class Compiler {
+class Interpreter {
     // Script information and built-in functions
     #script
     #tokens
@@ -154,4 +154,4 @@ class Compiler {
     }
 }
 
-module.exports = Compiler
+module.exports = Interpreter

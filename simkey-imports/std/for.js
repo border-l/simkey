@@ -1,4 +1,4 @@
-const checkVariableName = require("../../compiler/helpers/checkVariableName")
+const checkVariableName = require("../../interpreter/helpers/checkVariableName")
 const deepClone = require("./helpers/deepClone")
 
 // Loop through block from start to end with step, with variable holding index

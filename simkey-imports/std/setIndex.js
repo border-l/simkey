@@ -1,4 +1,4 @@
-const evaluateExpr = require("../../compiler/helpers/evaluateExpr")
+const evaluateExpr = require("../../interpreter/helpers/evaluateExpr")
 
 // Set an index (expression) of a vector to a value from an expression
 function setIndex(INFO, vector, indexAndExpression) {

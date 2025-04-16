@@ -1,4 +1,4 @@
-const evaluateExpr = require("../../compiler/helpers/evaluateExpr")
+const evaluateExpr = require("../../interpreter/helpers/evaluateExpr")
 
 // Evaluates boolean statements about vectors (for conditional expressions)
 function e(INFO, expression) {
