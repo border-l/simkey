@@ -1,23 +1,16 @@
 // Types a string out (this overcomes the restriction of not being able to have repeats)
-function type (INFO, string) {
-    let code = ""
+async function type(INFO, string, time = 10) {
     string = String(string)
 
     // Go through each char
     for (let i = 0; i < string.length; i++) {
-        let key = string[i]
-
-        // Deal with space case
-        key = (key === " ") ? "SPACE" : key
-
-        // Wait, press and release key
-        code += `\nw10\np${key}\nw10\nr${key}`
+        await INFO.ROBOT.sleep(time)
+        await INFO.ROBOT.send([(string[i] === " ") ? "SPACE" : string[i], true])
+        await INFO.ROBOT.send([(string[i] === " ") ? "SPACE" : string[i], false])
+        await INFO.ROBOT.sleep(time)
     }
 
-    // Another 10 ms
-    code += "\nw10"
-
-    return code
+    await INFO.ROBOT.sleep(time)
 }
 
-module.exports = { FUNCTION: type, TAKES: { PARAMS: "[NUM|STR|LOOSE]", BLOCK: false } }
+module.exports = { FUNCTION: type, TAKES: { PARAMS: "[NUM | STR, NUM:OPTIONAL]", BLOCK: false } }

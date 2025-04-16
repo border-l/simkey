@@ -102,6 +102,28 @@ __declspec(dllexport) void scroll(int amount) {
     SendInput(1, &mouseInput, sizeof(INPUT));
 }
 
+__declspec(dllexport) void getCursor(int* coords) {
+    POINT p;
+    GetCursorPos(&p);
+    coords[0] = p.x;
+    coords[1] = p.y;
+}
+
+__declspec(dllexport) void getScreenSize(int* size) {
+    size[0] = GetSystemMetrics(SM_CXSCREEN);
+    size[1] = GetSystemMetrics(SM_CYSCREEN);
+}
+
+__declspec(dllexport) void getPixelColor(int x, int y, int* rgb) {
+    HDC hdc = GetDC(NULL);
+    COLORREF color = GetPixel(hdc, x, y);
+    ReleaseDC(NULL, hdc);
+
+    rgb[0] = GetRValue(color);
+    rgb[1] = GetGValue(color);
+    rgb[2] = GetBValue(color);
+}
+
 #else
 #include <stdio.h>
 

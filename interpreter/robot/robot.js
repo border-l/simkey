@@ -1,7 +1,10 @@
-const mapping = require("./mapping")
-const ffi = require("ffi-napi")
-const ThrowError = require("../errors/ThrowError")
 const path = require("path")
+const mapping = require("./mapping")
+const ThrowError = require("../errors/ThrowError")
+
+const ffi = require("ffi-napi")
+const ref = require("ref-napi")
+const ArrayType = require("ref-array-napi")
 
 const libPath = path.resolve(__dirname, 'robot')
 const robot = ffi.Library(libPath, {
@@ -10,7 +13,10 @@ const robot = ffi.Library(libPath, {
     'mouseDown': ['void', ['int']],
     'mouseUp': ['void', ['int']],
     'setCursor': ['void', ['int', 'int']],
-    'scroll': ['void', ['int']]
+    'scroll': ['void', ['int']],
+    'getCursor': ['void', [ArrayType(ref.types.int, 2)]],
+    'getScreenSize': ['void', [ArrayType(ref.types.int, 2)]],
+    'getPixelColor': ['void', ['int', 'int', ArrayType(ref.types.int, 3)]]
 })
 
 function sleep(ms) {
@@ -18,12 +24,13 @@ function sleep(ms) {
 }
 
 function send(input) {
+    if (!Array.isArray(input)) ThrowError(2600, { AT: "non-array given to robot.send function" })
     const [key, down] = input
     const map = mapping[key]
-    if (!map) ThrowError(2600, { AT: key })
+    if (map === undefined) ThrowError(2600, { AT: key })
 
     if (map.shift === null) {
-        down ? mouseDown() : mouseUp()
+        down ? robot.mouseDown(map.code) : robot.mouseUp(map.code)
         return
     }
 
@@ -32,4 +39,22 @@ function send(input) {
     send(map.code)
 }
 
-module.exports = {send, cursor: robot.setCursor, scroll: robot.scroll, sleep}
+function getCursor() {
+    const coords = new (ArrayType(ref.types.int, 2))()
+    robot.getCursor(coords)
+    return Array.from(coords)
+}
+
+function getPixel(x, y) {
+    const color = new (ArrayType(ref.types.int, 3))()
+    robot.getPixelColor(x, y, color)
+    return Array.from(color)
+}
+
+function getScreenSize() {
+    const size = new (ArrayType(ref.types.int, 2))()
+    robot.getScreenSize(size)
+    return Array.from(size)
+}
+
+module.exports = {send, cursor: robot.setCursor, scroll: robot.scroll, sleep, getCursor, getPixel, getScreenSize}

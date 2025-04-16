@@ -29,6 +29,7 @@ async function interpret(context) {
         MODES: context.model.MODES,
         SWITCHES: context.model.SWITCHES,
         VECTORS: context.model.VECTORS,
+        CONTEXT: context,
         ROBOT: robot,
         INTERPRET: interpreter,
         SHARED: {}

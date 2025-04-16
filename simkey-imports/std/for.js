@@ -2,10 +2,7 @@ const checkVariableName = require("../../interpreter/helpers/checkVariableName")
 const deepClone = require("./helpers/deepClone")
 
 // Loop through block from start to end with step, with variable holding index
-function forLoop(INFO, BLOCK, start, end, step, variable) {
-    // Keep track of where to add instructions
-    let index = INFO.INDEX + 1
-
+async function forLoop(INFO, BLOCK, start, end, step, variable) {
     // No step of 0
     if (step === 0) {
         throw new Error("You cannot have a step of zero.")
@@ -45,12 +42,8 @@ function forLoop(INFO, BLOCK, start, end, step, variable) {
 
     // Loop through with compare, incrementing by step
     for (let i = start; compare(i); i += step) {
-        // Add block and deep clone it for next time
-        INFO.LIST.splice(index, 0, ["@set", [variable + "," + i.toString()]], ...BLOCK)
+        await INFO.INTERPRET(INFO.CONTEXT, INFO, [["@set", [variable + "," + i.toString()]], ...BLOCK])
         BLOCK = deepClone(BLOCK)
-
-        // Move forward accordingly
-        index += BLOCK.length + 1
     }
 }
 
