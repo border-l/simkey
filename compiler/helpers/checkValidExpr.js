@@ -3,6 +3,11 @@ const checkVariableName = require("./checkVariableName")
 const getBalancedExpression = require('./getBalancedExpression')
 
 function checkValidExpr(expression, boolean = false) {
+    // This is a string (should return false anyway, but apparently this doesn't. I will make a parser myself)
+    if (expression[0] === expression.at(-1) && expression[0] === "\"") {
+        return false
+    }
+
     // Expression itself is a variable (supposedly), return false for something else to handle it
     if (checkVariableName(expression, true)) {
         return false

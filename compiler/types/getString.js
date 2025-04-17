@@ -1,73 +1,88 @@
 const ThrowError = require("../errors/ThrowError")
 const checkSection = require("../helpers/checkSection")
-const backCheck = require("../helpers/backCheck")
+const isEscaped = require("../helpers/isEscaped")
 
-// Get string from array of tokens and index
-module.exports = (context, index, searchArray = context.tokens, mustStart = false) => {
-    // return string
+// Get string from array of tokens and index (first char has to be \", last will end with \")
+function getString(context, index, searchArray = context.tokens, join = " ") {
+    if (searchArray[index][0] !== '"') {
+        ThrowError(1001, { AT: searchArray[index] })
+    }
+
     let string = ""
-
-    // Start index, flag for end
-    let i = index
     let hasEnd = false
+    const isTokens = context.tokens === searchArray
 
-    // Check whether other array was passed in than tokens
-    const isSearchArray = context.tokens !== searchArray
-
-    // Loop from index to length
-    for (; i < searchArray.length; i++) {
-        let token = searchArray[i]
-
-        // Look past first " if it is there (DONT KNOW WHY IT WAS MADE LIKE THIS, CHANGING IT CAUSED ERRORS)
-        if (i === index && token.charAt(0) === "\"") {
-            token = token.substring(1)
-        }
-        else if (i === index && token.trim().charAt(0) === "\"") {
-            token = token.substring(token.indexOf("\"") + 1)
-        }
-        else if (i === index && mustStart) {
-            ThrowError(1001, { AT: token })
-        }
+    for (var i = index; i < searchArray.length; i++) {
+        let token = i === index ? searchArray[i].substring(1) : searchArray[i]
 
         // If section token then no end to string (an argument for searchArray that isnt #tokens means no section tokens)
-        if (!isSearchArray && checkSection(context, token)) {
+        if (isTokens && checkSection(context, token)) {
             ThrowError(1000, { AT: context.tokens[index] + ", " + context.tokens[i + 2] })
         }
 
         // If there is an ending " that isnt escaped, finish loop
-        if (token.endsWith('"') && !backCheck(token)) {
-            string += (!isSearchArray ? " " : ",") + token.substring(0, token.length - 1)
+        if (token.endsWith('"') && checkEscapedOrInvalid(token)) {
+            string += join + token.slice(0, -1)
             hasEnd = true
             break
         }
 
-        // Account for difference in formatting
-        string += (!isSearchArray ? " " : ",") + token
+        string += join + token
+    }
+
+    if (string.length > 1 && string.substring(join.length) === searchArray[index] && checkEscapedOrInvalid(string.substring(1))) {
+        string = string.slice(0, string.lastIndexOf('"'))
     }
 
     // No end to string, throw error
-    if (!hasEnd) {
+    else if (!hasEnd) {
         ThrowError(1000, { AT: context.tokens[index] + ", " + string })
     }
 
     // Handle escape characters
 
-    string = string.substring(1)
+    string = string.substring(join.length)
     let finalString = ""
 
-    // Go through string forward
-    for (let i = 0; i < string.length; i++) {
+    for (let ind = 0; ind < string.length; ind++) {
         // Escape char at i
-        if (string.charAt(i) === "\\") {
-            finalString += string.charAt(i + 1)
-            i++
+        if (string[ind] === "\\") {
+            finalString += escapedCharacter(string[ind + 1])
+            ind++
             continue
         }
 
         // Non-escaped, add it to string
-        finalString += string.charAt(i)
+        finalString += string[ind]
     }
 
     // Final string and new index
     return [finalString, i]
 }
+
+// Assumes quote is the last in string, otherwise infinite loop
+function checkEscapedOrInvalid(string) {
+    let newStr = string
+
+    // When string runs out, every quote is escaped
+    while (newStr.length > 0) {
+        if (isEscaped(newStr, newStr.indexOf('"'))) newStr = newStr.slice(newStr.indexOf('"') + 1)
+        else if (newStr.indexOf('"') === newStr.length - 1) return true
+        else ThrowError(1000, { AT: string + " (unescaped quote inside of string)" })
+    }
+
+    return false
+}
+
+// Escapes the character, eg. n -> \n
+function escapedCharacter(char) {
+    switch (char) {
+        case "n": return "\n"
+        case "t": return "\t"
+        case "r": return "\r"
+        case "b": return "\b"
+        default: return char
+    }
+}
+
+module.exports = getString

@@ -33,7 +33,7 @@ module.exports = (context, index, trimmed = true, searchArray = context.tokens) 
     }
 
     // Something to do with strings
-    array = string.substring(trimmed ? 1 : 2).trim().split(",")
+    array = string.substring(trimmed ? 1 : 2).trim().split(",") // CHECK BALANCED PARANTHESIS BEFORE SPLITTING!
     array.forEach((val) => {
         val = val.trim() 
     })
