@@ -21,14 +21,9 @@ async function interpret(context) {
     const heldKeys = []
 
     // Interpret list
-    await interpreter(context, {
+    await interpreter({
         DEF: def,
         HELD: heldKeys,
-        IMPORTS: context.model.IMPORTS,
-        SETTINGS: context.settings,
-        MODES: context.model.MODES,
-        SWITCHES: context.model.SWITCHES,
-        VECTORS: context.model.VECTORS,
         CONTEXT: context,
         ROBOT: robot,
         INTERPRET: interpreter,

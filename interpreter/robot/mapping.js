@@ -1,5 +1,4 @@
 const Vk = {
-    // Function Keys
     VK_F1: 0x70, VK_F2: 0x71, VK_F3: 0x72, VK_F4: 0x73,
     VK_F5: 0x74, VK_F6: 0x75, VK_F7: 0x76, VK_F8: 0x77,
     VK_F9: 0x78, VK_F10: 0x79, VK_F11: 0x7A, VK_F12: 0x7B,
@@ -154,14 +153,18 @@ const mapping = {
     "/":  { code: Vk.VK_OEM_2, shift: false }
 }
 
-
+// Function mapping
 for (let i = 1; i <= 24; i++) {
     mapping["F" + i] = { code: Vk["VK_F" + i], shift: false }
 }
+
+// Digit & Numpad digit mapping
 for (let i = 0; i <= 9; i++) {
     mapping[i] = { code: String(i).charCodeAt(0), shift: false }
     mapping["NUM_" + i] = { code: Vk["VK_NUMPAD" + i], shift: false }
 }
+
+// Upper & lowercase letter mapping
 for (let i = 65; i <= 90; i++) {
     mapping[String.fromCharCode(i)] = { code: i, shift: true }
     mapping[String.fromCharCode(i + 32)] = { code: i, shift: false }

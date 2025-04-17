@@ -17,8 +17,8 @@ async function type(INFO, string, time = 10) {
             segment = "%" + variable + "%"
 
             // Mode/switch
-            if (INFO.SETTINGS[variable] !== undefined) {
-                await typeString(INFO.ROBOT, String(INFO.SETTINGS[variable]), time)
+            if (INFO.CONTEXT.settings[variable] !== undefined) {
+                await typeString(INFO.ROBOT, String(INFO.CONTEXT.settings[variable]), time)
                 continue
             }
 

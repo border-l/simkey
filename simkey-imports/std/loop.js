@@ -2,7 +2,7 @@ const deepClone = require("./helpers/deepClone")
 
 async function loop(INFO, BLOCK) {
     while (true) {
-        let ended = await INFO.INTERPRET(INFO.CONTEXT, INFO, BLOCK)
+        let ended = await INFO.INTERPRET(INFO, BLOCK)
         if (ended) {
             break
         }

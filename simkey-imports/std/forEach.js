@@ -16,10 +16,10 @@ function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
     element = element.trim()
     index = index.trim()
 
-    if (INFO.SETTINGS[element]) {
+    if (INFO.CONTEXT.settings[element]) {
         throw new Error("Element variable is already a boolean: " + element)
     }
-    if (INFO.SETTINGS[index]) {
+    if (INFO.CONTEXT.settings[index]) {
         throw new Error("Index variable is already a boolean: " + index)
     }
 
@@ -32,11 +32,11 @@ function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
     }
 
     //  Set to default [0,0] if doesnt exist
-    if (!INFO.VECTORS[element]) {
-        INFO.VECTORS[element] = [0, 0]
+    if (!INFO.CONTEXT.model.VECTORS[element]) {
+        INFO.CONTEXT.model.VECTORS[element] = [0, 0]
     }
-    if (!INFO.VECTORS[index]) {
-        INFO.VECTORS[index] = [0, 0]
+    if (!INFO.CONTEXT.model.VECTORS[index]) {
+        INFO.CONTEXT.model.VECTORS[index] = [0, 0]
     }
 
     // Loop through with compare, incrementing by step
@@ -44,7 +44,7 @@ function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
         let value = loopVector[i]
 
         // Add block and deep clone it for next time
-        INFO.INTERPRET(INFO.CONTEXT, INFO, [["SET", element, 0, () => value], ["SET", index, 0, () => i], ...BLOCK])
+        INFO.INTERPRET(INFO, [["SET", element, 0, () => value], ["SET", index, 0, () => i], ...BLOCK])
         BLOCK = deepClone(BLOCK)
 
         // Move forward accordingly

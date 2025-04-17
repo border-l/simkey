@@ -13,24 +13,24 @@ function set(INFO, vectorAndExpression) {
     }
 
     // Check it is not already a boolean
-    if (INFO.SETTINGS[vectorName]) {
+    if (INFO.CONTEXT.settings[vectorName]) {
         throw new Error("Attempted to set a vector under a name that is already a boolean: " + vectorName)
     }
 
     // Set it to [0,0] by default if doesnt exist
-    if (!INFO.VECTORS[vectorName]) {
-        INFO.VECTORS[vectorName] = [0,0]
+    if (!INFO.CONTEXT.model.VECTORS[vectorName]) {
+        INFO.CONTEXT.model.VECTORS[vectorName] = [0,0]
     }
 
     const context = {
         model: {
-            VECTORS: INFO.VECTORS,
-            settings: INFO.SETTINGS
+            VECTORS: INFO.CONTEXT.model.VECTORS,
+            settings: INFO.CONTEXT.settings
         }
     }
 
     // Set 0th index to be the evaluated expression
-    INFO.VECTORS[vectorName][0] = evaluateExpr(context, expression)
+    INFO.CONTEXT.model.VECTORS[vectorName][0] = evaluateExpr(context, expression)
 }
 
 module.exports = { FUNCTION: set, TAKES: { PARAMS: "[LOOSE]" } }

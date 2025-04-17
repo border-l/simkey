@@ -6,8 +6,8 @@ function setIndex(INFO, vector, indexAndExpression) {
 
     const context = {
         model: {
-            VECTORS: INFO.VECTORS,
-            settings: INFO.SETTINGS
+            VECTORS: INFO.CONTEXT.model.VECTORS,
+            settings: INFO.CONTEXT.settings
         }
     }
 

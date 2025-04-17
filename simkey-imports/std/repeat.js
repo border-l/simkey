@@ -10,7 +10,7 @@ async function repeat(INFO, BLOCK, num) {
 
     // Clone block and add it to LIST
     for (let i = 0; i < num; i++) {
-        await INFO.INTERPRET(INFO.CONTEXT, INFO, BLOCK)
+        await INFO.INTERPRET(INFO, BLOCK)
         BLOCK = deepClone(BLOCK)
     }
 }

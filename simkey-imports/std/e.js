@@ -4,8 +4,8 @@ const evaluateExpr = require("../../interpreter/helpers/evaluateExpr")
 function e(INFO, expression) {
     const context = {
         model: {
-            VECTORS: INFO.VECTORS,
-            settings: INFO.SETTINGS
+            VECTORS: INFO.CONTEXT.model.VECTORS,
+            settings: INFO.CONTEXT.settings
         }
     }
     return evaluateExpr(context, expression, true)
