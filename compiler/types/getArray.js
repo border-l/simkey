@@ -33,10 +33,20 @@ module.exports = (context, index, trimmed = true, searchArray = context.tokens) 
     }
 
     // Something to do with strings
-    array = string.substring(trimmed ? 1 : 2).trim().split(",") // CHECK BALANCED PARANTHESIS BEFORE SPLITTING!
-    array.forEach((val) => {
-        val = val.trim() 
-    })
+    string = string.substring(trimmed ? 1 : 2).trim()
+
+    // Check balanced parentheses for each split
+    let counter = 0
+    let lastSplit = -1
+    for (let x = 0; x < string.length; x++) {
+        if (string[x] === "(") counter += 1
+        if (string[x] === ")") counter -= 1
+        if (string[x] === "," && counter === 0) {
+            array.push(string.substring(lastSplit + 1, x))
+            lastSplit = x
+        }
+    }
+    array.push(string.substring(lastSplit + 1))
 
     // Array and final index
     return [array, i]
