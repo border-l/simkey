@@ -8,12 +8,20 @@ const findBracket = require("../helpers/findBracket")
 const ThrowError = require("../errors/ThrowError")
 
 // Parse imported function call for #parseInnards
-module.exports = (context, token, parsed, i, parseInnards, section) => {
+function parseImportedFunctionCall(context, token, parsed, i, parseInnards, section) {
     // Get parameters for function
     const importParams = context.model.IMPORTS[token]["PARAMS"]
 
+    // Block required, wrap arguments in brackets
+    if (context.model.IMPORTS[token].BLOCK && context.tokens[i + 1] !== "{" && !context.tokens[i + 1].startsWith("[")) {
+        const nextBracket = context.tokens.indexOf("{", i + 1)
+        if (nextBracket === -1) ThrowError(1035, { AT: token })
+        context.tokens[i + 1] = "[" + context.tokens[i + 1]
+        context.tokens[nextBracket - 1] += "]"
+    }
+
     // No arguments
-    if (!context.tokens[i + 1].startsWith("[")) {
+    else if (!context.tokens[i + 1].startsWith("[")) {
         if (importParams.length !== 0 && !importParams[0][0].endsWith(":OPTIONAL")) {
             ThrowError(2100, { AT: token })
         }
@@ -169,7 +177,7 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
         return newIndex
     }
 
-    // Doesnt have block even though its required
+    // Doesnt have block even though required
     if (context.tokens[newIndex + 1] !== "{") {
         ThrowError(1035, { AT: token })
     }
@@ -196,3 +204,5 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
     // Move index along
     return newerIndex
 }
+
+module.exports = parseImportedFunctionCall

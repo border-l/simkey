@@ -7,7 +7,7 @@ async function repeat(INFO, BLOCK, num) {
         INFO.LIST.splice(INFO.INDEX + 1, 0, ...BLOCK.slice(0,-1))
         return
     }
-    
+
     // Clone block and add it to LIST
     for (let i = 0; i < num; i++) {
         await INFO.INTERPRET(INFO.CONTEXT, INFO, BLOCK)

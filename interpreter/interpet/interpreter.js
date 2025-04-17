@@ -53,6 +53,7 @@ async function interpreter(context, passedInfo, instructionList) {
 
         // Doesnt contain parameters where it should
         else if (!Array.isArray(instruction[1].args)) {
+            console.log(instruction)
             ThrowError(5205, { AT: func })
         }
 

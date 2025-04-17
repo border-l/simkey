@@ -16,3 +16,4 @@
 @type ./type
 @exit ./exit
 @loop ./loop
+@async ./async

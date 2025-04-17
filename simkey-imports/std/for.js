@@ -42,7 +42,8 @@ async function forLoop(INFO, BLOCK, start, end, step, variable) {
 
     // Loop through with compare, incrementing by step
     for (let i = start; compare(i); i += step) {
-        await INFO.INTERPRET(INFO.CONTEXT, INFO, [["@set", [variable + "," + i.toString()]], ...BLOCK])
+        INFO.VECTORS[variable][0] = i
+        await INFO.INTERPRET(INFO.CONTEXT, INFO, BLOCK)
         BLOCK = deepClone(BLOCK)
     }
 }
