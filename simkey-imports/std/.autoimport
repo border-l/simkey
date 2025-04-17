@@ -15,3 +15,4 @@
 @scroll ./scroll
 @type ./type
 @exit ./exit
+@loop ./loop

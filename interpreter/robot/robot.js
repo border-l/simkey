@@ -4,7 +4,7 @@ const ThrowError = require("../errors/ThrowError")
 
 const ffi = require("ffi-napi")
 const ref = require("ref-napi")
-const ArrayType = require("ref-array-napi")
+const intArrayType = ref.refType(ref.types.int)
 
 const libPath = path.resolve(__dirname, 'robot')
 const robot = ffi.Library(libPath, {
@@ -14,9 +14,9 @@ const robot = ffi.Library(libPath, {
     'mouseUp': ['void', ['int']],
     'setCursor': ['void', ['int', 'int']],
     'scroll': ['void', ['int']],
-    'getCursor': ['void', [ArrayType(ref.types.int, 2)]],
-    'getScreenSize': ['void', [ArrayType(ref.types.int, 2)]],
-    'getPixelColor': ['void', ['int', 'int', ArrayType(ref.types.int, 3)]]
+    'getCursor': ['void', [intArrayType]],
+    'getScreenSize': ['void', [intArrayType]],
+    'getPixelColor': ['void', ['int', 'int', intArrayType]]
 })
 
 function sleep(ms) {
@@ -40,21 +40,29 @@ function send(input) {
 }
 
 function getCursor() {
-    const coords = new (ArrayType(ref.types.int, 2))()
+    const coords = Buffer.alloc(2 * ref.types.int.size)
     robot.getCursor(coords)
-    return Array.from(coords)
+    return BufferToArray(coords)
 }
 
 function getPixel(x, y) {
-    const color = new (ArrayType(ref.types.int, 3))()
+    const color = Buffer.alloc(3 * ref.types.int.size)
     robot.getPixelColor(x, y, color)
-    return Array.from(color)
+    return BufferToArray(color)
 }
 
 function getScreenSize() {
-    const size = new (ArrayType(ref.types.int, 2))()
+    const size = Buffer.alloc(2 * ref.types.int.size)
     robot.getScreenSize(size)
-    return Array.from(size)
+    return BufferToArray(size)
+}
+
+function BufferToArray(buff) {
+    const res = []
+    for (let i = 0; i < buff.length; i+= 4) {
+        res.push(buff.readInt32LE(i))
+    }
+    return res
 }
 
 module.exports = {send, cursor: robot.setCursor, scroll: robot.scroll, sleep, getCursor, getPixel, getScreenSize}

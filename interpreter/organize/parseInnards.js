@@ -92,7 +92,7 @@ function parseInnards(context, index, section) {
             }
             
             // Imported functions
-            if (context.model.IMPORTS[token] && context.model.IMPORTS[token]["PARAMS"].length > 0) {
+            if (context.model.IMPORTS[token]) {
                 i = parseImportedFunctionCall(context, token, parsed, i, parseInnards)
                 continue
             }

@@ -14,13 +14,30 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
 
     // No arguments
     if (!context.tokens[i + 1].startsWith("[")) {
-        // No need for arguments, otherwise error
-        if (importParams[0][0].endsWith(":OPTIONAL")) {
-            parsed.push([token, []])
-            return i
+        if (importParams.length !== 0 && !importParams[0][0].endsWith(":OPTIONAL")) {
+            ThrowError(2100, { AT: token })
         }
 
-        ThrowError(2100, { AT: token })
+        if (context.model.IMPORTS[token].BLOCK) {
+            if (context.tokens[i + 1] !== "{") {
+                ThrowError(1035, { AT: token })
+            }
+
+            if (context.model.IMPORTS[token].DONT_PARSE_BLOCK) {
+                const closeIndex = findBracket(context, i + 1)
+                if (closeIndex == -1) ThrowError(1015, { AT: token })
+
+                parsed.push([token, { args: [], block: context.tokens.slice(i + 2, closeIndex) }])
+                return closeIndex
+            }
+
+            const [parsedBlock, newerIndex] = parseInnards(context, i + 1, section)
+            parsed.push([token, { args: [], block: parsedBlock }])
+            return newerIndex
+        }
+
+        parsed.push([token, { args: [], block: [] }])
+        return i
     }
 
     // Values & final
@@ -79,7 +96,7 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
                 if (arg !== "TRUE" && arg !== "FALSE") {
                     continue
                 }
-                
+
                 finalArray.push(arg === "TRUE" ? true : false)
                 break
             }
@@ -111,11 +128,11 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
             if (expected === "STR") {
                 // Try to get the string, if error, not a string
                 try {
-                    const [string, finalIndex] = getString(context, x, value, true)
+                    const [string, finalIndex] = getString(context, x, value, ",")
                     finalArray.push(string)
                     x = finalIndex
                     break
-                } 
+                }
                 catch (error) {
                     continue
                 }
@@ -126,7 +143,7 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
             x = value.length
             break
         }
-        
+
         // No new element added so nothing matched, invalid type
         if (finalArray.length === prevSize) {
             ThrowError(2110, { AT: token, ARG: arg, EXPECTED: expectedArray })
@@ -135,10 +152,10 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
 
     // Get optional index for finding needed length right after
     let optionalIndex = importParams.reduce((foundIndex, elementArray, curIndex) => {
-                            if (foundIndex !== -1) return foundIndex;
-                            const index = elementArray.findIndex((val) => val.endsWith(":OPTIONAL"));
-                            return index !== -1 ? curIndex : -1;
-                        }, -1)
+        if (foundIndex !== -1) return foundIndex;
+        const index = elementArray.findIndex((val) => val.endsWith(":OPTIONAL"));
+        return index !== -1 ? curIndex : -1;
+    }, -1)
     let neededLength = optionalIndex > -1 ? optionalIndex : importParams.length
 
     // Not enough arguments were given
@@ -148,13 +165,13 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
 
     // No block necessary
     if (!context.model.IMPORTS[token]["BLOCK"]) {
-        parsed.push([token, finalArray])
+        parsed.push([token, { args: finalArray, block: [] }])
         return newIndex
     }
 
     // Doesnt have block even though its required
     if (context.tokens[newIndex + 1] !== "{") {
-        ThrowError(1035, { AT : token })
+        ThrowError(1035, { AT: token })
     }
 
     // Not necessary to parse, just use newerIndex to give tokens
@@ -164,7 +181,7 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
         if (closeIndex == -1) ThrowError(1015, { AT: token })
 
         // Give tokens in block
-        parsed.push([token, finalArray, context.tokens.slice(newIndex + 2, closeIndex)])
+        parsed.push([token, { args: finalArray, block: context.tokens.slice(newIndex + 2, closeIndex) }])
 
         // Move index along
         return closeIndex
@@ -174,7 +191,7 @@ module.exports = (context, token, parsed, i, parseInnards, section) => {
     const [parsedBlock, newerIndex] = parseInnards(context, newIndex + 1, section)
 
     // Give parsed block
-    parsed.push([token, finalArray, parsedBlock])
+    parsed.push([token, { args: finalArray, block: parsedBlock }])
 
     // Move index along
     return newerIndex

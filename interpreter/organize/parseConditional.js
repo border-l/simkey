@@ -4,7 +4,7 @@ const parseConditionExpression = require("./parseConditionExpression")
 const ThrowError = require("../errors/ThrowError")
 
 // Parses conditional models, using #parseConditionExpression for expressions
-function parseConditional (context, index, section, parseInnards) {
+function parseConditional(context, index, section, parseInnards) {
     // Three array structure (conditional, expression, block)
     const parsed = [[], [], []]
     let i = index

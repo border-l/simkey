@@ -24,6 +24,7 @@ program
     .option('-r, --repeat <repeat>', 'Times to repeat')
     .option('-o, --options <options...>', 'Mode/switch options')
     .action((fileName, cmd) => {
+        fileName = fileName.endsWith(".simkey") ? fileName : fileName + ".simkey"
         run(fileName, cmd.repeat || 1, cmd.options || []);
     });
 

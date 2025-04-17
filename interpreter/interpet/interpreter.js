@@ -18,7 +18,7 @@ async function interpreter(context, passedInfo, instructionList) {
 
         // End
         if (instruction === "@end") {
-            break
+            return true
         }
 
         // Otherwise, handle imported function call
@@ -37,7 +37,8 @@ async function interpreter(context, passedInfo, instructionList) {
                     continue
                 }
 
-                interpreter(context, passedInfo, getInstructionList(context, instruction[2][x], "MACRO"))
+                const check = await interpreter(context, passedInfo, getInstructionList(context, instruction[2][x], "MACRO"))
+                if (check) return true
                 break
                 // // Add block of branch
                 // instructionList.splice(i + 1, 0, ...getInstructionList(context, instruction[2][x], "MACRO"))
@@ -51,7 +52,7 @@ async function interpreter(context, passedInfo, instructionList) {
         }
 
         // Doesnt contain parameters where it should
-        else if (!Array.isArray(instruction[1])) {
+        else if (!Array.isArray(instruction[1].args)) {
             ThrowError(5205, { AT: func })
         }
 
@@ -61,14 +62,14 @@ async function interpreter(context, passedInfo, instructionList) {
             const newInstructions = []
 
             // Call each of the getVectorNumber binded functions
-            for (let ind = 0; ind < instruction[1].length; ind++) {
+            for (let ind = 0; ind < instruction[1].args.length; ind++) {
                 // Value func, append value from function to newInstructions
-                if (typeof instruction[1][ind] === "function") {
-                    newInstructions[ind] = instruction[1][ind]()
+                if (typeof instruction[1].args[ind] === "function") {
+                    newInstructions[ind] = instruction[1].args[ind]()
                 }
                 // Push since it is not a function
                 else {
-                    newInstructions.push(instruction[1][ind])
+                    newInstructions.push(instruction[1].args[ind])
                 }
 
                 // Cannot be undefined
@@ -78,10 +79,11 @@ async function interpreter(context, passedInfo, instructionList) {
             }
 
             // Get result with arguments
-            if (instruction[2] !== undefined) {
+            if (instruction[1].block.length > 0) {
                 // Get the instructions or not depending on DONT_PARSE_BLOCK
-                const passedBlock = context.model.IMPORTS[func].DONT_PARSE_BLOCK ? instruction[2] : getInstructionList(context, instruction[2], "MACRO")
-                result = await context.model.IMPORTS[func.substring(1)](passedInfo, passedBlock, ...newInstructions)
+                const passedBlock = context.model.IMPORTS[func].DONT_PARSE_BLOCK ? instruction[1].block : getInstructionList(context, instruction[1].block, "MACRO")
+                if (newInstructions.length > 0) result = await context.model.IMPORTS[func.substring(1)](passedInfo, passedBlock, ...newInstructions)
+                else result = await context.model.IMPORTS[func.substring(1)](passedInfo, passedBlock)
             }
             else {
                 result = await context.model.IMPORTS[func.substring(1)](passedInfo, ...newInstructions)
@@ -92,7 +94,14 @@ async function interpreter(context, passedInfo, instructionList) {
         if (!result) {
             continue
         }
+
+        if (result === "END") {
+            return true
+        }
+
+        // Will handle result later (useful in a couple situations)
     }
+    return false
 }
 
 module.exports = interpreter
