@@ -1,6 +1,5 @@
 const combineTillNext = require("../helpers/combineTillNext")
 const findBracket = require("../helpers/findBracket")
-const parseConditionExpression = require("./parseConditionExpression")
 const ThrowError = require("../errors/ThrowError")
 
 // Parses conditional models, using #parseConditionExpression for expressions
@@ -22,17 +21,9 @@ function parseConditional(context, index, section, parseInnards) {
                 ThrowError(1025, { AT: conditionFunction + " " + context.tokens[i + 1] })
             }
 
-            // Parse the condition expression
-            const parsedCondition = parseConditionExpression(context, condition)
-
-            // Invalid condition [This seems impossible? [Why would it be?]]
-            if (!parsedCondition) {
-                ThrowError(1130, { AT: condition })
-            }
-
             // Add function and parsed condition
             parsed[0].push(conditionFunction)
-            parsed[1].push(parsedCondition)
+            parsed[1].push(condition)
             
             // Add conditional branch block
             parsed[2].push(parseInnards(context, nextBracket, section)[0])

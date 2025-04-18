@@ -6,10 +6,6 @@ module.exports = (context, array) => {
     const [value, _] = getArray(context, 0, true, array)
     const parameters = []
 
-    if (value.length === 1 && value[0] === "CONDITION-EXPRESSION") {
-        return []
-    }
-
     if (value.length === 1 && value[0] === "") {
         return ""
     }

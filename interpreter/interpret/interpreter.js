@@ -1,6 +1,5 @@
 const getInstructionList = require("./getInstructionList")
 const runExpressionObject = require("./runExpressionObject")
-const solveConditional = require("./solveConditional")
 const handleSET = require("./handleSET")
 const ThrowError = require("../errors/ThrowError")
 const evaluateExpr = require("../helpers/evaluateExpr")
@@ -30,7 +29,7 @@ async function interpreter(passedInfo, instructionList) {
         if (Array.isArray(func)) {
             for (let x = 0; x < func.length; x++) {
                 // Branch should not be run
-                if (func[x] !== "@else" && !solveConditional(passedInfo.CONTEXT, passedInfo, instruction[1][x])) {
+                if (func[x] !== "@else" && !evaluateExpr(passedInfo.CONTEXT, instruction[1][x], true)) {
                     continue
                 }
 

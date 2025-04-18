@@ -8,7 +8,6 @@
 @forEach ./forEach
 @with ./with
 @print ./print
-@e ./e
 @scroll ./scroll
 @type ./type
 @exit ./exit

@@ -8,9 +8,9 @@ const parseImports = require("./interpreter/sections/parseImports")
 const parseSettings = require("./interpreter/sections/parseSettings")
 const parseModesAndSwitches = require("./interpreter/sections/parseModesAndSwitches")
 
-const interpret = require("./interpreter/interpet/interpret")
-const setSettings = require("./interpreter/interpet/setSettings")
-const setInputVectors = require('./interpreter/interpet/setInputVectors')
+const interpret = require("./interpreter/interpret/interpret")
+const setSettings = require("./interpreter/interpret/setSettings")
+const setInputVectors = require('./interpreter/interpret/setInputVectors')
 
 const ThrowError = require("./interpreter/errors/ThrowError")
 
