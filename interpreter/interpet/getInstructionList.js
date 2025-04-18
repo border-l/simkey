@@ -18,19 +18,6 @@ function getInstructionList(cont, instructions, context) {
                 continue
             }
 
-            // Handle goto
-            if (func === "@goto") {
-                // Add instructions in macro after flag
-                finalInstructions.push(...getInstructionList(cont, cont.model.MACRO.slice(cont.model.MACRO.indexOf(instruction[1]) + 1), "MACRO"))
-
-                // End if last instruction is end
-                if (finalInstructions[finalInstructions.length - 1] === "@end") {
-                    break
-                }
-
-                continue
-            }
-
             if (cont.model.FUNCS[func]) {
                 finalInstructions.push(...setFuncCallParams(cont, func, instruction[1]), ...getInstructionList(cont, cont.model.FUNCS[func][0], func))
     

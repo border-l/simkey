@@ -1,12 +1,13 @@
 const findBracket = require("../helpers/findBracket")
 const findNextSection = require("../helpers/findNextSection")
 const combineTillNext = require("../helpers/combineTillNext")
-const parseBuiltInFunctionCall = require("./parseBuiltInFunctionCall")
 const parseImportedFunctionCall = require("./parseImportedFunctionCall")
 const parseConditional = require("./parseConditional")
 const parseExpression = require("./parseExpression")
 const getArray = require("../types/getArray")
 const ThrowError = require("../errors/ThrowError")
+const checkVariableName = require("../helpers/checkVariableName")
+const asnOperators = require('./operators')
 
 // Parses the bodies of functions & macro section (split it up)
 function parseInnards(context, index, section) {
@@ -37,25 +38,38 @@ function parseInnards(context, index, section) {
             i = newIndex
             continue
         }
-        
-        // Token should be a flag
-        if (token.charAt(0) === "$" && token.charAt(1) === "$") {
-            // Invalid token, incomplete or should not be there
-            if (token.length == 2) {
-                ThrowError(3100, { AT: token })
+
+        // Variable assignment
+        if (token[0] === "$" && asnOperators[context.tokens[i + 1]]) {
+            if (!checkVariableName(token, true)) ThrowError(1100, { AT: token + " (in assignment)" })
+            const operator = asnOperators[context.tokens[i + 1]]
+
+            // Assigning to output of a function
+            if (context.tokens[i + 2][0] === "@") {
+                parsed.push(["ASSN", token, operator, "NEXT INSTRUCTION"])
+                i++
             }
 
-            // Declared outside of MACRO section
-            if (section !== "MACRO") {
-                ThrowError(1510, { AT: token })
+            // Assigning to whole vector
+            else if (context.tokens[i + 2][0] === "[") {
+                const [vector, newIndex] = getArray(context, i + 2, true)
+                parsed.push(["ASSN", token, operator, vector])
+                i = newIndex
             }
 
-            // Flag already exists
-            if (parsed.includes(token)) {
-                ThrowError(1505, { AT: token })
+            // Assigning to expression with spaces
+            else if (context.tokens[i + 2][0] === "(") {
+                const [expr, newIndex] = getBalanced(i + 2, context.tokens)
+                parsed.push(["ASSN", token, operator, expr])
+                i = newIndex
             }
 
-            parsed.push(token)
+            // Assigning to expression without spaces
+            else {
+                parsed.push(["ASSN", token, operator, context.tokens[i + 2]])
+                i += 2
+            }
+
             continue
         }
 
@@ -85,12 +99,11 @@ function parseInnards(context, index, section) {
                 continue
             }
 
-            // Builtin functions
-            if (context.builtIn.includes(token)) {
-                i = parseBuiltInFunctionCall(context, parsed, token, i)
-                continue
+            if (token === "@end") {
+                parsed.push("@end")
+                return i
             }
-            
+
             // Imported functions
             if (context.model.IMPORTS[token]) {
                 i = parseImportedFunctionCall(context, token, parsed, i, parseInnards)
@@ -111,7 +124,6 @@ function parseInnards(context, index, section) {
             }
 
             parsed.push([token, []])
-
             continue
         }
 
@@ -133,6 +145,27 @@ function parseInnards(context, index, section) {
 
     // Parsed block and final index
     return [parsed, finalIndex]
+}
+
+// Gets balanced expr, with index being the beginning of it in array, starting with "("
+function getBalanced(index, array) {
+    let i
+    let str = ""
+    let balanced = 0
+
+    for (i = index; i < array.length; i++) {
+        token = array[i]
+
+        for (let x = 0; x < token.length; x++) {
+            if (token[x] === "(") balanced -= 1
+            else if (token[x] === ")") balanced += 1
+        }
+
+        str += " " + token
+        if (balanced === 0) return [str, i]
+    }
+
+    return [str, i]
 }
 
 module.exports = parseInnards

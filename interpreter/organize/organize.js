@@ -30,7 +30,7 @@ module.exports = (context) => {
         else if (section === "IMPORTS" || section === "SETTINGS" || section === "MODES" || section === "SWITCHES" || section === "VECTORS") {
             continue
         }
-        
+
         // Handle function section
         else if (section === "FUNCS") {
             // Conditionals to handle different errors
@@ -40,7 +40,7 @@ module.exports = (context) => {
             if (token.length < 2) {
                 ThrowError(1105, { AT: token })
             }
-            if (context.builtIn.includes(token)) {
+            if (token in ["@if", "@elseif", "@else", "@end"]) {
                 ThrowError(1105, { AT: token })
             }
             if (i === tokens.length - 1) {

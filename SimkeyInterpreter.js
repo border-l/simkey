@@ -21,7 +21,6 @@ class Interpreter {
     #script
     #tokens
     #model
-    #builtIn
 
     // New, for inputting vectors
     #inputVectors
@@ -39,7 +38,6 @@ class Interpreter {
         this.#fileName = fileName
         this.#script = fs.readFileSync(fileName, 'utf-8')
         this.#tokens = []
-        this.#builtIn = ["@goto", "@end", "@if", "@elseif", "@else"]
         this.#checkLater = []
         this.#inputVectors = {}
         this.#model = {
@@ -90,9 +88,6 @@ class Interpreter {
                     case 'tokens':
                         this.#tokens = set
                         break
-                    case 'builtIn':
-                        this.#builtIn = set
-                        break
                     case 'checkLater':
                         this.#checkLater = set
                         break
@@ -118,7 +113,6 @@ class Interpreter {
         this.#context.fileName = this.#fileName
         this.#context.script = this.#script
         this.#context.tokens = this.#tokens
-        this.#context.builtIn = this.#builtIn
         this.#context.checkLater = this.#checkLater,
         this.#context.model = this.#model
         this.#context.settings = this.#settings,

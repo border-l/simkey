@@ -25,7 +25,11 @@ const FORMAT = {
 
     NegativeHoldOrWait: ({ VALUES }) => `Negative hold or wait in key expression. VALUES: ${VALUES}`,
 
-    KeyNotExist: ({ AT }) => `Key is invalid (not mapped by Simkey). AT: ${AT}`
+    KeyNotExist: ({ AT }) => `Key is invalid (not mapped by Simkey). AT: ${AT}`,
+
+    AssignmentToConstant: ({ AT }) => `Attempted to assign to a constant MODE. AT: ${AT}`,
+    AssignmentTypeMismatch: ({ AT }) => `Attempted to assign to a value with mismatched type. AT: ${AT}`,
+    AssignmentDivideByZero: ({ AT }) => `Attempted to divide by zero in assignment. AT: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

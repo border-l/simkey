@@ -3,6 +3,8 @@ const runExpressionObject = require("./runExpressionObject")
 const solveConditional = require("./solveConditional")
 const handleSET = require("./handleSET")
 const ThrowError = require("../errors/ThrowError")
+const evaluateExpr = require("../helpers/evaluateExpr")
+const getVectorNumber = require("../types/getVectorNumber")
 
 async function interpreter(passedInfo, instructionList) {
     for (let i = 0; i < instructionList.length; i++) {
@@ -24,13 +26,8 @@ async function interpreter(passedInfo, instructionList) {
         // Otherwise, handle imported function call
         let result
 
-        // No arguments
-        if (func.length === 1 && typeof func === "string") {
-            result = passedInfo.CONTEXT.model.IMPORTS[instruction.substring(1)](passedInfo)
-        }
-
         // Handle conditional
-        else if (Array.isArray(func)) {
+        if (Array.isArray(func)) {
             for (let x = 0; x < func.length; x++) {
                 // Branch should not be run
                 if (func[x] !== "@else" && !solveConditional(passedInfo.CONTEXT, passedInfo, instruction[1][x])) {
@@ -46,6 +43,12 @@ async function interpreter(passedInfo, instructionList) {
         // Special case, SET function
         else if (func === "SET") {
             handleSET(passedInfo.CONTEXT, instruction)
+        }
+
+        // Assignment statement
+        else if (func === "ASSN") {
+            if (instruction[3] === "NEXT INSTRUCTION") continue
+            assign(passedInfo.CONTEXT, instruction)
         }
 
         // Doesnt contain parameters where it should
@@ -96,9 +99,89 @@ async function interpreter(passedInfo, instructionList) {
             return true
         }
 
-        // Will handle result later (useful in a couple situations)
+        // Previous was assignment to next instruction, so assign result
+        if (i > 0 && instructionList[i - 1][3] === "NEXT INSTRUCTION") {
+            // THIS ISNT DEALT WITH PROPERLY
+            assign(passedInfo.CONTEXT, instructionList[i - 1], result)
+        }
     }
     return false
+}
+
+function assign(context, instruction, input) {
+    // Retrieve variable (undefined if doesnt exist, otherwise boolean or number)
+        // If the variable is a mode, error instantly
+    // Check if arg is array
+    // Otherwise single:
+        // Evaluate it
+        // Not valid, then check if it's a variable directly
+        // Error if none of those match
+    // Result is processed, pass in to assignment function with variable
+        // UPDATE THOSE FUNCTIONS TO WORK PROPERLY FIRST!
+    // Check type of result to see how to handle assigning
+        // Already switch & returned vector, error, otherwise implicit conversion if type mismatch
+
+    let [_, varName, assnFunction, exprValue] = instruction
+
+    // Get whatever variable is
+    let variable = context.settings[varName]
+    variable = variable === undefined ? context.model.VECTORS[varName] : variable
+
+    // In case of index, handle that
+    let index = 0
+    if (varName.indexOf(":") > 0) {
+        variable = getVectorNumber(context, varName)
+        index = evaluateExpr(context, varName.slice(varName.indexOf(":") + 1))
+        varName = varName.slice(0, varName.indexOf(":"))
+    }
+
+    // Make sure not a constant mode
+    if (context.model.MODES.includes(varName)) {
+        ThrowError(2700, { AT: varName })
+    }
+
+    let result = input
+
+    // Array and single values handling
+    if (Array.isArray(exprValue)) {
+        result = []
+        for (const expr of exprValue) {
+            result.push(evaluateExpr(context, expr))
+        }
+    }
+    else if (result === undefined) {
+        result = evaluateExpr(context, exprValue)
+    }
+
+    // Cannot be implicitly converted
+    if (typeof variable === "boolean" && Array.isArray(result)) {
+        ThrowError(2705, { AT: varName })
+    }
+
+    // Assignment & implicit if needed
+    if (typeof variable === "boolean") {
+        result = !!result
+        context.settings[varName] = assnFunction(result, variable, varName)
+        return
+    }
+
+    // Reassign whole vector
+    if (Array.isArray(result)) {
+        context.model.VECTORS[varName] = assnFunction(result, variable, varName)
+        return
+    }
+
+    // Implicit if needed
+    result = Number(result)
+
+    // Assign at index if exists, otherwise create new with second being 0
+    // Assigning to non-zero index without already existing vector throws error earlier
+    if (variable !== undefined) {
+        context.model.VECTORS[varName][index] = assnFunction(result, variable, varName)
+    }
+    else {
+        context.model.VECTORS[varName] = [assnFunction(result, variable, varName), 0]
+    }
 }
 
 module.exports = interpreter
