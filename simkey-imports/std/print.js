@@ -3,4 +3,4 @@ function print(INFO, input) {
     console.log(input)
 }
 
-module.exports = { FUNCTION: print, TAKES: { PARAMS: "[VECTOR|BOOL|NUM|STR|LOOSE]", BLOCK: false } }
+module.exports = { FUNCTION: print, TAKES: { PARAMS: "[VECTOR|BOOL|NUM|STR]", BLOCK: false } }

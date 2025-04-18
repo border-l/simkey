@@ -11,7 +11,8 @@ module.exports = (context, array) => {
     }
 
     // Each part
-    for (const part of value) {
+    for (let x = 0; x < value.length; x++) {
+        const part = value[x]
         const segment = part.split("|").map((val) => val.trim())
 
         // Each type in segment
@@ -22,6 +23,11 @@ module.exports = (context, array) => {
             if (type !== "VECTOR" && type !== "NUM" && type !== "BOOL" && type !== "STR" && type !== "LOOSE"
                 && type !== "VECTOR:OPTIONAL" && type !== "NUM:OPTIONAL" && type !== "BOOL:OPTIONAL" && type !== "STR:OPTIONAL" && type !== "LOOSE:OPTIONAL") {
                 ThrowError(4000, { AT: type })
+            }
+
+            // Loose does not come last and alone
+            if (type.indexOf("LOOSE") > -1 && (segment.length !== 1 || x !== value.length - 1)) {
+                ThrowError(4200, { AT: part + " (does not come at the end AND by itself)" })
             }
 
             // Type put several times
