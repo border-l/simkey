@@ -10,7 +10,7 @@ const FORMAT = {
 
     ArgumentMissing: ({ AT }) => `Function call (native or imported) is missing arguments. AT: ${AT}`,
     ArgumentExtra: ({ AT }) => `Function call (native or imported) received extra arguments. AT: ${AT}`,
-    ArgumentTypeMismatch: ({ AT, ARG, EXPECTED }) => `Function call (native or imported) did not match any of the valid types. AT: ${AT}, ARG: ${ARG} EXPECTED: ${EXPECTED}`,
+    ArgumentTypeMismatch: ({ AT, ARG, EXPECTED }) => `Function call (native or imported) did not match any of the valid types. AT: ${AT}, ARG: \`${ARG}\`, EXPECTED: ${EXPECTED}`,
     ArgumentUndefined: ({ AT }) => `Argument passed to imported function is undefined (Instruction was presumably injected by another imported function). AT: ${AT}`,
 
     ParamTypeDeclaredOpposite: ({ AT }) => `Parameter variable is already declared to be of the opposite type. AT: ${ AT }`, // Already exists, declared opposite, this is for params

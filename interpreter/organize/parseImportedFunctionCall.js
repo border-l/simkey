@@ -13,7 +13,7 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, sect
     const importParams = context.model.IMPORTS[token]["PARAMS"]
 
     // Block required, wrap arguments in brackets
-    if (context.model.IMPORTS[token].BLOCK && context.tokens[i + 1] !== "{" && !context.tokens[i + 1].startsWith("[")) {
+    if (context.model.IMPORTS[token].BLOCK && context.tokens[i + 1] !== "{") {
         const nextBracket = context.tokens.indexOf("{", i + 1)
         if (nextBracket === -1) ThrowError(1035, { AT: token })
         context.tokens[i + 1] = "[" + context.tokens[i + 1]
