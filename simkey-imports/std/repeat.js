@@ -10,7 +10,8 @@ async function repeat(INFO, BLOCK, num) {
 
     // Clone block and add it to LIST
     for (let i = 0; i < num; i++) {
-        await INFO.RUN(INFO, BLOCK)
+        const ended = await INFO.RUN(INFO, BLOCK)
+        if (ended === INFO.END_SYMBOL) break
         BLOCK = deepClone(BLOCK)
     }
 }

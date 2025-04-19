@@ -2,7 +2,7 @@ const checkVariableName = require("../../interpreter/helpers/checkVariableName")
 const deepClone = require("./helpers/deepClone")
 
 // Loop through block from start to end with step, with variable holding index
-function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
+async function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
     // Keep track of where to add instructions
     let INDEX = INFO.INDEX + 1
 
@@ -44,7 +44,7 @@ function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
         let value = loopVector[i]
 
         // Add block and deep clone it for next time
-        INFO.RUN(INFO, [["SET", element, 0, () => value], ["SET", index, 0, () => i], ...BLOCK])
+        await INFO.RUN(INFO, [["SET", element, 0, () => value], ["SET", index, 0, () => i], ...BLOCK])
         BLOCK = deepClone(BLOCK)
 
         // Move forward accordingly

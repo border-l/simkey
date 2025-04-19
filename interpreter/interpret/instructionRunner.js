@@ -1,9 +1,9 @@
-const getInstructionList = require("./getInstructionList")
+const setFuncCallParams = require("./setFuncCallParams")
 const runExpressionObject = require("./runExpressionObject")
 const handleSET = require("./handleSET")
 const ThrowError = require("../errors/ThrowError")
 const evaluateExpr = require("../helpers/evaluateExpr")
-const getVectorNumber = require("../types/getVectorNumber")
+const handleASSN = require("./handleASSN")
 
 async function instructionRunner(passedInfo, instructionList) {
     for (let i = 0; i < instructionList.length; i++) {
@@ -19,7 +19,7 @@ async function instructionRunner(passedInfo, instructionList) {
 
         // End
         if (instruction === "@end") {
-            return true
+            return passedInfo.END_SYMBOL
         }
 
         // Otherwise, handle imported function call
@@ -33,7 +33,7 @@ async function instructionRunner(passedInfo, instructionList) {
                     continue
                 }
 
-                const check = await instructionRunner(passedInfo, getInstructionList(passedInfo.CONTEXT, instruction[2][x], "MACRO"))
+                const check = await instructionRunner(passedInfo, instruction[2][x])
                 if (check) return true
                 break
             }
@@ -47,7 +47,13 @@ async function instructionRunner(passedInfo, instructionList) {
         // Assignment statement
         else if (func === "ASSN") {
             if (instruction[3] === "NEXT INSTRUCTION") continue
-            assign(passedInfo.CONTEXT, instruction)
+            handleASSN(passedInfo.CONTEXT, instruction)
+        }
+
+        else if (passedInfo.CONTEXT.model.FUNCS[func]) {
+            // This will have to be adjusted, as of now result doesnt mean much except for when ending, which is an issue
+            result = await instructionRunner(passedInfo, [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]), ...passedInfo.CONTEXT.model.FUNCS[func][0]])
+            if (result === passedInfo.END_SYMBOL) return passedInfo.END_SYMBOL
         }
 
         else if (!passedInfo.CONTEXT.model.IMPORTS[func]) {
@@ -83,10 +89,7 @@ async function instructionRunner(passedInfo, instructionList) {
 
             // Get result with arguments
             if (instruction[1].block.length > 0) {
-                // Get the instructions or not depending on DONT_PARSE_BLOCK
-                const passedBlock = passedInfo.CONTEXT.model.IMPORTS[func].DONT_PARSE_BLOCK ? instruction[1].block : getInstructionList(passedInfo.CONTEXT, instruction[1].block, "MACRO")
-                if (newInstructions.length > 0) result = await passedInfo.CONTEXT.model.IMPORTS[func.substring(1)](passedInfo, passedBlock, ...newInstructions)
-                else result = await passedInfo.CONTEXT.model.IMPORTS[func.substring(1)](passedInfo, passedBlock)
+                result = await passedInfo.CONTEXT.model.IMPORTS[func.substring(1)](passedInfo, instruction[1].block, ...(newInstructions.length > 0 ? newInstructions : []))
             }
             else {
                 result = await passedInfo.CONTEXT.model.IMPORTS[func.substring(1)](passedInfo, ...newInstructions)
@@ -95,7 +98,7 @@ async function instructionRunner(passedInfo, instructionList) {
 
         if (i > 0 && instructionList[i - 1][3] === "NEXT INSTRUCTION") {
             if (!result) ThrowError(2715, { AT: instruction[0] })
-            assign(passedInfo.CONTEXT, instructionList[i - 1], result)
+                handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result)
         }
 
         // No result, continue
@@ -103,75 +106,11 @@ async function instructionRunner(passedInfo, instructionList) {
             continue
         }
 
-        else if (result === "END") {
-            return true
+        else if (result === END_SYMBOL) {
+            return END_SYMBOL
         }
     }
     return false
-}
-
-function assign(context, instruction, input) {
-    let [_, varName, assnFunction, exprValue] = instruction
-
-    // Get whatever variable is
-    let variable = context.settings[varName]
-    variable = variable === undefined ? context.model.VECTORS[varName] : variable
-
-    // In case of index, handle that
-    let index = 0
-    if (varName.indexOf(":") > 0) {
-        variable = getVectorNumber(context, varName)
-        index = evaluateExpr(context, varName.slice(varName.indexOf(":") + 1))
-        varName = varName.slice(0, varName.indexOf(":"))
-    }
-
-    // Make sure not a constant mode
-    if (context.model.MODES.includes(varName)) {
-        ThrowError(2700, { AT: varName })
-    }
-
-    let result = input
-
-    // Array and single values handling
-    if (Array.isArray(exprValue)) {
-        result = []
-        for (const expr of exprValue) {
-            result.push(evaluateExpr(context, expr))
-        }
-    }
-    else if (result === undefined) {
-        result = evaluateExpr(context, exprValue)
-    }
-
-    // Cannot be implicitly converted
-    if (typeof variable === "boolean" && Array.isArray(result)) {
-        ThrowError(2705, { AT: varName })
-    }
-
-    // Assignment & implicit if needed
-    if (typeof variable === "boolean") {
-        result = !!result
-        context.settings[varName] = assnFunction(result, variable, varName)
-        return
-    }
-
-    // Reassign whole vector
-    if (Array.isArray(result)) {
-        context.model.VECTORS[varName] = assnFunction(result, variable, varName)
-        return
-    }
-
-    // Implicit if needed
-    result = Number(result)
-
-    // Assign at index if exists, otherwise create new with second being 0
-    // Assigning to non-zero index without already existing vector throws error earlier
-    if (variable !== undefined) {
-        context.model.VECTORS[varName][index] = assnFunction(result, variable, varName)
-    }
-    else {
-        context.model.VECTORS[varName] = [assnFunction(result, variable, varName), 0]
-    }
 }
 
 module.exports = instructionRunner

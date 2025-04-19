@@ -3,9 +3,7 @@ const deepClone = require("./helpers/deepClone")
 async function loop(INFO, BLOCK) {
     while (true) {
         let ended = await INFO.RUN(INFO, BLOCK)
-        if (ended) {
-            break
-        }
+        if (ended === INFO.END_SYMBOL) break
         BLOCK = deepClone(BLOCK)
     }
 }

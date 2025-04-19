@@ -43,7 +43,8 @@ async function forLoop(INFO, BLOCK, start, end, step, variable) {
     // Loop through with compare, incrementing by step
     for (let i = start; compare(i); i += step) {
         INFO.CONTEXT.model.VECTORS[variable][0] = i
-        await INFO.RUN(INFO, BLOCK)
+        const ended = await INFO.RUN(INFO, BLOCK)
+        if (ended === INFO.END_SYMBOL) break
         BLOCK = deepClone(BLOCK)
     }
 }

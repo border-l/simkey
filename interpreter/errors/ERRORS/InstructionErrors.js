@@ -11,7 +11,7 @@ const FORMAT = {
     SetIndexNonNumber: ({ VECTOR, INDEX }) => `Attempting to set a non-number index (USING \`SET\`). VECTOR: ${VECTOR}, INDEX: ${INDEX}`,
     SetNonNumberElement: ({ VECTOR, VALUE }) => `Attempting to set a component of a vector to a non-number (USING \`SET\`). VECTOR: ${VECTOR}, VALUE: ${VALUE}`,
 
-    InstructionIllegal: ({ AT, CONTEXT }) => `Invalid instruction present. AT: ${AT}, CONTEXT: ${CONTEXT}`, // Honestly not entirely sure, but it's in getInstructionList
+    InstructionIllegal: ({ AT, CONTEXT }) => `Invalid instruction present. AT: ${AT}, CONTEXT: ${CONTEXT}`, // Honestly not entirely sure, but it's in getInstructionList (now removed)
     InstructionMissingArguments: ({ AT }) => `Instruction for imported function call is missing arguments. AT: ${AT}`,
     InstructionMissingFunction: ({ AT }) => `Instruction with non-existent imported function (this is most likely from forgetting to include in <EXPORTS>). AT: ${AT}`,
 

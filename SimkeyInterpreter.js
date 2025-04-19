@@ -16,6 +16,8 @@ const run = require("./interpreter/interpret/run")
 const setSettings = require("./interpreter/interpret/setSettings")
 const setInputVectors = require('./interpreter/interpret/setInputVectors')
 
+const getExport = require("./interpreter/importing/getExport")
+
 const ThrowError = require("./interpreter/errors/ThrowError")
 
 const fs = require("fs")
@@ -134,8 +136,8 @@ class Interpreter {
         this.#context.inputVectors = this.#inputVectors
     }
 
-    run(fileName) {
-        run(this.#context, fileName)
+    run() {
+        run(this.#context)
     }
 
     setSettings(object) {
@@ -163,25 +165,7 @@ class Interpreter {
     }
 
     getExport(name) {
-        const thisExport = this.#model.EXPORTS[name]
-        if (!thisExport) ThrowError(4305, { AT: name })
-
-        const out = { IMPORTS: {}, FUNCS: {} }
-
-        for (const func of thisExport) {
-            if (this.#model.IMPORTS[func]) {
-                out.IMPORTS[func] = this.#model.IMPORTS[func]
-                out.IMPORTS[func.slice(1)] = this.#model.IMPORTS[func.slice(1)]
-            }
-            else if (this.#model.FUNCS[func]) {
-                out.FUNCS[func] = this.#model.FUNCS[func]
-            }
-            else {
-                ThrowError([...wasntfound])
-            }
-        }
-
-        return out
+        return getExport(this.#context, name)
     }
 }
 

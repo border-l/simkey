@@ -72,6 +72,7 @@
     "ImportedFileNotExist": 4300,
     "ImportedLabelNotExist": 4305,
     "ImportedFuncUsesMode": 4310,
+    "ExportingNonExistentFunc": 4400,
     "SettingsKeyNotExist": 5000,
     "SettingsSeveralModesSet": 5005,
     "SettingsNonBooleanValue": 5010,

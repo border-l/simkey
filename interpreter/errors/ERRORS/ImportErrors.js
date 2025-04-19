@@ -15,7 +15,9 @@ const FORMAT = {
 
     ImportedFileNotExist: ({ AT }) => `Imported function's JS or Simkey file does not exist. AT: ${AT}`,
     ImportedLabelNotExist: ({ AT }) => `Simkey export label does not exist in its file. AT: ${AT}`,
-    ImportedFuncUsesMode: ({ MODE, FUNC }) => `Imported Simkey function has a mode as a parameter. MODE: ${MODE}, FUNC: ${FUNC}`
+    ImportedFuncUsesMode: ({ MODE, FUNC }) => `Imported Simkey function has a mode as a parameter. MODE: ${MODE}, FUNC: ${FUNC}`,
+
+    ExportingNonExistentFunc: ({ AT }) => `Simkey export includes non-existent function. AT: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

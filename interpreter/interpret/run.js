@@ -1,6 +1,7 @@
-const getInstructionList = require("./getInstructionList")
 const instructionRunner = require("./instructionRunner")
 const robot = require("../robot/robot")
+
+const endSymbol = "INSTRUCTION_RUNNER_ENDING_STRING"
 
 // Interprets the file
 async function run(context) {
@@ -10,7 +11,7 @@ async function run(context) {
     }
 
     // Get instruction list and set object for info shared between imports
-    const instructionList = getInstructionList(context, context.model.MACRO, "MACRO")
+    const instructionList = context.model.MACRO
     const def = [100, 100]
     const heldKeys = []
 
@@ -21,6 +22,7 @@ async function run(context) {
         CONTEXT: context,
         ROBOT: robot,
         RUN: instructionRunner,
+        END_SYMBOL: endSymbol,
         SHARED: {}
     }, instructionList)
 
