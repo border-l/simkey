@@ -53,6 +53,7 @@
     "AssignmentTypeMismatch": 2705,
     "AssignmentDivideByZero": 2710,
     "AssignmentNoReturnValue": 2715,
+    "ReturnWithoutValue": 2800,
     "NonExistentFlag": 3000,
     "NonExistentVariable": 3005,
     "NonExistentVector": 3010,

@@ -2,9 +2,8 @@ const parser = new (require("expr-eval").Parser)()
 const getBalancedExpression = require('./getBalancedExpression')
 const ThrowError = require("../errors/ThrowError")
 
-function evaluateExpr(context, expression, bool = false) {
-
-    const vars = bool ? { ...context.model.VECTORS, ...context.settings } : context.model.VECTORS
+function evaluateExpr(context, expression, bool = false, asIs = false) {
+    const vars = { ...context.model.VECTORS, ...context.settings }
     let expr = expression
         // Replaces indexed variables (vectors)
         .replaceAll(/\$(\w+):(-?\d+)/g, (_, varName, index) => {
@@ -65,6 +64,9 @@ function evaluateExpr(context, expression, bool = false) {
 
     // expr-eval evaluater
     const evaluate = parser.evaluate(expr)    
+
+    // Return it as is
+    if (asIs) return evaluate
 
     // Return according to bool arg
     return !bool ? Number(evaluate) : !(!evaluate)

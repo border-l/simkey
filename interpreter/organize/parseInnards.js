@@ -47,7 +47,7 @@ function parseInnards(context, index, section) {
 
             // Assigning to output of a function
             if (context.tokens[i + 2][0] === "@") {
-                parsed.push(["ASSN", token, operator, "NEXT INSTRUCTION"])
+                parsed.push(["ASSN", token, operator, "ASSN NEXT INSTRUCTION"])
                 i++
             }
 
@@ -85,6 +85,37 @@ function parseInnards(context, index, section) {
             }
             if (token === "@elseif" || token === "@else") {
                 ThrowError(1040, { AT: token })
+            }
+
+            // Return statement
+            if (token === "@return") {
+                // Assigning to output of a function
+                if (context.tokens[i + 1][0] === "@") {
+                    parsed.push(["RET", "RET NEXT INSTRUCTION"])
+                    i++
+                }
+
+                // Assigning to whole vector
+                else if (context.tokens[i + 1][0] === "[") {
+                    const [vector, newIndex] = getArray(context, i + 1, true)
+                    parsed.push(["RET", vector])
+                    i = newIndex
+                }
+
+                // Assigning to expression with spaces
+                else if (context.tokens[i + 1][0] === "(") {
+                    const [expr, newIndex] = getBalanced(i + 1, context.tokens)
+                    parsed.push(["RET", expr])
+                    i = newIndex
+                }
+
+                // Assigning to expression without spaces
+                else {
+                    parsed.push(["RET", context.tokens[i + 1]])
+                    i += 1
+                }
+
+                continue
             }
 
             // Defined functions (this is somewhat repetitive later on, clean up later)
@@ -135,7 +166,7 @@ function parseInnards(context, index, section) {
         if (!parsedExpression) {
             ThrowError(1110, { AT: token })
         }
-        
+
         parsed.push(parsedExpression)
     }
 

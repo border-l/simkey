@@ -4,6 +4,7 @@ const handleSET = require("./handleSET")
 const ThrowError = require("../errors/ThrowError")
 const evaluateExpr = require("../helpers/evaluateExpr")
 const handleASSN = require("./handleASSN")
+const handleRET = require("./handleRET")
 
 async function instructionRunner(passedInfo, instructionList) {
     for (let i = 0; i < instructionList.length; i++) {
@@ -46,14 +47,17 @@ async function instructionRunner(passedInfo, instructionList) {
 
         // Assignment statement
         else if (func === "ASSN") {
-            if (instruction[3] === "NEXT INSTRUCTION") continue
+            if (instruction[3] === "ASSN NEXT INSTRUCTION") continue
             handleASSN(passedInfo.CONTEXT, instruction)
         }
 
+        else if (func === "RET") {
+            if (instruction[3] === "RET NEXT INSTRUCTION") continue
+            return handleRET(passedInfo.CONTEXT, instruction)
+        }
+
         else if (passedInfo.CONTEXT.model.FUNCS[func]) {
-            // This will have to be adjusted, as of now result doesnt mean much except for when ending, which is an issue
             result = await instructionRunner(passedInfo, [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]), ...passedInfo.CONTEXT.model.FUNCS[func][0]])
-            if (result === passedInfo.END_SYMBOL) return passedInfo.END_SYMBOL
         }
 
         else if (!passedInfo.CONTEXT.model.IMPORTS[func]) {
@@ -96,21 +100,25 @@ async function instructionRunner(passedInfo, instructionList) {
             }
         }
 
-        if (i > 0 && instructionList[i - 1][3] === "NEXT INSTRUCTION") {
-            if (!result) ThrowError(2715, { AT: instruction[0] })
-                handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result)
+        if (i > 0 && instructionList[i - 1][3] === "ASSN NEXT INSTRUCTION") {
+            if (result === undefined) ThrowError(2715, { AT: instruction[0] })
+            handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result)
+        }
+
+        else if (i > 0 && instructionList[i - 1][3] === "RET NEXT INSTRUCTION") {
+            if (result === undefined) ThrowError(2800, { AT: instruction[0] })
+            return handleRET(passedInfo.CONTEXT, instructionList[i - 1], result)
         }
 
         // No result, continue
-        else if (!result) {
+        else if (result === undefined) {
             continue
         }
 
-        else if (result === END_SYMBOL) {
-            return END_SYMBOL
+        else if (result === passedInfo.END_SYMBOL) {
+            return passedInfo.END_SYMBOL
         }
     }
-    return false
 }
 
 module.exports = instructionRunner

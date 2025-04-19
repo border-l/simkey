@@ -2,7 +2,7 @@ const ThrowError = require("../errors/ThrowError")
 const evaluateExpr = require('../helpers/evaluateExpr')
 const getVectorNumber = require("../types/getVectorNumber")
 
-// Handle ASSN instructions
+// Handle ASSN instructions (assignments)
 function handleASSN(context, instruction, input) {
     let [_, varName, assnFunction, exprValue] = instruction
 
