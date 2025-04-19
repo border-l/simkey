@@ -10,7 +10,7 @@ function parseExports(context) {
     parseSection(context, (tokens, token, i, section, next) => {
         // Changing labels
         if (token.at(-1) === ":") {
-            current = token
+            current = token.slice(0, -1)
             return i
         }
         // Should be function otherwise
@@ -21,6 +21,7 @@ function parseExports(context) {
         context.model.EXPORTS[current].push(token)
         return i
     }, (section) => section === "EXPORTS")
+    console.log(context.model.EXPORTS)
 }
 
 module.exports = parseExports
