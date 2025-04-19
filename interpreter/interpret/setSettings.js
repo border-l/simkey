@@ -38,5 +38,8 @@ module.exports = (context, object) => {
         object[variable] = !object[variable] ? false : object[variable]
     }
 
-    context.update("settings", object)
+    // Instead of updating, extending
+    for (const key in object) {
+        context.settings[key] = object[key]
+    }
 }

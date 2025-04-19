@@ -44,7 +44,7 @@ function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
         let value = loopVector[i]
 
         // Add block and deep clone it for next time
-        INFO.INTERPRET(INFO, [["SET", element, 0, () => value], ["SET", index, 0, () => i], ...BLOCK])
+        INFO.RUN(INFO, [["SET", element, 0, () => value], ["SET", index, 0, () => i], ...BLOCK])
         BLOCK = deepClone(BLOCK)
 
         // Move forward accordingly

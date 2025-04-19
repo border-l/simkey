@@ -13,7 +13,9 @@ const FORMAT = {
 
     LooseMustBeLast: ({ AT }) => `LOOSE type does not come last in parameters for imported function. AT: ${AT}`,
 
-    ImportedFileNotExist: ({ AT }) => `Imported function's JS file does not exist. AT: ${AT}`
+    ImportedFileNotExist: ({ AT }) => `Imported function's JS or Simkey file does not exist. AT: ${AT}`,
+    ImportedLabelNotExist: ({ AT }) => `Simkey export label does not exist in its file. AT: ${AT}`,
+    ImportedFuncUsesMode: ({ MODE, FUNC }) => `Imported Simkey function has a mode as a parameter. MODE: ${MODE}, FUNC: ${FUNC}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

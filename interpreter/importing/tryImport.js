@@ -1,6 +1,7 @@
 const autoImport = require("./autoImport")
 const getParameters = require("./getParameters")
 const ThrowError = require("../errors/ThrowError")
+const importSimkeyFunc = require('./importSimkeyFunc')
 
 const path = require("path")
 const fs = require("fs")
@@ -53,7 +54,7 @@ module.exports = (context, array, currentPath = path.dirname(path.resolve(contex
     }
 
     // Check whether .autoimport or .js
-    if (!importLocation.endsWith(".autoimport")) {
+    if (!importLocation.endsWith(".autoimport") && !importLocation.endsWith(".simkey")) {
         importLocation += ".js"
     }
 
@@ -71,6 +72,11 @@ module.exports = (context, array, currentPath = path.dirname(path.resolve(contex
     // Load imported functions into model
     if (first === "CALL.BEFORE") {
         params = require(importLocation)
+    }
+    else if (importLocation.endsWith(".simkey")) {
+        name = name.slice(1)
+        name = name.endsWith(".simkey") ? name.slice(0, -1 * ".simkey".length) : name
+        importSimkeyFunc(context, importLocation, name.endsWith(".simkey") ? name.slice(0, -1 * ".simkey".length) : name)
     }
     else {
         // Parameters are now given by the function files themselves

@@ -22,6 +22,7 @@ const FORMAT = {
     IllegalTokenInCondition: ({ AT }) => `Illegal token present in condition expression. AT: ${AT}`,
     IllegalConditionStructure: ({ AT }) => `Condition structure is invalid. AT: ${AT}`,
     IllegalConditionFuncCall: ({ AT }) => `Invalid structure for boolean function call in condition. AT: ${AT}`, // For condition functions structured badly
+    IllegalTokenInExports: ({ AT }) => `Illegal token present in <EXPORTS> (not a label or function). AT: ${AT}`,
 
     ExpressionHeldNotLast: ({ AT }) => `Held expression must come at the end of the key expression. AT: ${AT}`, // Held must come last in expression
     ExpressionEscapeAtEnd: ({ AT }) => `Escape character at the end of expression. AT: ${AT}`, // Escape character at the end

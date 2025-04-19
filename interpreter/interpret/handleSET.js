@@ -4,7 +4,7 @@ const ThrowError = require("../errors/ThrowError")
 function handleSET(context, instruction) {
     // Separate parts of instruction
     const [_, varName, index, valueFunc] = instruction
-    const value = valueFunc()
+    const value = valueFunc(context)
 
     // Handle boolean set
     if (index === "BOOL") {

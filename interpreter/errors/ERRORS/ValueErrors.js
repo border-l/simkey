@@ -29,7 +29,8 @@ const FORMAT = {
 
     AssignmentToConstant: ({ AT }) => `Attempted to assign to a constant MODE. AT: ${AT}`,
     AssignmentTypeMismatch: ({ AT }) => `Attempted to assign to a value with mismatched type. AT: ${AT}`,
-    AssignmentDivideByZero: ({ AT }) => `Attempted to divide by zero in assignment. AT: ${AT}`
+    AssignmentDivideByZero: ({ AT }) => `Attempted to divide by zero in assignment. AT: ${AT}`,
+    AssignmentNoReturnValue: ({ AT }) => `Function used in assignment did not yield a value. AT: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

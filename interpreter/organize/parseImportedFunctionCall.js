@@ -83,20 +83,20 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, sect
                 }
 
                 // Changed way of retrieving vector after the fact
-                finalArray.push(getVariable.bind(null, context, arg, expectedArray))
+                finalArray.push((context) => getVariable(context, arg, expectedArray))
                 break
             }
 
             // Handle booleans
             if (expected === "BOOL") {
                 if (checkVariableName(arg)) {
-                    finalArray.push(getVariable.bind(null, context, arg, expectedArray))
+                    finalArray.push((context) => getVariable(context, arg, expectedArray))
                     break
                 }
 
                 // Valid expression
                 if (checkValidExpr(arg, true)) {
-                    finalArray.push(evaluateExpr.bind(null, context, arg, true))
+                    finalArray.push((context) => evaluateExpr(context, arg, true))
                     break
                 }
 
@@ -119,7 +119,7 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, sect
 
                 // Valid expression
                 if (checkValidExpr(arg)) {
-                    finalArray.push(evaluateExpr.bind(null, context, arg))
+                    finalArray.push((context) => evaluateExpr(context, arg))
                     break
                 }
 
@@ -128,7 +128,7 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, sect
                     continue
                 }
 
-                finalArray.push(getVariable.bind(null, context, arg, expectedArray))
+                finalArray.push((context) => getVariable(context, arg, expectedArray))
                 break
             }
 

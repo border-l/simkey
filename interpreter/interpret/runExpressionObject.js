@@ -1,17 +1,17 @@
 const ThrowError = require("../errors/ThrowError")
 
 // Runs expression object directly
-async function runExpressionObject (expression, heldKeys, def, { send, sleep }) {
+async function runExpressionObject (context, expression, heldKeys, def, { send, sleep }) {
     // Get hold and wait
     let hold = expression.hold === "DEF" ? def[0] : expression.hold
     let wait = expression.wait === "DEF" ? def[1] : expression.wait
 
     // Account for how numbers in vectors are now stored
     if (typeof hold === "function") {
-        hold = hold()
+        hold = hold(context)
     }
     if (typeof wait === "function") {
-        wait = wait()
+        wait = wait(context)
     }
 
     // Check proper hold and wait values

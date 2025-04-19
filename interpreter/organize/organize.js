@@ -1,5 +1,3 @@
-const checkVariableName = require("../helpers/checkVariableName")
-const combineTillNext = require("../helpers/combineTillNext")
 const checkSection = require("../helpers/checkSection")
 const parseInnards = require("./parseInnards")
 const parseFuncParams = require("./parseFuncParams")
@@ -24,15 +22,16 @@ module.exports = (context) => {
             // Update section
             section = token.substring(1, token.length - 1)
             section === "MACRO" ? passedMacroDeclaration = true : 0
+            continue
         }
 
         // Skipped as other functions handle them later on
-        else if (section === "IMPORTS" || section === "SETTINGS" || section === "MODES" || section === "SWITCHES" || section === "VECTORS") {
+        if (section !== "FUNCS" && section !== "MACRO") {
             continue
         }
 
         // Handle function section
-        else if (section === "FUNCS") {
+        if (section === "FUNCS") {
             // Conditionals to handle different errors
             if (token.charAt(0) !== "@") {
                 ThrowError(1030, { AT: token })
@@ -62,7 +61,7 @@ module.exports = (context) => {
 
             // Get parameters
             const [params, arrayIndex] = getArray(context, i + 1)
-            
+
             // Block doesnt exist
             if (context.tokens[arrayIndex + 1] !== '{') {
                 ThrowError(1035, { AT: token })
@@ -81,15 +80,8 @@ module.exports = (context) => {
         }
 
         // Handle macro section
-        else if (section === "MACRO") {
-            const [model, newIndex] = parseInnards(context, i - 1, "MACRO")
-            context.model.MACRO = model
-            i = newIndex - 1
-        }
-
-        // Section is not valid
-        else {
-            ThrowError(1305, { AT: token })
-        }
+        const [model, newIndex] = parseInnards(context, i - 1, "MACRO")
+        context.model.MACRO = model
+        i = newIndex - 1
     }
 }

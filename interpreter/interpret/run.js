@@ -1,19 +1,13 @@
-const organize = require("../organize/organize")
-const checkFunctionReferences = require("../helpers/checkFunctionReferences")
 const getInstructionList = require("./getInstructionList")
-const interpreter = require("./interpreter")
+const instructionRunner = require("./instructionRunner")
 const robot = require("../robot/robot")
 
 // Interprets the file
-async function interpret(context) {
+async function run(context) {
     // Settings must be set first
     if (!context.settings) {
-        return
+        return false
     }
-
-    // Organize and check that function references are valid
-    organize(context)
-    checkFunctionReferences(context)
 
     // Get instruction list and set object for info shared between imports
     const instructionList = getInstructionList(context, context.model.MACRO, "MACRO")
@@ -21,12 +15,12 @@ async function interpret(context) {
     const heldKeys = []
 
     // Interpret list
-    await interpreter({
+    await instructionRunner({
         DEF: def,
         HELD: heldKeys,
         CONTEXT: context,
         ROBOT: robot,
-        INTERPRET: interpreter,
+        RUN: instructionRunner,
         SHARED: {}
     }, instructionList)
 
@@ -36,4 +30,4 @@ async function interpret(context) {
     }
 }
 
-module.exports = interpret
+module.exports = run

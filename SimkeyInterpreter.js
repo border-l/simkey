@@ -5,10 +5,14 @@ const clearComments = require("./interpreter/organize/clearComments")
 
 const parseVectors = require('./interpreter/sections/parseVectors')
 const parseImports = require("./interpreter/sections/parseImports")
+const parseExports = require("./interpreter/sections/parseExports")
 const parseSettings = require("./interpreter/sections/parseSettings")
 const parseModesAndSwitches = require("./interpreter/sections/parseModesAndSwitches")
 
-const interpret = require("./interpreter/interpret/interpret")
+const organize = require("./interpreter/organize/organize")
+const checkFunctionReferences = require("./interpreter/helpers/checkFunctionReferences")
+
+const run = require("./interpreter/interpret/run")
 const setSettings = require("./interpreter/interpret/setSettings")
 const setInputVectors = require('./interpreter/interpret/setInputVectors')
 
@@ -17,6 +21,8 @@ const ThrowError = require("./interpreter/errors/ThrowError")
 const fs = require("fs")
 
 class Interpreter {
+    #Interpreter
+
     // Script information and built-in functions
     #script
     #tokens
@@ -35,13 +41,16 @@ class Interpreter {
     #context
 
     constructor(fileName) {
+        this.#Interpreter = Interpreter
         this.#fileName = fileName
         this.#script = fs.readFileSync(fileName, 'utf-8')
         this.#tokens = []
         this.#checkLater = []
         this.#inputVectors = {}
+        this.#settings = {}
         this.#model = {
             "IMPORTS": {},
+            "EXPORTS": {},
             "SETTINGS": {
                 "name": "",
                 "mode": "$DEFAULT",
@@ -67,9 +76,14 @@ class Interpreter {
 
         parseModesAndSwitches(this.#context)
         parseImports(this.#context)
+        parseExports(this.#context)
         parseSettings(this.#context)
         parseVectors(this.#context)
-        
+
+        // Organize and check that function references are valid
+        organize(this.#context)
+        checkFunctionReferences(this.#context)
+
         // Imported function to scan over document and parse before this handling
         if (this.#model.IMPORTS["CALL.BEFORE"]) {
             this.#model.IMPORTS["CALL.BEFORE"](this.#tokens, this.#model)
@@ -79,7 +93,7 @@ class Interpreter {
     #initContext() {
         this.#context = {
             update: (property, set) => {
-                switch(property) {
+                switch (property) {
                     case 'fileName':
                         this.#fileName = set
                         break
@@ -110,17 +124,18 @@ class Interpreter {
     }
 
     #getContext() {
+        this.#context.Interpreter = this.#Interpreter
         this.#context.fileName = this.#fileName
         this.#context.script = this.#script
         this.#context.tokens = this.#tokens
-        this.#context.checkLater = this.#checkLater,
+        this.#context.checkLater = this.#checkLater
         this.#context.model = this.#model
-        this.#context.settings = this.#settings,
+        this.#context.settings = this.#settings
         this.#context.inputVectors = this.#inputVectors
     }
 
     run(fileName) {
-        interpret(this.#context, fileName)
+        run(this.#context, fileName)
     }
 
     setSettings(object) {
@@ -145,6 +160,28 @@ class Interpreter {
 
     getSettings() {
         return JSON.parse(JSON.stringify(this.#model.SETTINGS))
+    }
+
+    getExport(name) {
+        const thisExport = this.#model.EXPORTS[name]
+        if (!thisExport) ThrowError(4305, { AT: name })
+
+        const out = { IMPORTS: {}, FUNCS: {} }
+
+        for (const func of thisExport) {
+            if (this.#model.IMPORTS[func]) {
+                out.IMPORTS[func] = this.#model.IMPORTS[func]
+                out.IMPORTS[func.slice(1)] = this.#model.IMPORTS[func.slice(1)]
+            }
+            else if (this.#model.FUNCS[func]) {
+                out.FUNCS[func] = this.#model.FUNCS[func]
+            }
+            else {
+                ThrowError([...wasntfound])
+            }
+        }
+
+        return out
     }
 }
 

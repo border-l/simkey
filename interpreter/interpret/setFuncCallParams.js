@@ -66,12 +66,12 @@ function setFuncCallParams(context, func, args) {
 
                 // Means it has an index
                 if (vectorNum === true) {
-                    setList.push(["SET", varName, 0, getVariable.bind(null, context, arg, ["VECTOR"])])
+                    setList.push(["SET", varName, 0, (context) => getVariable(context, arg, ["VECTOR"])])
                 }
 
                 else {
                     // Set variable since vector number does exist
-                    setList.push(["SET", varName, "ALL", getVariable.bind(null, context, arg, ["VECTOR"])])
+                    setList.push(["SET", varName, "ALL", (context) => getVariable(context, arg, ["VECTOR"])])
                     continue
                 }
             }
@@ -79,10 +79,10 @@ function setFuncCallParams(context, func, args) {
 
             // Set them to be the argument
             if (expected === "BOOL") {
-                setList.push(["SET", varName, "BOOL", getVariable.bind(null, context, arg, ["BOOL"])])
+                setList.push(["SET", varName, "BOOL", (context) => getVariable(context, arg, ["BOOL"])])
             }
             else {
-                setList.push(["SET", varName, "ALL", getVariable.bind(null, context, arg, ["VECTOR"])])
+                setList.push(["SET", varName, "ALL", (context) => getVariable(context, arg, ["VECTOR"])])
             }
 
             continue
@@ -95,12 +95,12 @@ function setFuncCallParams(context, func, args) {
 
         // Assigning expression to vector at 0
         if (expected !== "BOOL") {
-            setList.push(["SET", varName, 0, evaluateExpr.bind(null, context, arg)])
+            setList.push(["SET", varName, 0, (context) => evaluateExpr(context, arg)])
             continue
         }
         
         // Assign to boolean
-        setList.push(["SET", varName, "BOOL", evaluateExpr.bind(null, context, arg, true)])
+        setList.push(["SET", varName, "BOOL", (context) => evaluateExpr(context, arg, true)])
     }
 
     return setList

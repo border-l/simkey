@@ -36,7 +36,7 @@ module.exports = (context, expression) => {
         else {
             // An expression
             if (checkValidExpr(value)) {
-                parsedExpression.hold = evaluateExpr.bind(null, context, value)
+                parsedExpression.hold = (context) => evaluateExpr(context, value)
             }
 
             // Valid name for it
@@ -46,7 +46,7 @@ module.exports = (context, expression) => {
 
             else {
                 // Let getVectorNumber handle it
-                parsedExpression.hold = getVectorNumber.bind(null, context, value)
+                parsedExpression.hold = (context) => getVectorNumber(context, value)
             }
         }
     }
@@ -69,7 +69,7 @@ module.exports = (context, expression) => {
         else {
             // An expression
             if (checkValidExpr(value)) {
-                parsedExpression.hold = evaluateExpr.bind(null, context, value)
+                parsedExpression.hold = (context) => evaluateExpr(context, value)
             }
 
             // Valid name for it
@@ -79,7 +79,7 @@ module.exports = (context, expression) => {
 
             else {
                 // Let getVectorNumber handle it
-                parsedExpression.wait = getVectorNumber.bind(null, context, value, false, false, 1)
+                parsedExpression.wait = (context) => getVectorNumber(context, value, false, false, 1)
             }
         }
     }

@@ -5,13 +5,13 @@ const ThrowError = require("../errors/ThrowError")
 const evaluateExpr = require("../helpers/evaluateExpr")
 const getVectorNumber = require("../types/getVectorNumber")
 
-async function interpreter(passedInfo, instructionList) {
+async function instructionRunner(passedInfo, instructionList) {
     for (let i = 0; i < instructionList.length; i++) {
         const instruction = instructionList[i]
 
         // Key expression object
         if (instruction instanceof Object && !Array.isArray(instruction)) {
-            await runExpressionObject(instruction, passedInfo.HELD, passedInfo.DEF, passedInfo.ROBOT)
+            await runExpressionObject(passedInfo.CONTEXT, instruction, passedInfo.HELD, passedInfo.DEF, passedInfo.ROBOT)
             continue
         }
 
@@ -33,7 +33,7 @@ async function interpreter(passedInfo, instructionList) {
                     continue
                 }
 
-                const check = await interpreter(passedInfo, getInstructionList(passedInfo.CONTEXT, instruction[2][x], "MACRO"))
+                const check = await instructionRunner(passedInfo, getInstructionList(passedInfo.CONTEXT, instruction[2][x], "MACRO"))
                 if (check) return true
                 break
             }
@@ -50,12 +50,16 @@ async function interpreter(passedInfo, instructionList) {
             assign(passedInfo.CONTEXT, instruction)
         }
 
+        else if (!passedInfo.CONTEXT.model.IMPORTS[func]) {
+            ThrowError(5210, { AT: func })
+        }
+
         // Doesnt contain parameters where it should
         else if (!Array.isArray(instruction[1].args)) {
             ThrowError(5205, { AT: func })
         }
 
-        // Imported function
+        // Imported JS function
         else {
             // Add to this as to not mutate original
             const newInstructions = []
@@ -64,7 +68,7 @@ async function interpreter(passedInfo, instructionList) {
             for (let ind = 0; ind < instruction[1].args.length; ind++) {
                 // Value func, append value from function to newInstructions
                 if (typeof instruction[1].args[ind] === "function") {
-                    newInstructions[ind] = instruction[1].args[ind]()
+                    newInstructions[ind] = instruction[1].args[ind](passedInfo.CONTEXT)
                 }
                 // Push since it is not a function
                 else {
@@ -89,37 +93,24 @@ async function interpreter(passedInfo, instructionList) {
             }
         }
 
+        if (i > 0 && instructionList[i - 1][3] === "NEXT INSTRUCTION") {
+            if (!result) ThrowError(2715, { AT: instruction[0] })
+            assign(passedInfo.CONTEXT, instructionList[i - 1], result)
+        }
+
         // No result, continue
-        if (!result) {
+        else if (!result) {
             continue
         }
 
-        if (result === "END") {
+        else if (result === "END") {
             return true
-        }
-
-        // Previous was assignment to next instruction, so assign result
-        if (i > 0 && instructionList[i - 1][3] === "NEXT INSTRUCTION") {
-            // THIS ISNT DEALT WITH PROPERLY
-            assign(passedInfo.CONTEXT, instructionList[i - 1], result)
         }
     }
     return false
 }
 
 function assign(context, instruction, input) {
-    // Retrieve variable (undefined if doesnt exist, otherwise boolean or number)
-        // If the variable is a mode, error instantly
-    // Check if arg is array
-    // Otherwise single:
-        // Evaluate it
-        // Not valid, then check if it's a variable directly
-        // Error if none of those match
-    // Result is processed, pass in to assignment function with variable
-        // UPDATE THOSE FUNCTIONS TO WORK PROPERLY FIRST!
-    // Check type of result to see how to handle assigning
-        // Already switch & returned vector, error, otherwise implicit conversion if type mismatch
-
     let [_, varName, assnFunction, exprValue] = instruction
 
     // Get whatever variable is
@@ -183,4 +174,4 @@ function assign(context, instruction, input) {
     }
 }
 
-module.exports = interpreter
+module.exports = instructionRunner
