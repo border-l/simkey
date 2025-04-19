@@ -4,7 +4,7 @@ const fs = require("fs")
 const exists = fs.existsSync
 
 // Handle importing from .autoimport file
-module.exports = (context, pathTo) => {
+function autoImport(context, pathTo) {
     if (!exists(pathTo)) {
         return
     }
@@ -14,6 +14,8 @@ module.exports = (context, pathTo) => {
 
     for (let i = 0; i < imports.length; i++) {
         // Import current file (path (0,-12) due to .autoimport being at the end)
-        i += tryImport(context, imports.slice(i), pathTo.slice(0, -12))
+        i += tryImport(context, imports.slice(i), autoImport, pathTo.slice(0, -12))
     }
 }
+
+module.exports = autoImport

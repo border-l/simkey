@@ -1,4 +1,3 @@
-const autoImport = require("./autoImport")
 const getParameters = require("./getParameters")
 const ThrowError = require("../errors/ThrowError")
 const importSimkeyFunc = require('./importSimkeyFunc')
@@ -8,7 +7,7 @@ const fs = require("fs")
 const exists = fs.existsSync
 
 // Try to import next function in array, returns new index
-module.exports = (context, array, currentPath = path.dirname(path.resolve(context.fileName))) => {
+module.exports = (context, array, autoImport, currentPath = path.dirname(path.resolve(context.fileName))) => {
     // account for parseImports giving an empty array (not sure why it happens)
     if (array.length == 0) return 0
 
@@ -19,7 +18,7 @@ module.exports = (context, array, currentPath = path.dirname(path.resolve(contex
     let returnIndex = -1
 
     // Make sure first is valid
-    if (first !== "CALL.BEFORE" && !first.startsWith("@")) {
+    if (first !== "CALL.BEFORE" && !first.startsWith("@") && !first.endsWith("*")) {
         ThrowError(4005, { AT: first })
     }
 
@@ -47,7 +46,7 @@ module.exports = (context, array, currentPath = path.dirname(path.resolve(contex
         importLocation = path.join(currentPath, importLocation)
     }
     else if (!path.isAbsolute(importLocation)) {
-        importLocation = path.join(__dirname.slice(0, -18), 'simkey-imports', importLocation)
+        importLocation = path.join(path.resolve(__dirname, "..", ".."), 'simkey-imports', importLocation)
     }
     else {
         importLocation = path.resolve(currentPath, importLocation)
