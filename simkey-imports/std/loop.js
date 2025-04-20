@@ -1,9 +1,11 @@
 const deepClone = require("./helpers/deepClone")
 
+// Loop until broken or returned
 async function loop(INFO, BLOCK) {
     while (true) {
-        let ended = await INFO.RUN(INFO, BLOCK)
-        if (ended === INFO.END_SYMBOL) break
+        const ended = await INFO.RUN(INFO, BLOCK)
+        if (INFO.YIELD.END(ended)) break
+        if (INFO.YIELD.RETURN(ended)) return ended
         BLOCK = deepClone(BLOCK)
     }
 }

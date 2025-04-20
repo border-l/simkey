@@ -44,7 +44,8 @@ async function forLoop(INFO, BLOCK, start, end, step, variable) {
     for (let i = start; compare(i); i += step) {
         INFO.CONTEXT.model.VECTORS[variable][0] = i
         const ended = await INFO.RUN(INFO, BLOCK)
-        if (ended === INFO.END_SYMBOL) break
+        if (INFO.YIELD.END(ended)) break
+        if (INFO.YIELD.RETURN(ended)) return ended
         BLOCK = deepClone(BLOCK)
     }
 }

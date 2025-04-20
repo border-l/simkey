@@ -133,7 +133,7 @@ function parseInnards(context, index, section) {
 
             if (token === "@end") {
                 parsed.push("@end")
-                return i
+                return [parsed, i]
             }
 
             // Imported functions

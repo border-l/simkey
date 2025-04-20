@@ -1,7 +1,8 @@
 const instructionRunner = require("./instructionRunner")
 const robot = require("../robot/robot")
 
-const endSymbol = "INSTRUCTION_RUNNER_ENDING_STRING"
+const endSymbol = Symbol("END_STRING")
+const returnSymbol = Symbol("RETURN_STRING")
 
 // Interprets the file
 async function run(context) {
@@ -22,7 +23,8 @@ async function run(context) {
         CONTEXT: context,
         ROBOT: robot,
         RUN: instructionRunner,
-        END_SYMBOL: endSymbol,
+        SYMBOLS: { END: endSymbol, RETURN: returnSymbol },
+        YIELD: { END: (val) => val === endSymbol, RETURN: (val) => Array.isArray(val) && val[0] === returnSymbol },
         SHARED: {}
     }, instructionList)
 

@@ -21,7 +21,6 @@ function parseExports(context) {
         context.model.EXPORTS[current].push(token)
         return i
     }, (section) => section === "EXPORTS")
-    console.log(context.model.EXPORTS)
 }
 
 module.exports = parseExports

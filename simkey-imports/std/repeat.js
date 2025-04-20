@@ -2,16 +2,11 @@ const deepClone = require("./helpers/deepClone")
 
 // Repeats block num times
 async function repeat(INFO, BLOCK, num) {
-    // Break at end, no ending main program
-    if (BLOCK[BLOCK.length - 1] === "@end") {
-        INFO.LIST.splice(INFO.INDEX + 1, 0, ...BLOCK.slice(0,-1))
-        return
-    }
-
     // Clone block and add it to LIST
     for (let i = 0; i < num; i++) {
         const ended = await INFO.RUN(INFO, BLOCK)
-        if (ended === INFO.END_SYMBOL) break
+        if (INFO.YIELD.END(ended)) break
+        if (INFO.YIELD.RETURN(ended)) return ended
         BLOCK = deepClone(BLOCK)
     }
 }

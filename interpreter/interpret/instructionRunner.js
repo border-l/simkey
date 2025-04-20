@@ -20,7 +20,7 @@ async function instructionRunner(passedInfo, instructionList) {
 
         // End
         if (instruction === "@end") {
-            return passedInfo.END_SYMBOL
+            return passedInfo.SYMBOLS.END
         }
 
         // Otherwise, handle imported function call
@@ -34,8 +34,7 @@ async function instructionRunner(passedInfo, instructionList) {
                     continue
                 }
 
-                const check = await instructionRunner(passedInfo, instruction[2][x])
-                if (check) return true
+                result = await instructionRunner(passedInfo, instruction[2][x])
                 break
             }
         }
@@ -53,11 +52,12 @@ async function instructionRunner(passedInfo, instructionList) {
 
         else if (func === "RET") {
             if (instruction[3] === "RET NEXT INSTRUCTION") continue
-            return handleRET(passedInfo.CONTEXT, instruction)
+            return [passedInfo.SYMBOLS.RETURN, handleRET(passedInfo.CONTEXT, instruction)]
         }
 
         else if (passedInfo.CONTEXT.model.FUNCS[func]) {
             result = await instructionRunner(passedInfo, [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]), ...passedInfo.CONTEXT.model.FUNCS[func][0]])
+            result = Array.isArray(result) ? result[1] : result // In case it's a return statement, we know it is already fulfilled as this is where it was called
         }
 
         else if (!passedInfo.CONTEXT.model.IMPORTS[func]) {
@@ -100,14 +100,21 @@ async function instructionRunner(passedInfo, instructionList) {
             }
         }
 
+        // Return further up
+        if (passedInfo.YIELD.RETURN(result)) {
+            return result
+        }
+
+        // Assignment statement that required result from this function call
         if (i > 0 && instructionList[i - 1][3] === "ASSN NEXT INSTRUCTION") {
             if (result === undefined) ThrowError(2715, { AT: instruction[0] })
             handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result)
         }
 
+        // Return statement that required result from this function call
         else if (i > 0 && instructionList[i - 1][3] === "RET NEXT INSTRUCTION") {
             if (result === undefined) ThrowError(2800, { AT: instruction[0] })
-            return handleRET(passedInfo.CONTEXT, instructionList[i - 1], result)
+            return [passedInfo.SYMBOLS.RETURN, result]
         }
 
         // No result, continue
@@ -115,8 +122,8 @@ async function instructionRunner(passedInfo, instructionList) {
             continue
         }
 
-        else if (result === passedInfo.END_SYMBOL) {
-            return passedInfo.END_SYMBOL
+        else if (passedInfo.YIELD.END(result)) {
+            return result
         }
     }
 }
