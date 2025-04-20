@@ -17,15 +17,15 @@ function importSimkeyFunc(context, path, name) {
 
         // Either already MODE or will set VECTORS & BOOL (remember STRING)
         for (const param of params) {
-            if (context.model.MODES.includes(param[1])) {
-                ThrowError(4310, { MODE: param[1], FUNC: key })
-            }
-            if (param[1] === "VECTOR" && !context.model.VECTORS[param[1]]) {
-                context.model.VECTORS[param[0]] = [0, 0]
-            }
-            else if (param[1] === "BOOL" && context.settings[param[1]] === undefined) {
-                context.settings[param[1]] = false
-            }
+            // if (context.model.MODES.includes(param)) {
+            //     ThrowError(4310, { MODE: param, FUNC: key })
+            // }
+            // if (param[1] === "VECTOR" && !Array.isArray(context.variables[param])) {
+                context.variables[param] = [0, 0]
+            // }
+            // else if (param[1] === "BOOL" && context.variables[param] === undefined) {
+            //     context.variables[param] = false
+            // }
         }
     }
 }

@@ -7,43 +7,52 @@ function handleSET(context, instruction) {
     const value = valueFunc(context)
 
     // Handle boolean set
-    if (index === "BOOL") {
-        if (context.settings[varName] === undefined) {
-            ThrowError(5100, { VAR: varName, TYPE: "BOOL" })
-        }
+    // if (index === "BOOL") {
+    //     // if (context.variables[varName] === undefined) {
+    //     //     ThrowError(5100, { VAR: varName, TYPE: "BOOL" })
+    //     // }
 
-        context.settings[varName] = !!value
-        return
-    }
+    //     context.variables[varName] = !!value
+    //     return
+    // }
 
     // Must be vector to get here
-    if (!context.model.VECTORS[varName]) {
-        ThrowError(5100, { VAR: varName, TYPE: "VECTOR" })
-    }
+    // if (!Array.isArray(context.variables[varName])) {
+    //     ThrowError(5100, { VAR: varName, TYPE: "VECTOR" })
+    // }
 
     // Setting entire vector array to be something else
     if (index === "ALL") {
-        if (!Array.isArray(value)) {
-            ThrowError(5105, { VECTOR: varName, VALUE_TYPE: typeof value })
+        // if (!Array.isArray(value)) {
+        //     ThrowError(5105, { VECTOR: varName, VALUE_TYPE: typeof value })
+        // }
+
+        if (typeof value === "number" && Array.isArray(context.variables[varName])) {
+            context.variables[varName][0] = value
+            return
         }
 
-        context.model.VECTORS[varName] = value
+        context.variables[varName] = value
+        return
     }
 
-    // Set a specific index
-    else {
-        // Non number index
-        if (isNaN(index)) {
-            ThrowError(5110, { VECTOR: varName, INDEX: index })
-        }
-        // Non number value
-        if (isNaN(value)) {
-            ThrowError(5115, { VECTOR: varName, VALUE: value })
-        }
-        
-        // Set it, they're both valid
-        context.model.VECTORS[varName][index] = value
+    // Set a specific index instead
+
+    // Non existent array
+    if (!Array.isArray(context.variables[varName])) {
+        ThrowError(5100, { AT: varName, TYPE: "VECTOR" })
     }
+    // Non number index
+    if (isNaN(index) || index === null) {
+        ThrowError(5110, { VECTOR: varName, INDEX: index })
+    }
+    // Non number value
+    if (isNaN(value) || value === null) {
+        ThrowError(5115, { VECTOR: varName, VALUE: value })
+    }
+
+    // Set it, they're both valid
+    context.variables[varName][index] = value
 }
 
 module.exports = handleSET

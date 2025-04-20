@@ -6,7 +6,7 @@ const getBalancedExpression = require("../helpers/getBalancedExpression")
 module.exports = (context, vector, noError = false, errorIndex = false, defaultIndex = 0) => {
     // Get colon's index and vector, finalNumber will be figured
     const colonIndex = vector.indexOf(":")
-    const vectorArray = context.model.VECTORS[vector.substring(0, colonIndex > -1 ? colonIndex : vector.length)]
+    const vectorArray = context.variables[vector.substring(0, colonIndex > -1 ? colonIndex : vector.length)]
 
     // Check if finalNumber is actually a vector
     if (vectorArray) {

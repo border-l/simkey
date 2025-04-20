@@ -39,7 +39,7 @@ module.exports = (context) => {
             if (token.length < 2) {
                 ThrowError(1105, { AT: token })
             }
-            if (token in ["@if", "@elseif", "@else", "@end"]) {
+            if (["@if", "@elseif", "@else", "@end"].includes(token)) {
                 ThrowError(1105, { AT: token })
             }
             if (i === tokens.length - 1) {

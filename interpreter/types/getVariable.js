@@ -20,15 +20,15 @@ function getVariable(context, variable, expected) {
 
         // Check for type bool (settings)
         else if (expect === "BOOL") {
-            if (context.settings[variable] === undefined) continue
-            solution = context.settings[variable]
+            if (typeof context.variables[variable] !== "boolean") continue
+            solution = context.variables[variable]
             break
         }
 
         // Check for vector (VECTORS)
         else {
-            if (!context.model.VECTORS[variable]) continue
-            solution = context.model.VECTORS[variable]
+            if (!Array.isArray(context.variables[variable])) continue
+            solution = context.variables[variable]
             break
         }
     }

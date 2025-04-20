@@ -1,4 +1,3 @@
-const getVariables = require("../types/getVariables")
 const ThrowError = require("../errors/ThrowError")
 
 // Set settings to be used when compiling script
@@ -33,13 +32,15 @@ module.exports = (context, object) => {
         object["$DEFAULT"] = true
     }
 
+    const others = [...context.model.MODES, ...context.model.SWITCHES]
+
     // Set all other variables to false
-    for (const variable of getVariables(context, false)) {
+    for (const variable of others) {
         object[variable] = !object[variable] ? false : object[variable]
     }
 
     // Instead of updating, extending
     for (const key in object) {
-        context.settings[key] = object[key]
+        context.variables[key] = object[key]
     }
 }

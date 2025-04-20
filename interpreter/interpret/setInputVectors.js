@@ -25,7 +25,7 @@ function setInputVectors (context, object) {
         let newArray = JSON.parse(JSON.stringify(vectorArray.map((val) => val.length === 0 ? 0 : Number(val))))
         if (newArray.length < 2) newArray.push(0)
 
-        context.model.VECTORS[vector] = newArray
+        context.variables[vector] = newArray
     }
 }
 

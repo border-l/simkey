@@ -11,14 +11,16 @@ async function type(INFO, string, time = 10) {
         // Variable syntax (%$var%)
         if (segment[0] === "%" && segment.lastIndexOf("%") > 0) {
             let variable = segment.slice(1, segment.indexOf("%", 1))
+            let varValue = INFO.CONTEXT.variables[variable]
 
             // Split segment up in case there's more variables
             segments.splice(i + 1, 0, segment.slice(variable.length + 2))
             segment = "%" + variable + "%"
 
-            // Mode/switch
-            if (INFO.CONTEXT.settings[variable] !== undefined) {
-                await typeString(INFO.ROBOT, String(INFO.CONTEXT.settings[variable]), time)
+            // Non-indexed variable
+            if (varValue !== undefined) {
+                if (Array.isArray(varValue)) await typeString(INFO.ROBOT, String(varValue[0]), time)
+                else await typeString(INFO.ROBOT, String(varValue), time)
                 continue
             }
 

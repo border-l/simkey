@@ -16,12 +16,12 @@ async function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
     element = element.trim()
     index = index.trim()
 
-    if (INFO.CONTEXT.settings[element]) {
-        throw new Error("Element variable is already a boolean: " + element)
-    }
-    if (INFO.CONTEXT.settings[index]) {
-        throw new Error("Index variable is already a boolean: " + index)
-    }
+    // if (INFO.CONTEXT.variables[element]) {
+    //     throw new Error("Element variable is already a boolean: " + element)
+    // }
+    // if (INFO.CONTEXT.variables[index]) {
+    //     throw new Error("Index variable is already a boolean: " + index)
+    // }
 
     // Check that variable name is valid
     if (!checkVariableName(element)) {
@@ -32,11 +32,11 @@ async function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
     }
 
     //  Set to default [0,0] if doesnt exist
-    if (!INFO.CONTEXT.model.VECTORS[element]) {
-        INFO.CONTEXT.model.VECTORS[element] = [0, 0]
+    if (!Array.isArray(INFO.CONTEXT.variables[element])) {
+        INFO.CONTEXT.variables[element] = [0, 0]
     }
-    if (!INFO.CONTEXT.model.VECTORS[index]) {
-        INFO.CONTEXT.model.VECTORS[index] = [0, 0]
+    if (!Array.isArray(INFO.CONTEXT.variables[index])) {
+        INFO.CONTEXT.variables[index] = [0, 0]
     }
 
     // Loop through with compare, incrementing by step

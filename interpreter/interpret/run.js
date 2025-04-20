@@ -6,11 +6,6 @@ const returnSymbol = Symbol("RETURN_STRING")
 
 // Interprets the file
 async function run(context) {
-    // Settings must be set first
-    if (!context.settings) {
-        return false
-    }
-
     // Get instruction list and set object for info shared between imports
     const instructionList = context.model.MACRO
     const def = [100, 100]

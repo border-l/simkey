@@ -37,7 +37,8 @@ class Interpreter {
 
     // References to check after organization
     #checkLater
-    #settings
+    #variables
+    #constants
 
     // For passing private fields to other functions
     #context
@@ -49,7 +50,8 @@ class Interpreter {
         this.#tokens = []
         this.#checkLater = []
         this.#inputVectors = {}
-        this.#settings = {}
+        this.#variables = {}
+        this.#constants = []
         this.#model = {
             "IMPORTS": {},
             "EXPORTS": {},
@@ -113,8 +115,11 @@ class Interpreter {
                     case 'model':
                         this.#model = set
                         break
-                    case 'settings':
-                        this.#settings = set
+                    case 'variables':
+                        this.#variables = set
+                        break
+                    case 'constants':
+                        this.#constants = set
                         break
                     default:
                         ThrowError(5300, { AT: property })
@@ -132,7 +137,8 @@ class Interpreter {
         this.#context.tokens = this.#tokens
         this.#context.checkLater = this.#checkLater
         this.#context.model = this.#model
-        this.#context.settings = this.#settings
+        this.#context.variables = this.#variables
+        this.#context.constants = this.#constants
         this.#context.inputVectors = this.#inputVectors
     }
 

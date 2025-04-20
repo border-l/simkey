@@ -15,13 +15,13 @@ async function forLoop(INFO, BLOCK, start, end, step, variable) {
     if (!checkVariableName(variable)) {
         throw new Error("Variable name given to @for loop is not valid: " + variable)
     }
-    if (INFO.CONTEXT.settings[variable]) {
-        throw new Error("Index variable is already a boolean: " + variable)
-    }
+    // if (INFO.CONTEXT.variables[variable]) {
+    //     throw new Error("Index variable is already a boolean: " + variable)
+    // }
 
     //  Set to default [0,0] if doesnt exist
-    if (!INFO.CONTEXT.model.VECTORS[variable]) {
-        INFO.CONTEXT.model.VECTORS[variable] = [0,0]
+    if (!Array.isArray(INFO.CONTEXT.variables[variable])) {
+        INFO.CONTEXT.variables[variable] = [0,0]
     }
 
     // Function to compare for loop
@@ -42,7 +42,7 @@ async function forLoop(INFO, BLOCK, start, end, step, variable) {
 
     // Loop through with compare, incrementing by step
     for (let i = start; compare(i); i += step) {
-        INFO.CONTEXT.model.VECTORS[variable][0] = i
+        INFO.CONTEXT.variables[variable][0] = i
         const ended = await INFO.RUN(INFO, BLOCK)
         if (INFO.YIELD.END(ended)) break
         if (INFO.YIELD.RETURN(ended)) return ended

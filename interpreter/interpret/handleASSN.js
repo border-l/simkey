@@ -7,11 +7,10 @@ function handleASSN(context, instruction, input) {
     let [_, varName, assnFunction, exprValue] = instruction
 
     // Get whatever variable is
-    let variable = context.settings[varName]
-    variable = variable === undefined ? context.model.VECTORS[varName] : variable
+    let variable = context.variables[varName]
 
     // In case of index, handle that
-    let index = 0
+    let index = null
     if (varName.indexOf(":") > 0) {
         variable = getVectorNumber(context, varName)
         index = evaluateExpr(context, varName.slice(varName.indexOf(":") + 1))
@@ -19,9 +18,9 @@ function handleASSN(context, instruction, input) {
     }
 
     // Make sure not a constant mode
-    if (context.model.MODES.includes(varName)) {
-        ThrowError(2700, { AT: varName })
-    }
+    // if (context.model.MODES.includes(varName)) {
+    //     ThrowError(2700, { AT: varName })
+    // }
 
     let result = input
 
@@ -36,35 +35,43 @@ function handleASSN(context, instruction, input) {
         result = evaluateExpr(context, exprValue)
     }
 
-    // Cannot be implicitly converted
-    if (typeof variable === "boolean" && Array.isArray(result)) {
-        ThrowError(2705, { AT: varName })
-    }
+    // // Cannot be implicitly converted
+    // if (typeof variable === "boolean" && Array.isArray(result)) {
+    //     ThrowError(2705, { AT: varName })
+    // }
 
-    // Assignment & implicit if needed
-    if (typeof variable === "boolean") {
-        result = !!result
-        context.settings[varName] = assnFunction(result, variable, varName)
-        return
-    }
+    // // Assignment & implicit if needed
+    // if (typeof variable === "boolean") {
+    //     result = !!result
+    //     context.variables[varName] = assnFunction(result, variable, varName)
+    //     return
+    // }
 
-    // Reassign whole vector
-    if (Array.isArray(result)) {
-        context.model.VECTORS[varName] = assnFunction(result, variable, varName)
-        return
-    }
+    // // Reassign whole vector
+    // if (Array.isArray(result)) {
+    //     context.variables[varName] = assnFunction(result, variable, varName)
+    //     return
+    // }
 
-    // Implicit if needed
-    result = Number(result)
+    // // Implicit if needed
+    // result = Number(result)
 
     // Assign at index if exists, otherwise create new with second being 0
     // Assigning to non-zero index without already existing vector throws error earlier
-    if (variable !== undefined) {
-        context.model.VECTORS[varName][index] = assnFunction(result, variable, varName)
+    // if (index !== undefined) {
+    //     context.variables[varName][index] = assnFunction(result, variable, varName)
+    // }
+    // else {
+    //     context.variables[varName] = [assnFunction(result, variable, varName), 0]
+    // }
+
+    if (typeof result === "number") {
+        if (Array.isArray(variable) || index !== null) context.variables[varName][index === null ? 0 : index] = assnFunction(result, variable, varName)
+        else context.variables[varName] = [assnFunction(result, variable, varName), 0]
+        return
     }
-    else {
-        context.model.VECTORS[varName] = [assnFunction(result, variable, varName), 0]
-    }
+
+    context.variables[varName] = assnFunction(result, variable, varName)
 }
 
 module.exports = handleASSN

@@ -3,7 +3,7 @@ const getBalancedExpression = require('./getBalancedExpression')
 const ThrowError = require("../errors/ThrowError")
 
 function evaluateExpr(context, expression, bool = false, asIs = false) {
-    const vars = { ...context.model.VECTORS, ...context.settings }
+    const vars = context.variables
     let expr = expression
         // Replaces indexed variables (vectors)
         .replaceAll(/\$(\w+):(-?\d+)/g, (_, varName, index) => {
