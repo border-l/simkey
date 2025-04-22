@@ -3,7 +3,7 @@ const findBracket = require("../helpers/findBracket")
 const ThrowError = require("../errors/ThrowError")
 
 // Parses conditional models, using #parseConditionExpression for expressions
-function parseConditional(context, index, section, parseInnards) {
+function parseConditional(context, index, parseInnards, depth) {
     // Three array structure (conditional, expression, block)
     const parsed = [[], [], []]
     let i = index
@@ -13,6 +13,10 @@ function parseConditional(context, index, section, parseInnards) {
         const conditionFunction = context.tokens[i]
         const [condition, nextBracket] = combineTillNext(context, "{", i, false)
         const closeBracket = findBracket(context, nextBracket)
+
+        if (nextBracket === -1) {
+            ThrowError(1040, { AT: condition + " " + conditionFunction })
+        }
 
         // Handle conditions for everything but else
         if (conditionFunction !== "@else") {
@@ -26,13 +30,13 @@ function parseConditional(context, index, section, parseInnards) {
             parsed[1].push(condition)
             
             // Add conditional branch block
-            parsed[2].push(parseInnards(context, nextBracket, section)[0])
+            parsed[2].push(parseInnards(context, nextBracket, depth)[0])
         }
 
         // No condition for else as should be
         else if (condition === '') {
             parsed[0].push('@else')
-            parsed[2].push(parseInnards(context, nextBracket, section)[0])
+            parsed[2].push(parseInnards(context, nextBracket, depth)[0])
             i = closeBracket + 1
             break
         }

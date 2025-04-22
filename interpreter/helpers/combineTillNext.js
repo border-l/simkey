@@ -7,6 +7,10 @@ module.exports = (context, char, index, noSection = false, noComments = false) =
     for (let i = index + 1; i < context.tokens.length; i++) {
         const token = context.tokens[i]
 
+        if (!noSection && checkSection(context, token)) {
+            break
+        }
+
         // Combine till character is found or section
         if (token.charAt(0) === char || (token === "#" && noComments) || (!noSection && checkSection(context, token))) {
             return [combination, i]

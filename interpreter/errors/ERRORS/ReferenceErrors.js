@@ -11,7 +11,7 @@ const FORMAT = {
     
     IncompleteFlag: ({ AT }) => `Flag reference is not complete. AT: ${AT}`,
 
-    IndexOutOfRange: ({ AT }) => `Index is out of range, at: ${AT}`,
+    IndexOutOfRange: ({ AT }) => `Index is out of range, at: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

@@ -10,11 +10,11 @@ const FORMAT = {
 
     ArgumentMissing: ({ AT }) => `Function call (native or imported) is missing arguments. AT: ${AT}`,
     ArgumentExtra: ({ AT }) => `Function call (native or imported) received extra arguments. AT: ${AT}`,
-    ArgumentTypeMismatch: ({ AT, ARG, EXPECTED }) => `Function call (native or imported) did not match any of the valid types. AT: ${AT}, ARG: \`${ARG}\`, EXPECTED: ${EXPECTED}`,
+    ArgumentTypeMismatch: ({ AT, ARG, EXPECTED }) => `Function call (native or imported) did not match any of the valid types. AT: ${AT}, ARG: ${ARG}, EXPECTED: ${EXPECTED}`,
     ArgumentUndefined: ({ AT }) => `Argument passed to imported function is undefined (Instruction was presumably injected by another imported function). AT: ${AT}`,
 
     ParamTypeDeclaredOpposite: ({ AT }) => `Parameter variable is already declared to be of the opposite type. AT: ${ AT }`, // Already exists, declared opposite, this is for params
-    ParamDeclaredMode: ({ AT }) => `Parameter variable is already declared a MODE, so it cannot be changed. AT: ${ AT }`, // Declared mode but tried to make it a param
+    ParamDeclaredConstant: ({ AT }) => `Parameter variable is already declared a constant, so it cannot be changed. AT: ${ AT }`, // Declared mode but tried to make it a param
     ParamTypeNotExist: ({ AT }) => `Parameter type does not exist, is not VECTOR or BOOL (For native Func). AT: ${ AT }`,
 
     NonBoolExpression: ({ AT }) => `Did not receive a boolean expression. AT: ${AT}`,
@@ -27,12 +27,15 @@ const FORMAT = {
 
     KeyNotExist: ({ AT }) => `Key is invalid (not mapped by Simkey). AT: ${AT}`,
 
-    AssignmentToConstant: ({ AT }) => `Attempted to assign to a constant MODE. AT: ${AT}`,
+    AssignmentToConstant: ({ AT }) => `Attempted to assign to a constant. AT: ${AT}`,
     AssignmentTypeMismatch: ({ AT }) => `Attempted to assign to a value with mismatched type. AT: ${AT}`,
     AssignmentDivideByZero: ({ AT }) => `Attempted to divide by zero in assignment. AT: ${AT}`,
     AssignmentNoReturnValue: ({ AT }) => `Function used in assignment did not yield a value. AT: ${AT}`,
+    AssignmentNonExistent: ({ AT }) => `Assigning with non \`=\` on a non-existent variable.`,
+    AssignmentConstantExists: ({ AT }) => `Attempting to declare a constant when the variable already exists. AT: ${AT}`,
 
-    ReturnWithoutValue: ({ AT }) => `Function used in return statement did not yield a value. AT : ${AT}`
+    ReturnWithoutValue: ({ AT }) => `Function used in return statement did not yield a value. AT : ${AT}`,
+    ReturnMissingValue: ({ AT }) => `Return statement did not have a value given after it.`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

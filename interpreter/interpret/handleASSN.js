@@ -3,7 +3,7 @@ const evaluateExpr = require('../helpers/evaluateExpr')
 const getVectorNumber = require("../types/getVectorNumber")
 
 // Handle ASSN instructions (assignments)
-function handleASSN(context, instruction, input) {
+function handleASSN(context, instruction, input, constant = false) {
     let [_, varName, assnFunction, exprValue] = instruction
 
     // Get whatever variable is
@@ -17,10 +17,15 @@ function handleASSN(context, instruction, input) {
         varName = varName.slice(0, varName.indexOf(":"))
     }
 
-    // Make sure not a constant mode
-    // if (context.model.MODES.includes(varName)) {
-    //     ThrowError(2700, { AT: varName })
-    // }
+    // Make sure not a constant
+    if (context.constants.includes(varName)) {
+        ThrowError(2700, { AT: varName })
+    }
+
+    // Cannot make constant if already exists
+    if (variable !== undefined && constant) {
+        ThrowError(2725, { AT: varName })
+    }
 
     let result = input
 
@@ -32,46 +37,18 @@ function handleASSN(context, instruction, input) {
         }
     }
     else if (result === undefined) {
-        result = evaluateExpr(context, exprValue)
+        result = evaluateExpr(context, exprValue, true, true)
     }
-
-    // // Cannot be implicitly converted
-    // if (typeof variable === "boolean" && Array.isArray(result)) {
-    //     ThrowError(2705, { AT: varName })
-    // }
-
-    // // Assignment & implicit if needed
-    // if (typeof variable === "boolean") {
-    //     result = !!result
-    //     context.variables[varName] = assnFunction(result, variable, varName)
-    //     return
-    // }
-
-    // // Reassign whole vector
-    // if (Array.isArray(result)) {
-    //     context.variables[varName] = assnFunction(result, variable, varName)
-    //     return
-    // }
-
-    // // Implicit if needed
-    // result = Number(result)
-
-    // Assign at index if exists, otherwise create new with second being 0
-    // Assigning to non-zero index without already existing vector throws error earlier
-    // if (index !== undefined) {
-    //     context.variables[varName][index] = assnFunction(result, variable, varName)
-    // }
-    // else {
-    //     context.variables[varName] = [assnFunction(result, variable, varName), 0]
-    // }
 
     if (typeof result === "number") {
         if (Array.isArray(variable) || index !== null) context.variables[varName][index === null ? 0 : index] = assnFunction(result, variable, varName)
         else context.variables[varName] = [assnFunction(result, variable, varName), 0]
-        return
     }
+    else context.variables[varName] = assnFunction(result, variable, varName)
 
-    context.variables[varName] = assnFunction(result, variable, varName)
+    if (constant) {
+        context.constants.push(varName)
+    }
 }
 
 module.exports = handleASSN

@@ -38,8 +38,11 @@ const FORMAT = {
     DeclarationDuplicateConstant: ({ AT }) => `Duplicate declaration of constant, AT: ${AT}`,
     DeclarationDuplicateFlag: ({ AT }) => `Duplicate declaration of flag, AT: ${AT}`,
     DeclarationFlagOutsideMacro: ({ AT }) => `Flag is delcared outside of MACRO section. AT: ${AT}`,
+    DeclarationFuncInsideBlock: ({ AT }) => `Attempted to declare function inside of another block. AT: ${AT}`,
 
     AssignmentOperatorMissing: ({ AT, SECTION }) => `Assignment in \`${SECTION}\` section does not include an equal sign. AT: \`${AT}\` \nNOTE: it should be separated by a space in both directions`,
+    AssignmentMissingParts: ({ AT }) => `Missing parts in assignment to a constant or variable. AT: ${AT}`,
+    AssignmentInvalidOperator: ({ AT }) => `Invalid operator in assignment to a constant. AT: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

@@ -18,7 +18,7 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
     let returnIndex = -1
 
     // Make sure first is valid
-    if (first !== "CALL.BEFORE" && !first.startsWith("@") && !first.endsWith("*")) {
+    if (first !== "CALL.BEFORE" && !first.startsWith("@") && !first.endsWith("*") && !first.startsWith("#")) {
         ThrowError(4005, { AT: first })
     }
 
@@ -26,6 +26,11 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
     if (first === "CALL.BEFORE") {
         importLocation = array[1]
         name = "CALL.BEFORE"
+        returnIndex = 1
+    }
+    else if (first[0] === "#") {
+        importLocation = first.endsWith(".simkey") ? first.substring(1) : array[1]
+        name = first.substring(1)
         returnIndex = 1
     }
     else if (first.endsWith("*")) {
@@ -53,7 +58,7 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
     }
 
     // Check whether .autoimport or .js
-    if (!importLocation.endsWith(".autoimport") && !importLocation.endsWith(".simkey")) {
+    if (!importLocation.endsWith(".autoimport") && (!importLocation.endsWith(".simkey") || !first.startsWith("#"))) {
         importLocation += ".js"
     }
 
@@ -73,9 +78,8 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
         params = require(importLocation)
     }
     else if (importLocation.endsWith(".simkey")) {
-        name = name.slice(1)
-        name = name.endsWith(".simkey") ? name.slice(0, -1 * ".simkey".length) : name
-        importSimkeyFunc(context, importLocation, name.endsWith(".simkey") ? name.slice(0, -1 * ".simkey".length) : name)
+        name = name.endsWith(".simkey") ? path.parse(name).name : name
+        importSimkeyFunc(context, importLocation, name)
     }
     else {
         // Parameters are now given by the function files themselves

@@ -6,29 +6,16 @@ function handleSET(context, instruction) {
     const [_, varName, index, valueFunc] = instruction
     const value = valueFunc(context)
 
-    // Handle boolean set
-    // if (index === "BOOL") {
-    //     // if (context.variables[varName] === undefined) {
-    //     //     ThrowError(5100, { VAR: varName, TYPE: "BOOL" })
-    //     // }
+    // Check it isn't a constant
+    if (context.constants.includes(varName)) {
+        ThrowError(5120, { AT: varName })
+    }
 
-    //     context.variables[varName] = !!value
-    //     return
-    // }
-
-    // Must be vector to get here
-    // if (!Array.isArray(context.variables[varName])) {
-    //     ThrowError(5100, { VAR: varName, TYPE: "VECTOR" })
-    // }
-
-    // Setting entire vector array to be something else
+    // Setting entire vector array to be something else (or anything else now)
     if (index === "ALL") {
-        // if (!Array.isArray(value)) {
-        //     ThrowError(5105, { VECTOR: varName, VALUE_TYPE: typeof value })
-        // }
-
-        if (typeof value === "number" && Array.isArray(context.variables[varName])) {
-            context.variables[varName][0] = value
+        if (typeof value === "number") {
+            if (Array.isArray(context.variables[varName])) context.variables[varName][0] = value
+            else context.variables[varName] = [value, 0]
             return
         }
 

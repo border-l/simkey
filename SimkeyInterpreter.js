@@ -50,8 +50,8 @@ class Interpreter {
         this.#tokens = []
         this.#checkLater = []
         this.#inputVectors = {}
-        this.#variables = {}
-        this.#constants = []
+        this.#variables = { "$whatever": [0,0] }
+        this.#constants = ["$whatever"]
         this.#model = {
             "IMPORTS": {},
             "EXPORTS": {},

@@ -9,9 +9,10 @@ const ThrowError = require("../errors/ThrowError")
 const checkVariableName = require("../helpers/checkVariableName")
 const asnOperators = require('./operators')
 const getBalanced = require('../helpers/getBalanced')
+const parseFuncBody = require("./parseFuncBody")
 
 // Parses the bodies of functions & macro section (split it up)
-function parseInnards(context, index, section) {
+function parseInnards(context, index, depth) {
     const firstToken = context.tokens[index]
     const parsed = []
     let finalIndex
@@ -41,34 +42,51 @@ function parseInnards(context, index, section) {
         }
 
         // Variable assignment
-        if (token[0] === "$" && asnOperators[context.tokens[i + 1]]) {
-            if (!checkVariableName(token, true)) ThrowError(1100, { AT: token + " (in assignment)" })
-            const operator = asnOperators[context.tokens[i + 1]]
+        if (token === "const" || (token[0] === "$" && asnOperators[context.tokens[i + 1]])) {
+            const [isConst, varName, opToken, next] = token === "const" ?
+                [true, context.tokens[i + 1], context.tokens[i + 2], i + 3] :
+                [false, token, context.tokens[i + 1], i + 2]
+
+            // Missing parts
+            if (next >= finalIndex) {
+                ThrowError(1605, { AT: varName === undefined ? "variable name missing" : varName })
+            }
+
+            if (!checkVariableName(varName, true)) ThrowError(1100, { AT: varName + " (in assignment)" })
+            const operator = asnOperators[opToken]
+
+            // const keyword used and then invalid assignment operator
+            if (operator === undefined) {
+                ThrowError(1610, { AT: varName + " " + opToken })
+            }
+
+            const instr = "ASSN" + (isConst ? "C" : "")
 
             // Assigning to output of a function
-            if (context.tokens[i + 2][0] === "@") {
-                parsed.push(["ASSN", token, operator, "ASSN NEXT INSTRUCTION"])
-                i++
+            if (context.tokens[next][0] === "@") {
+                parsed.push([instr, varName, operator, "ASSN NEXT INSTRUCTION"])
+                i += next - i - 1
             }
 
             // Assigning to whole vector
-            else if (context.tokens[i + 2][0] === "[") {
-                const [vector, newIndex] = getArray(context, i + 2, true)
-                parsed.push(["ASSN", token, operator, vector])
+            else if (context.tokens[next][0] === "[") {
+                const [vector, newIndex] = getArray(context, next, true)
+                parsed.push([instr, varName, operator, vector])
                 i = newIndex
             }
 
             // Assigning to expression with spaces
-            else if (context.tokens[i + 2][0] === "(") {
-                const [expr, newIndex] = getBalanced(i + 2, context.tokens)
-                parsed.push(["ASSN", token, operator, expr])
+            else if (context.tokens[next][0] === "(") {
+                const [expr, newIndex] = getBalanced(next, context.tokens)
+                if (expr.at(-1) !== ")") ThrowError(1115, { AT: expr })
+                parsed.push([instr, varName, operator, expr])
                 i = newIndex
             }
 
             // Assigning to expression without spaces
             else {
-                parsed.push(["ASSN", token, operator, context.tokens[i + 2]])
-                i += 2
+                parsed.push([instr, varName, operator, context.tokens[next]])
+                i += next - i
             }
 
             continue
@@ -78,17 +96,21 @@ function parseInnards(context, index, section) {
         if (token.charAt(0) === "@") {
             // Conditional "functions" handling
             if (token === "@if") {
-                const [condParsed, newIndex] = parseConditional(context, i, section, parseInnards)
+                const [condParsed, newIndex] = parseConditional(context, i, parseInnards, depth + 1)
                 parsed.push(condParsed)
                 i = newIndex - 1
                 continue
             }
             if (token === "@elseif" || token === "@else") {
-                ThrowError(1040, { AT: token })
+                ThrowError(1045, { AT: token })
             }
 
             // Return statement
             if (token === "@return") {
+                if (i >= finalIndex - 1) {
+                    ThrowError(2805, {})
+                }
+
                 // Assigning to output of a function
                 if (context.tokens[i + 1][0] === "@") {
                     parsed.push(["RET", "RET NEXT INSTRUCTION"])
@@ -105,6 +127,7 @@ function parseInnards(context, index, section) {
                 // Assigning to expression with spaces
                 else if (context.tokens[i + 1][0] === "(") {
                     const [expr, newIndex] = getBalanced(i + 1, context.tokens)
+                    if (expr.at(-1) !== ")") ThrowError(1115, { AT: expr })
                     parsed.push(["RET", expr])
                     i = newIndex
                 }
@@ -115,6 +138,15 @@ function parseInnards(context, index, section) {
                     i += 1
                 }
 
+                continue
+            }
+
+            // Function definition
+            if (context.tokens[i + 1] === "uses") {
+                if (depth !== 1) {
+                    ThrowError(1515, { AT: token })
+                }
+                i = parseFuncBody(context, token, i + 1, parseInnards, depth + 1)
                 continue
             }
 
@@ -138,7 +170,7 @@ function parseInnards(context, index, section) {
 
             // Imported functions
             if (context.model.IMPORTS[token]) {
-                i = parseImportedFunctionCall(context, token, parsed, i, parseInnards)
+                i = parseImportedFunctionCall(context, token, parsed, i, parseInnards, depth + 1)
                 continue
             }
 

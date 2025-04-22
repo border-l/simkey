@@ -48,7 +48,7 @@ module.exports = (context) => {
 
             // Block exists with no params, parse function body
             if (context.tokens[i + 1] === "{") {
-                const [model, newIndex] = parseInnards(context, i + 1, "FUNCS")
+                const [model, newIndex] = parseInnards(context, i + 1, 1)
                 context.model.FUNCS[token] = [model, []]
                 i = newIndex
                 continue
@@ -71,7 +71,7 @@ module.exports = (context) => {
             const parsedParams = parseFuncParams(context, params)
 
             // Parse function body
-            const [model, newIndex] = parseInnards(context, arrayIndex + 1, "FUNCS")
+            const [model, newIndex] = parseInnards(context, arrayIndex + 1, 1)
             context.model.FUNCS[token] = [model, parsedParams]
 
             // Move index along, continue
@@ -80,7 +80,7 @@ module.exports = (context) => {
         }
 
         // Handle macro section
-        const [model, newIndex] = parseInnards(context, i - 1, "MACRO")
+        const [model, newIndex] = parseInnards(context, i - 1, 1)
         context.model.MACRO = model
         i = newIndex - 1
     }

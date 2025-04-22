@@ -45,9 +45,9 @@ async function instructionRunner(passedInfo, instructionList) {
         }
 
         // Assignment statement
-        else if (func === "ASSN") {
+        else if (func === "ASSN" || func === "ASSNC") {
             if (instruction[3] === "ASSN NEXT INSTRUCTION") continue
-            handleASSN(passedInfo.CONTEXT, instruction)
+            handleASSN(passedInfo.CONTEXT, instruction, undefined, func.at(-1) === "C")
         }
 
         else if (func === "RET") {
@@ -108,7 +108,7 @@ async function instructionRunner(passedInfo, instructionList) {
         // Assignment statement that required result from this function call
         if (i > 0 && instructionList[i - 1][3] === "ASSN NEXT INSTRUCTION") {
             if (result === undefined) ThrowError(2715, { AT: instruction[0] })
-            handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result)
+            handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result, instructionList[i - 1][0].at(-1) === "C")
         }
 
         // Return statement that required result from this function call

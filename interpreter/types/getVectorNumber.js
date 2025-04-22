@@ -9,7 +9,7 @@ module.exports = (context, vector, noError = false, errorIndex = false, defaultI
     const vectorArray = context.variables[vector.substring(0, colonIndex > -1 ? colonIndex : vector.length)]
 
     // Check if finalNumber is actually a vector
-    if (vectorArray) {
+    if (Array.isArray(vectorArray)) {
         // Terrible but it's a placeholder
         let ind = vector.substring(colonIndex + 1)
 

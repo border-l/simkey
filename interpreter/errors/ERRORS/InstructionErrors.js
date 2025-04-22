@@ -2,7 +2,7 @@ const ERROR = require('path').basename(__filename).slice(0,-4)
 const CODE = require("../Codes")[ERROR]
 
 const FORMAT = {
-    SettingsKeyNotExist: ({ AT }) => `Key in settings object does not exist in MODES or SWITCHES. AT: ${AT}`, // All of these are for setSettings (settings used in compiling)
+    SettingsKeyNotExist: ({ AT }) => `Key in settings object does not exist as an input MODE or SWITCH. AT: ${AT}`, // All of these are for setSettings (settings used in compiling)
     SettingsSeveralModesSet: ({ AT }) => `Several modes have been set to true in settings object. AT: ${AT}`,
     SettingsNonBooleanValue: ({ AT }) => `Key in settings object does not have a boolean value. AT: ${AT}`,
 
@@ -10,6 +10,7 @@ const FORMAT = {
     SetVectorNonArray: ({ VECTOR, VALUE_TYPE }) => `Attempting to set a vector to a non-array (USING \`SET\`). VECTOR: ${VECTOR}, VALUE_TYPE: ${VALUE_TYPE}`,
     SetIndexNonNumber: ({ VECTOR, INDEX }) => `Attempting to set a non-number index (USING \`SET\`). VECTOR: ${VECTOR}, INDEX: ${INDEX}`,
     SetNonNumberElement: ({ VECTOR, VALUE }) => `Attempting to set a component of a vector to a non-number (USING \`SET\`). VECTOR: ${VECTOR}, VALUE: ${VALUE}`,
+    SetConstant: ({ AT }) => `Attempting to set a constant. AT: ${AT}`,
 
     InstructionIllegal: ({ AT, CONTEXT }) => `Invalid instruction present. AT: ${AT}, CONTEXT: ${CONTEXT}`, // Honestly not entirely sure, but it's in getInstructionList (now removed)
     InstructionMissingArguments: ({ AT }) => `Instruction for imported function call is missing arguments. AT: ${AT}`,

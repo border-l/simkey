@@ -4,24 +4,24 @@ const ThrowError = require("../errors/ThrowError")
 const asnOperators = {
     "=": (input, variable, varName) => input,
     "+=": (input, variable, varName) => {
-        if (Array.isArray(input)) ThrowError(2705, { AT: "+= used in vector assignment with" + varName })
+        if (Array.isArray(input)) ThrowError(2705, { AT: "+= used in vector assignment with " + varName })
         return Array.isArray(variable) ? variable[0] + input : variable + input
     }, 
     "-=": (input, variable, varName) => {
-        if (Array.isArray(input)) ThrowError(2705, { AT: "-= used in vector assignment with" + varName })
+        if (Array.isArray(input)) ThrowError(2705, { AT: "-= used in vector assignment with " + varName })
         return Array.isArray(variable) ? variable[0] - input : variable - input
     },
     "*=": (input, variable, varName) => {
-        if (Array.isArray(input)) ThrowError(2705, { AT: "*= used in vector assignment with" + varName })
+        if (Array.isArray(input)) ThrowError(2705, { AT: "*= used in vector assignment with " + varName })
         return Array.isArray(variable) ? variable[0] * input : variable * input
     },
     "/=": (input, variable, varName) => {
-        if (Array.isArray(input)) ThrowError(2705, { AT: "/= used in vector assignment with" + varName })
+        if (Array.isArray(input)) ThrowError(2705, { AT: "/= used in vector assignment with " + varName })
         if (input === 0) ThrowError(2710, { AT: varName })
         return Array.isArray(variable) ? variable[0] / input : variable / input
     },
     "//=": (input, variable, varName) => {
-        if (Array.isArray(input)) ThrowError(2705, { AT: "//= used in vector assignment with" + varName })
+        if (Array.isArray(input)) ThrowError(2705, { AT: "//= used in vector assignment with " + varName })
         if (input === 0) ThrowError(2710, { AT: varName })
         return Array.isArray(variable) ? Math.floor(variable[0] / input) : Math.floor(variable / input)
     }

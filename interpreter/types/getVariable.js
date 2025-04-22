@@ -28,14 +28,14 @@ function getVariable(context, variable, expected) {
         // Check for vector (VECTORS)
         else {
             if (!Array.isArray(context.variables[variable])) continue
-            solution = context.variables[variable]
+            solution = context.constants.includes(variable) ? context.variables[variable].map(x => x) : context.variables[variable]
             break
         }
     }
 
     // No value found compliant with expected types
     if (solution === undefined) {
-        ThrowError(3005, { AT: `${variable}` })
+        ThrowError(2110, { AT: variable, ARG: variable, EXPECTED: expected })
     }
 
     // Solution exists

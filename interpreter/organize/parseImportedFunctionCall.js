@@ -8,7 +8,7 @@ const findBracket = require("../helpers/findBracket")
 const ThrowError = require("../errors/ThrowError")
 
 // Parse imported function call for #parseInnards
-function parseImportedFunctionCall(context, token, parsed, i, parseInnards, section) {
+function parseImportedFunctionCall(context, token, parsed, i, parseInnards, depth) {
     // Get parameters for function
     const importParams = context.model.IMPORTS[token]["PARAMS"]
 
@@ -39,7 +39,7 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, sect
                 return closeIndex
             }
 
-            const [parsedBlock, newerIndex] = parseInnards(context, i + 1, section)
+            const [parsedBlock, newerIndex] = parseInnards(context, i + 1, depth)
             parsed.push([token, { args: [], block: parsedBlock }])
             return newerIndex
         }
@@ -196,7 +196,7 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, sect
     }
 
     // Parse insides of block
-    const [parsedBlock, newerIndex] = parseInnards(context, newIndex + 1, section)
+    const [parsedBlock, newerIndex] = parseInnards(context, newIndex + 1, depth)
 
     // Give parsed block
     parsed.push([token, { args: finalArray, block: parsedBlock }])
