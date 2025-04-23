@@ -7,22 +7,17 @@ const checkVariableName = require("../helpers/checkVariableName")
 // Handles meta section
 module.exports = (context) => {
     parseSection(context, (tokens, token, i, section, next) => {
-        // Check for assignment operator
-        if (tokens[i + 1] !== "=") {
-            ThrowError(1100, { SECTION: "META", AT: token })
-        }
-
         // First input for token
-        const firstIn = tokens[i + 2]
+        const firstIn = tokens[i + 1]
 
-        if (token === "repeat") {
+        if (token === "REPEAT") {
             // Number repeat
             if (Number(firstIn)) {
-                context.model.META.repeat = Number(firstIn)
+                context.model.META.REPEAT = Number(firstIn)
             }
             // Literal repeat (boolean)
             else if (firstIn === "OFF" || firstIn === "ON") {
-                context.model.META.repeat = firstIn
+                context.model.META.REPEAT = firstIn
             }
             // Not a valid value
             else {
@@ -33,7 +28,7 @@ module.exports = (context) => {
             return i + 2
         }
 
-        else if (token === "name") {
+        else if (token === "NAME") {
             // Deal with string and move along, error if no starting "
             if (!firstIn.startsWith("\"")) {
                 ThrowError(2005, { AT: firstIn })
@@ -43,25 +38,25 @@ module.exports = (context) => {
             const [value, newIndex] = getString(context, i + 2)
 
             // Update meta in model
-            context.model.META.name = value
+            context.model.META.NAME = value
 
             // Move along to end of the string
             return newIndex
         }
 
-        else if (token === "mode") {
+        else if (token === "MODE") {
             // Set value if valid variable name, otherwise error
             if (!checkVariableName(firstIn)) {
                 ThrowError(2010, { AT: firstIn })
             }
             // Update meta in model
-            context.model.META.mode = firstIn
+            context.model.META.MODE = firstIn
 
             // Move index along
             return i + 2
         }
 
-        else if (token === "switches") {
+        else if (token === "SWITCHES") {
             // Parse array if opening bracket is present in correct spot, otherwise error
             if (!firstIn.startsWith("[")) {
                 ThrowError(1010, { AT: firstIn })
@@ -75,15 +70,15 @@ module.exports = (context) => {
                 !checkVariableName(val) ? ThrowError(2015, { AT: val }) : 0)
 
             // Update meta in model
-            context.model.META.switches = value
+            context.model.META.SWITCHES = value
 
             // Index after array
             return newIndex
         }
 
         // Handle shortcut assignment
-        else if (token === "shortcut") {
-            context.model.META.shortcut = firstIn
+        else if (token === "SHORTCUT") {
+            context.model.META.SHORTCUT = firstIn
             return i + 2
         }
 

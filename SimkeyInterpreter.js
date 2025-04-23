@@ -47,11 +47,11 @@ class Interpreter {
             "IMPORTS": {},
             "EXPORTS": {},
             "META": {
-                "name": "",
-                "mode": "$DEFAULT",
-                "switches": [],
-                "repeat": "OFF",
-                "shortcut": "NONE"
+                "NAME": "",
+                "MODE": "$DEFAULT",
+                "SWITCHES": [],
+                "REPEAT": "OFF",
+                "SHORTCUT": "NONE"
             },
             "INPUTS": {
                 "MODES": [],
