@@ -1,24 +1,16 @@
 const getVariable = require("../types/getVariable")
-const getVectorNumber = require("../types/getVectorNumber")
 const evaluateExpr = require("../helpers/evaluateExpr")
 const checkVariableName = require("../helpers/checkVariableName")
-const checkValidExpr = require("../helpers/checkValidExpr")
 const ThrowError = require("../errors/ThrowError")
+const STRING_MARKER = require("../helpers/STRING_MARKER")
+const getString = require('../types/getString')
 
 // Sets all the parameter variables for simkey function
 function setFuncCallParams(context, func, args) {
     // Get parameters for function
     const funcParams = context.model.FUNCS[func]
 
-    // Too little or too many arguments, throw error
-    if (args.length > funcParams[1].length) {
-        ThrowError(2105, { AT: func })
-    }
-    if (args.length < funcParams[1].length) {
-        ThrowError(2100, { AT: func })
-    }
-
-    // List for setting to be done by compile function (will be in instruction list)
+    // List for setting to be done by instructionRunner function (will be in instruction list)
     const setList = []
 
     // Set parameters for each argument
@@ -30,7 +22,7 @@ function setFuncCallParams(context, func, args) {
 
         // Literal boolean
         if (arg === "TRUE" || arg === "FALSE") {
-            setList.push(["SET", varName, "ALL", () => (arg === "TRUE" ? true : false)])
+            setList.push(["SET", varName, "ALL", () => arg === "TRUE"])
             continue
         }
 
@@ -42,13 +34,29 @@ function setFuncCallParams(context, func, args) {
 
         // Simple variable to handle
         if (checkVariableName(arg, true)) {
-            if (arg.indexOf(":") > -1) setList.push(["SET", varName, 0, (context) => getVariable(context, arg, ["NUM"])])
-            else setList.push(["SET", varName, "ALL", (context) => getVariable(context, arg, ["VECTOR", "BOOL"])])
+            if (arg.indexOf(":") > -1) setList.push(["SET", varName, 0, (context) => getVariable(context, arg, ["NUM", "TABLE", "STR"])])
+            else setList.push(["SET", varName, "ALL", (context) => getVariable(context, arg, ["VECTOR", "BOOL", "STR", "TABLE"])])
             continue
         }
 
+        try {
+            const [string, finalIndex] = getString(context, i, args, ",")
+            setList.push(["SET", varName, "ALL", () => string])
+            i = finalIndex
+            continue
+        }
+        catch (error) { }
+
         // Assign to expression as-is
         setList.push(["SET", varName, "ALL", (context) => evaluateExpr(context, arg, true, true)])
+    }
+
+    // Too little or too many arguments, throw error
+    if (setList.length > funcParams[1].length) {
+        ThrowError(2105, { AT: func })
+    }
+    if (setList.length < funcParams[1].length) {
+        ThrowError(2100, { AT: func })
     }
 
     return setList

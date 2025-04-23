@@ -1,26 +1,20 @@
 const autoImport = require("./interpreter/importing/autoImport")
 const tokenize = require("./interpreter/organize/tokenize")
-
 const clearComments = require("./interpreter/organize/clearComments")
 
-const parseVectors = require('./interpreter/sections/parseVectors')
 const parseImports = require("./interpreter/sections/parseImports")
 const parseExports = require("./interpreter/sections/parseExports")
 const parseSettings = require("./interpreter/sections/parseSettings")
-const parseModesAndSwitches = require("./interpreter/sections/parseModesAndSwitches")
+const parseInputs = require('./interpreter/sections/parseInputs')
 
 const organize = require("./interpreter/organize/organize")
 const checkFunctionReferences = require("./interpreter/helpers/checkFunctionReferences")
 
 const run = require("./interpreter/interpret/run")
-const setSettings = require("./interpreter/interpret/setSettings")
-const setInputVectors = require('./interpreter/interpret/setInputVectors')
-
 const getExport = require("./interpreter/importing/getExport")
-
 const ThrowError = require("./interpreter/errors/ThrowError")
-
 const fs = require("fs")
+
 
 class Interpreter {
     #Interpreter
@@ -39,6 +33,7 @@ class Interpreter {
     #checkLater
     #variables
     #constants
+    #tables
 
     // For passing private fields to other functions
     #context
@@ -49,9 +44,9 @@ class Interpreter {
         this.#script = fs.readFileSync(fileName, 'utf-8')
         this.#tokens = []
         this.#checkLater = []
-        this.#inputVectors = {}
-        this.#variables = { "$whatever": [0,0] }
-        this.#constants = ["$whatever"]
+        this.#variables = {}
+        this.#constants = []
+        this.#tables = { "TABLE": [] }
         this.#model = {
             "IMPORTS": {},
             "EXPORTS": {},
@@ -62,9 +57,12 @@ class Interpreter {
                 "repeat": "OFF",
                 "shortcut": "NONE"
             },
-            "VECTORS": {},
-            "MODES": ["$DEFAULT"],
-            "SWITCHES": [],
+            "INPUTS": {
+                "MODES": [],
+                "SWITCHES": [],
+                "STRINGS": [],
+                "VECTORS": {}
+            },
             "FUNCS": {},
             "MACRO": []
         }
@@ -78,11 +76,10 @@ class Interpreter {
         tokenize(this.#context)
         clearComments(this.#context)
 
-        parseModesAndSwitches(this.#context)
+        parseInputs(this.#context)
         parseImports(this.#context)
         parseExports(this.#context)
         parseSettings(this.#context)
-        parseVectors(this.#context)
 
         // Organize and check that function references are valid
         organize(this.#context)
@@ -121,6 +118,9 @@ class Interpreter {
                     case 'constants':
                         this.#constants = set
                         break
+                    case 'tables':
+                        this.#tables = set
+                        break
                     default:
                         ThrowError(5300, { AT: property })
                 }
@@ -139,35 +139,12 @@ class Interpreter {
         this.#context.model = this.#model
         this.#context.variables = this.#variables
         this.#context.constants = this.#constants
+        this.#context.tables = this.#tables
         this.#context.inputVectors = this.#inputVectors
     }
 
     run() {
         run(this.#context)
-    }
-
-    setSettings(object) {
-        setSettings(this.#context, object)
-    }
-
-    setInputVectors(object) {
-        setInputVectors(this.#context, object)
-    }
-
-    getInputVectors() {
-        return JSON.parse(JSON.stringify(this.#inputVectors))
-    }
-
-    getModes() {
-        return JSON.parse(JSON.stringify(this.#model.MODES))
-    }
-
-    getSwitches() {
-        return JSON.parse(JSON.stringify(this.#model.SWITCHES))
-    }
-
-    getSettings() {
-        return JSON.parse(JSON.stringify(this.#model.SETTINGS))
     }
 
     getExport(name) {

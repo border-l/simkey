@@ -5,11 +5,11 @@ const version = "1.1.0"
 
 async function run(fileName, repeat, options) {
     const simkey = new SimkeyInterpreter(fileName);
-    let settingsObject = {}
-    for (const option of options) {
-        settingsObject["$" + option] = true
-    }
-    simkey.setSettings(settingsObject)
+    // let settingsObject = {}
+    // for (const option of options) {
+    //     settingsObject["$" + option] = true
+    // }
+    // simkey.setSettings(settingsObject)
     return simkey.run()
 }
 

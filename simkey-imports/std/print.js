@@ -1,6 +1,9 @@
+const looseReader = require("../../interpreter/helpers/looseReader")
+
 // Simply prints the input
-function print(INFO, input) { 
-    console.log(input)
+function print(INFO, input) {
+    const restArgs = looseReader(INFO.CONTEXT, input, ["VECTOR", "STR", "NUM", "BOOL", "TABLE"])
+    console.log(...restArgs)
 }
 
-module.exports = { FUNCTION: print, TAKES: { PARAMS: "[VECTOR|BOOL|NUM|STR]", BLOCK: false } }
+module.exports = { FUNCTION: print, TAKES: { PARAMS: "[LOOSE]", BLOCK: false } }

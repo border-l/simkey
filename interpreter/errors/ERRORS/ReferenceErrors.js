@@ -8,10 +8,14 @@ const FORMAT = {
     NonExistentBool: ({ AT }) => `Referenced a non-existent boolean. AT: ${AT}`,
     NonExistentFunc: ({ AT }) => `Referenced function does not exist. AT: ${AT}`,
     NonExistentState: ({ AT }) => ``, // ?
+    NonExistentTable: ({ AT }) => `Referenced a non-existent TABLE. AT: ${AT}`,
+    NonExistentString: ({ AT }) => `Referenced a non-existent STRING. AT: ${AT}`,
     
     IncompleteFlag: ({ AT }) => `Flag reference is not complete. AT: ${AT}`,
 
-    IndexOutOfRange: ({ AT }) => `Index is out of range, at: ${AT}`
+    IndexOutOfRange: ({ AT }) => `Index is out of range, at: ${AT}`,
+
+    InvalidKey: ({ AT, KEY }) => `Invalid key given when trying to access subtable. AT: ${AT}, KEY: ${KEY}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

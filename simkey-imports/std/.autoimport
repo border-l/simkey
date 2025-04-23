@@ -13,3 +13,5 @@
 @exit ./exit
 @loop ./loop
 @async ./async
+@table ./table
+@new ./new

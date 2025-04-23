@@ -5,6 +5,7 @@ const ThrowError = require("../errors/ThrowError")
 const evaluateExpr = require("../helpers/evaluateExpr")
 const handleASSN = require("./handleASSN")
 const handleRET = require("./handleRET")
+const NEXT_INSTRUCTION = require('../helpers/NEXT_INSTRUCTION')
 
 async function instructionRunner(passedInfo, instructionList) {
     for (let i = 0; i < instructionList.length; i++) {
@@ -46,12 +47,12 @@ async function instructionRunner(passedInfo, instructionList) {
 
         // Assignment statement
         else if (func === "ASSN" || func === "ASSNC") {
-            if (instruction[3] === "ASSN NEXT INSTRUCTION") continue
+            if (instruction[3] instanceof NEXT_INSTRUCTION) continue
             handleASSN(passedInfo.CONTEXT, instruction, undefined, func.at(-1) === "C")
         }
 
         else if (func === "RET") {
-            if (instruction[3] === "RET NEXT INSTRUCTION") continue
+            if (instruction[3] instanceof NEXT_INSTRUCTION) continue
             return [passedInfo.SYMBOLS.RETURN, handleRET(passedInfo.CONTEXT, instruction)]
         }
 
@@ -74,7 +75,7 @@ async function instructionRunner(passedInfo, instructionList) {
             // Add to this as to not mutate original
             const newInstructions = []
 
-            // Call each of the getVectorNumber binded functions
+            // Call each of the binded functions
             for (let ind = 0; ind < instruction[1].args.length; ind++) {
                 // Value func, append value from function to newInstructions
                 if (typeof instruction[1].args[ind] === "function") {
@@ -106,15 +107,16 @@ async function instructionRunner(passedInfo, instructionList) {
         }
 
         // Assignment statement that required result from this function call
-        if (i > 0 && instructionList[i - 1][3] === "ASSN NEXT INSTRUCTION") {
+        if (i > 0 && instructionList[i - 1][3] instanceof NEXT_INSTRUCTION) {
+            // Return statement
+            if (instructionList[i - 1][0] === "RET") {
+                if (result === undefined) ThrowError(2800, { AT: instruction[0] })
+                return [passedInfo.SYMBOLS.RETURN, result]
+            }
+
+            // Assignment statement (could be const)
             if (result === undefined) ThrowError(2715, { AT: instruction[0] })
             handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result, instructionList[i - 1][0].at(-1) === "C")
-        }
-
-        // Return statement that required result from this function call
-        else if (i > 0 && instructionList[i - 1][3] === "RET NEXT INSTRUCTION") {
-            if (result === undefined) ThrowError(2800, { AT: instruction[0] })
-            return [passedInfo.SYMBOLS.RETURN, result]
         }
 
         // No result, continue

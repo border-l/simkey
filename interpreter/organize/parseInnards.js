@@ -10,6 +10,7 @@ const checkVariableName = require("../helpers/checkVariableName")
 const asnOperators = require('./operators')
 const getBalanced = require('../helpers/getBalanced')
 const parseFuncBody = require("./parseFuncBody")
+const getValueExpression = require("./getValueExpression")
 
 // Parses the bodies of functions & macro section (split it up)
 function parseInnards(context, index, depth) {
@@ -60,35 +61,9 @@ function parseInnards(context, index, depth) {
                 ThrowError(1610, { AT: varName + " " + opToken })
             }
 
-            const instr = "ASSN" + (isConst ? "C" : "")
-
-            // Assigning to output of a function
-            if (context.tokens[next][0] === "@") {
-                parsed.push([instr, varName, operator, "ASSN NEXT INSTRUCTION"])
-                i += next - i - 1
-            }
-
-            // Assigning to whole vector
-            else if (context.tokens[next][0] === "[") {
-                const [vector, newIndex] = getArray(context, next, true)
-                parsed.push([instr, varName, operator, vector])
-                i = newIndex
-            }
-
-            // Assigning to expression with spaces
-            else if (context.tokens[next][0] === "(") {
-                const [expr, newIndex] = getBalanced(next, context.tokens)
-                if (expr.at(-1) !== ")") ThrowError(1115, { AT: expr })
-                parsed.push([instr, varName, operator, expr])
-                i = newIndex
-            }
-
-            // Assigning to expression without spaces
-            else {
-                parsed.push([instr, varName, operator, context.tokens[next]])
-                i += next - i
-            }
-
+            const [value, newIndex] = getValueExpression(context, next)
+            parsed.push(["ASSN" + (isConst ? "C" : ""), varName, operator, value])
+            i = newIndex
             continue
         }
 
@@ -111,33 +86,9 @@ function parseInnards(context, index, depth) {
                     ThrowError(2805, {})
                 }
 
-                // Assigning to output of a function
-                if (context.tokens[i + 1][0] === "@") {
-                    parsed.push(["RET", "RET NEXT INSTRUCTION"])
-                    i++
-                }
-
-                // Assigning to whole vector
-                else if (context.tokens[i + 1][0] === "[") {
-                    const [vector, newIndex] = getArray(context, i + 1, true)
-                    parsed.push(["RET", vector])
-                    i = newIndex
-                }
-
-                // Assigning to expression with spaces
-                else if (context.tokens[i + 1][0] === "(") {
-                    const [expr, newIndex] = getBalanced(i + 1, context.tokens)
-                    if (expr.at(-1) !== ")") ThrowError(1115, { AT: expr })
-                    parsed.push(["RET", expr])
-                    i = newIndex
-                }
-
-                // Assigning to expression without spaces
-                else {
-                    parsed.push(["RET", context.tokens[i + 1]])
-                    i += 1
-                }
-
+                const [value, newIndex] = getValueExpression(context, i + 1)
+                parsed.push(["RET", value])
+                i = newIndex
                 continue
             }
 
@@ -204,7 +155,7 @@ function parseInnards(context, index, depth) {
 
     // Code went past block
     if (i > finalIndex) {
-        ThrowError(1400, { AT: context.tokens[index - 1] + " " + context.tokens[index] })
+        ThrowError(1400, { AT: (context.tokens[index - 1] || context.tokens.at(-2)) + " " + (context.tokens[index] || context.tokens.at(-1)) })
     }
 
     // Parsed block and final index

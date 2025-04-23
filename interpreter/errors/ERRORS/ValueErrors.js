@@ -33,6 +33,7 @@ const FORMAT = {
     AssignmentNoReturnValue: ({ AT }) => `Function used in assignment did not yield a value. AT: ${AT}`,
     AssignmentNonExistent: ({ AT }) => `Assigning with non \`=\` on a non-existent variable.`,
     AssignmentConstantExists: ({ AT }) => `Attempting to declare a constant when the variable already exists. AT: ${AT}`,
+    AssignmentToStringCharacter: ({ AT }) => `Attempting to assign a specific character in string. AT: ${AT}`,
 
     ReturnWithoutValue: ({ AT }) => `Function used in return statement did not yield a value. AT : ${AT}`,
     ReturnMissingValue: ({ AT }) => `Return statement did not have a value given after it.`

@@ -105,7 +105,7 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, dept
                     continue
                 }
 
-                finalArray.push(arg === "TRUE" ? true : false)
+                finalArray.push(arg === "TRUE")
                 break
             }
 
@@ -134,6 +134,12 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, dept
 
             // Handle strings
             if (expected === "STR") {
+                // String variable
+                if (checkVariableName(arg.trim(), true)) {
+                    finalArray.push((context) => getVariable(context, arg.trim(), expectedArray))
+                    break
+                }
+
                 // Try to get the string, if error, not a string
                 try {
                     const [string, finalIndex] = getString(context, x, value, ",")
@@ -144,6 +150,13 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, dept
                 catch (error) {
                     continue
                 }
+            }
+
+            // Table type (general object)
+            if (expected === "TABLE") {
+                if (!checkVariableName(arg, true)) continue
+                finalArray.push((context) => getVariable(context, arg, expectedArray))
+                break
             }
 
             // Handling Loose type

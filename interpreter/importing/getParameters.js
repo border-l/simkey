@@ -3,6 +3,9 @@ const ThrowError = require("../errors/ThrowError")
 
 // Get the parameter types for next imported function in array, returns new index and types
 module.exports = (context, array) => {
+    const VALID = ["VECTOR", "NUM", "BOOL", "STR", "LOOSE", "TABLE"]    
+    const OPT = ":OPTIONAL"
+
     const [value, _] = getArray(context, 0, true, array)
     const parameters = []
 
@@ -20,8 +23,7 @@ module.exports = (context, array) => {
             const type = segment[i]
 
             // Does not match any type
-            if (type !== "VECTOR" && type !== "NUM" && type !== "BOOL" && type !== "STR" && type !== "LOOSE"
-                && type !== "VECTOR:OPTIONAL" && type !== "NUM:OPTIONAL" && type !== "BOOL:OPTIONAL" && type !== "STR:OPTIONAL" && type !== "LOOSE:OPTIONAL") {
+            if (VALID.indexOf(type) === -1 && (VALID.indexOf(type.slice(0, -1 * OPT.length)) === -1 || !type.endsWith(OPT))) {
                 ThrowError(4000, { AT: type })
             }
 
@@ -42,15 +44,15 @@ module.exports = (context, array) => {
         }
 
         // If a type is optional, all types on the same level are too
-        if (segment.some((type) => type.endsWith(":OPTIONAL"))) {
+        if (segment.some((type) => type.endsWith(OPT))) {
             segment.forEach((type, index) => {
                 // No need to add it if there
-                if (type.endsWith(":OPTIONAL")) {
+                if (type.endsWith(OPT)) {
                     return
                 }
 
                 // Add it otherwise
-                segment[index] = type + ":OPTIONAL"
+                segment[index] = type + OPT
             })
         }
 

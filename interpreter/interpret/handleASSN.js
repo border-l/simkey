@@ -1,6 +1,8 @@
 const ThrowError = require("../errors/ThrowError")
 const evaluateExpr = require('../helpers/evaluateExpr')
 const getVectorNumber = require("../types/getVectorNumber")
+const resultHandler = require('./resultHandler')
+const getVariable = require('../types/getVariable')
 
 // Handle ASSN instructions (assignments)
 function handleASSN(context, instruction, input, constant = false) {
@@ -11,10 +13,20 @@ function handleASSN(context, instruction, input, constant = false) {
 
     // In case of index, handle that
     let index = null
-    if (varName.indexOf(":") > 0) {
-        variable = getVectorNumber(context, varName)
-        index = evaluateExpr(context, varName.slice(varName.indexOf(":") + 1))
-        varName = varName.slice(0, varName.indexOf(":"))
+
+    // Check if there are keys/index, and get variable (num, str, or table)
+    if (varName.indexOf(":") > -1) {
+        variable = getVariable(context, varName, ["NUM", "STR", "TABLE"])
+
+        const rootVarName = varName.slice(0, varName.indexOf(":"))
+        const rootVariable = context.variables[rootVarName]
+        index = varName.slice(varName.indexOf(":") + 1)
+
+        if (typeof rootVariable === "string") ThrowError(2730, { AT: varName })
+        if (Array.isArray(rootVariable)) index = evaluateExpr(context, index)
+        else index = index.split(":")
+
+        varName = rootVarName
     }
 
     // Make sure not a constant
@@ -27,25 +39,31 @@ function handleASSN(context, instruction, input, constant = false) {
         ThrowError(2725, { AT: varName })
     }
 
-    let result = input
+    let result = resultHandler(context, exprValue, input)
 
-    // Array and single values handling
-    if (Array.isArray(exprValue)) {
-        result = []
-        for (const expr of exprValue) {
-            result.push(evaluateExpr(context, expr))
-        }
-    }
-    else if (result === undefined) {
-        result = evaluateExpr(context, exprValue, true, true)
+    // Table with key(s)
+    if (Array.isArray(index)) {
+        let root = context.variables[varName]
+        for (const key of index.slice(0, -1)) root = root[key]
+        root[index.at(-1)] = assnFunction(result, variable, varName)
     }
 
-    if (typeof result === "number") {
-        if (Array.isArray(variable) || index !== null) context.variables[varName][index === null ? 0 : index] = assnFunction(result, variable, varName)
+    // Vector with index
+    else if (index !== null) {
+        context.variables[varName][index] = assnFunction(result, variable, varName)
+    }
+
+    // Vector without index (could or could not already be vector)
+    else if (typeof result === "number") {
+        if (Array.isArray(variable)) context.variables[varName][0] = assnFunction(result, variable, varName)
         else context.variables[varName] = [assnFunction(result, variable, varName), 0]
     }
+
+    // Misc, will assign directly
     else context.variables[varName] = assnFunction(result, variable, varName)
 
+
+    // Move into constants
     if (constant) {
         context.constants.push(varName)
     }

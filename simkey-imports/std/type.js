@@ -25,7 +25,7 @@ async function type(INFO, string, time = 10) {
             }
 
             // Check vector
-            const vector = getVectorNumber(INFO.CONTEXT, variable, true, true)
+            const vector = getVectorNumber(INFO.CONTEXT, variable, true, true) // getVariable instead (when adjusted)
             if (vector !== false) {
                 await typeString(INFO.ROBOT, String(vector), time)
                 continue

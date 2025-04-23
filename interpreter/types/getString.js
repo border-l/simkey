@@ -2,9 +2,18 @@ const ThrowError = require("../errors/ThrowError")
 const checkSection = require("../helpers/checkSection")
 const isEscaped = require("../helpers/isEscaped")
 
-// Get string from array of tokens and index (first char has to be \", last will end with \")
+// Get string from array of tokens and index (first char has to be \" or spaces followed by it, last will end with \")
 function getString(context, index, searchArray = context.tokens, join = " ") {
-    if (searchArray[index][0] !== '"') {
+    let quoteIndex = 0
+    for (let i = 0; i < searchArray[index].length; i++) {
+        if (searchArray[index][i] === '"') {
+            quoteIndex = i
+            break
+        }
+        if (searchArray[index][i] !== " ") ThrowError(1001, { AT: searchArray[index] })
+    }
+
+    if (searchArray[index][quoteIndex] !== '"') {
         ThrowError(1001, { AT: searchArray[index] })
     }
 
@@ -13,7 +22,7 @@ function getString(context, index, searchArray = context.tokens, join = " ") {
     const isTokens = context.tokens === searchArray
 
     for (var i = index; i < searchArray.length; i++) {
-        let token = i === index ? searchArray[i].substring(1) : searchArray[i]
+        let token = i === index ? searchArray[i].substring(quoteIndex + 1) : searchArray[i]
 
         // If section token then no end to string (an argument for searchArray that isnt #tokens means no section tokens)
         if (isTokens && checkSection(context, token)) {

@@ -30,8 +30,8 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
     }
     else if (first[0] === "#") {
         importLocation = first.endsWith(".simkey") ? first.substring(1) : array[1]
+        returnIndex = first.endsWith(".simkey") ? 0 : 1
         name = first.substring(1)
-        returnIndex = 1
     }
     else if (first.endsWith("*")) {
         importLocation = `${first.slice(0, -1)}.autoimport`
