@@ -2,11 +2,11 @@ const ERROR = require('path').basename(__filename).slice(0,-4)
 const CODE = require("../Codes")[ERROR]
 
 const FORMAT = {
-    SettingsRepeatAssignment: ({ AT }) => `Invalid value assignment of \`repeat\` \`SETTINGS\` attribute. AT: ${AT}`,
-    SettingsNameAssignment: ({ AT }) => `Invalid value assignment of \`name\` \`SETTINGS\` attribute. AT: ${AT}`,
-    SettingsModeAssignment: ({ AT }) => `Invalid value assignment of \`mode\` \`SETTINGS\` attribute. AT: ${AT}`,
-    SettingsSwitchesAssignment: ({ AT }) => `Invalid value assignment of \`switches\` \`SETTINGS\` attribute. Invalid \`switch\` Name. AT: ${AT}`,
-    SettingsNonAttribute: ({ AT }) => `Attempted to set \`SETTINGS\` atribute that does not exist. AT: ${AT}`,
+    MetaRepeatAssignment: ({ AT }) => `Invalid value assignment of \`repeat\` \`Meta\` attribute. AT: ${AT}`,
+    MetaNameAssignment: ({ AT }) => `Invalid value assignment of \`name\` \`Meta\` attribute. AT: ${AT}`,
+    MetaModeAssignment: ({ AT }) => `Invalid value assignment of \`mode\` \`Meta\` attribute. AT: ${AT}`,
+    MetaSwitchesAssignment: ({ AT }) => `Invalid value assignment of \`switches\` \`Meta\` attribute. Invalid \`switch\` Name. AT: ${AT}`,
+    MetaNonAttribute: ({ AT }) => `Attempted to set \`Meta\` atribute that does not exist. AT: ${AT}`,
 
     ArgumentMissing: ({ AT }) => `Function call (native or imported) is missing arguments. AT: ${AT}`,
     ArgumentExtra: ({ AT }) => `Function call (native or imported) received extra arguments. AT: ${AT}`,

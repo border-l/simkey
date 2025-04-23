@@ -12,14 +12,14 @@ function getVariable(context, variable, expected) {
         // Get type regardless of optionality
         const expect = expecter.includes(":OPTIONAL") ? expecter.slice(0,-9) : expecter
     
-        // Check for vector (VECTORS)
+        // Check for vector
         if (expect === "VECTOR") {
             if (!Array.isArray(context.variables[variable])) continue
             solution = context.constants.includes(variable) ? context.variables[variable].map(x => x) : context.variables[variable]
             break
         }
 
-        // Check for type num (getVectorNumber)
+        // Check for type num
         if (expect === "NUM") {
             const vectorNum = getVectorNumber(context, variable, true)
             if (vectorNum === false) continue
@@ -27,7 +27,7 @@ function getVariable(context, variable, expected) {
             break
         }
 
-        // Check for type bool (settings)
+        // Check for type bool
         else if (expect === "BOOL") {
             if (typeof context.variables[variable] !== "boolean") continue
             solution = context.variables[variable]

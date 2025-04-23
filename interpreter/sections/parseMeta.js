@@ -4,12 +4,12 @@ const getString = require("../types/getString")
 const ThrowError = require("../errors/ThrowError")
 const checkVariableName = require("../helpers/checkVariableName")
 
-// Handles settings section
+// Handles meta section
 module.exports = (context) => {
     parseSection(context, (tokens, token, i, section, next) => {
         // Check for assignment operator
         if (tokens[i + 1] !== "=") {
-            ThrowError(1100, { SECTION: "SETTINGS", AT: token })
+            ThrowError(1100, { SECTION: "META", AT: token })
         }
 
         // First input for token
@@ -18,11 +18,11 @@ module.exports = (context) => {
         if (token === "repeat") {
             // Number repeat
             if (Number(firstIn)) {
-                context.model.SETTINGS.repeat = Number(firstIn)
+                context.model.META.repeat = Number(firstIn)
             }
             // Literal repeat (boolean)
             else if (firstIn === "OFF" || firstIn === "ON") {
-                context.model.SETTINGS.repeat = firstIn
+                context.model.META.repeat = firstIn
             }
             // Not a valid value
             else {
@@ -42,8 +42,8 @@ module.exports = (context) => {
             // Get string for the name
             const [value, newIndex] = getString(context, i + 2)
 
-            // Update settings in model
-            context.model.SETTINGS.name = value
+            // Update meta in model
+            context.model.META.name = value
 
             // Move along to end of the string
             return newIndex
@@ -54,8 +54,8 @@ module.exports = (context) => {
             if (!checkVariableName(firstIn)) {
                 ThrowError(2010, { AT: firstIn })
             }
-            // Update settings in model
-            context.model.SETTINGS.mode = firstIn
+            // Update meta in model
+            context.model.META.mode = firstIn
 
             // Move index along
             return i + 2
@@ -74,8 +74,8 @@ module.exports = (context) => {
             value.forEach((val) => 
                 !checkVariableName(val) ? ThrowError(2015, { AT: val }) : 0)
 
-            // Update settings in model
-            context.model.SETTINGS.switches = value
+            // Update meta in model
+            context.model.META.switches = value
 
             // Index after array
             return newIndex
@@ -83,7 +83,7 @@ module.exports = (context) => {
 
         // Handle shortcut assignment
         else if (token === "shortcut") {
-            context.model.SETTINGS.shortcut = firstIn
+            context.model.META.shortcut = firstIn
             return i + 2
         }
 
@@ -91,5 +91,5 @@ module.exports = (context) => {
         else {
             ThrowError(2020, { AT: token })
         }
-    }, (section) => section === "SETTINGS")
+    }, (section) => section === "META")
 }

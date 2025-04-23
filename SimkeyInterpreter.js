@@ -4,7 +4,7 @@ const clearComments = require("./interpreter/organize/clearComments")
 
 const parseImports = require("./interpreter/sections/parseImports")
 const parseExports = require("./interpreter/sections/parseExports")
-const parseSettings = require("./interpreter/sections/parseSettings")
+const parseMeta = require("./interpreter/sections/parseMeta")
 const parseInputs = require('./interpreter/sections/parseInputs')
 
 const organize = require("./interpreter/organize/organize")
@@ -23,10 +23,6 @@ class Interpreter {
     #script
     #tokens
     #model
-
-    // New, for inputting vectors
-    #inputVectors
-
     #fileName
 
     // References to check after organization
@@ -50,7 +46,7 @@ class Interpreter {
         this.#model = {
             "IMPORTS": {},
             "EXPORTS": {},
-            "SETTINGS": {
+            "META": {
                 "name": "",
                 "mode": "$DEFAULT",
                 "switches": [],
@@ -79,7 +75,7 @@ class Interpreter {
         parseInputs(this.#context)
         parseImports(this.#context)
         parseExports(this.#context)
-        parseSettings(this.#context)
+        parseMeta(this.#context)
 
         // Organize and check that function references are valid
         organize(this.#context)
@@ -105,9 +101,6 @@ class Interpreter {
                         break
                     case 'checkLater':
                         this.#checkLater = set
-                        break
-                    case 'inputVectors':
-                        this.#inputVectors = set
                         break
                     case 'model':
                         this.#model = set
@@ -140,7 +133,6 @@ class Interpreter {
         this.#context.variables = this.#variables
         this.#context.constants = this.#constants
         this.#context.tables = this.#tables
-        this.#context.inputVectors = this.#inputVectors
     }
 
     run() {
