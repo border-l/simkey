@@ -116,7 +116,7 @@ function parseInnards(context, index, depth) {
 
             if (token === "@end") {
                 parsed.push("@end")
-                return [parsed, i]
+                return [parsed, finalIndex]
             }
 
             // Imported functions

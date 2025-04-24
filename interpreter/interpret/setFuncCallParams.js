@@ -28,13 +28,13 @@ function setFuncCallParams(context, func, args) {
 
         // Literal number
         if (!isNaN(Number(arg)) && arg.trim() != "") {
-            setList.push(["SET", varName, 0, () => Number(arg)])
+            setList.push(["SET", varName, "ALL", () => Number(arg)])
             continue
         }
 
         // Simple variable to handle
         if (checkVariableName(arg, true)) {
-            if (arg.indexOf(":") > -1) setList.push(["SET", varName, 0, (context) => getVariable(context, arg, ["NUM", "TABLE", "STR"])])
+            if (arg.indexOf(":") > -1) setList.push(["SET", varName, "ALL", (context) => getVariable(context, arg, ["NUM", "TABLE", "STR"])])
             else setList.push(["SET", varName, "ALL", (context) => getVariable(context, arg, ["VECTOR", "BOOL", "STR", "TABLE"])])
             continue
         }
