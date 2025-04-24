@@ -20,7 +20,9 @@ const FORMAT = {
 
     InputVectorNonExistent: ({ AT }) => `Attempted to input a vector that does not exist. AT: ${AT}`,
     InputVectorNonArray: ({ AT }) => `Attempted to set an input vector to a non-array. AT: ${AT}`,
-    InputVectorInvalidArray: ({ AT }) => `Invalid array given to set input vector (invalid length, or contains non-numbers). AT: ${AT}`
+    InputVectorInvalidArray: ({ AT }) => `Invalid array given to set input vector (invalid length, or contains non-numbers). AT: ${AT}`,
+
+    InvalidTypeGetVariable: ({ AT }) => `Invalid type given to getVariable (Internal Error, likely from imported function). AT: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

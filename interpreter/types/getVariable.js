@@ -15,7 +15,7 @@ function getVariable(context, variable, expected) {
         // Check for vector
         if (expect === "VECTOR") {
             if (!Array.isArray(context.variables[variable])) continue
-            solution = context.constants.includes(variable) ? context.variables[variable].map(x => x) : context.variables[variable]
+            solution = context.constants.includes(variable) ? deepClone(context.variables[variable]) : context.variables[variable]
             break
         }
 
@@ -50,8 +50,8 @@ function getVariable(context, variable, expected) {
             break
         }
 
-        // Expected an invalid type (remember to change the deepcopying being done above)
-        else ThrowError()
+        // Expected an invalid type
+        else ThrowError(5415, { AT: expect })
     }
 
     // No value found compliant with expected types
@@ -61,6 +61,31 @@ function getVariable(context, variable, expected) {
 
     // Solution exists
     return solution
+}
+
+// Function to deep clone object
+function deepClone(obj) {
+    // Nothing to clone
+    if (obj === null || typeof obj !== 'object') {
+        return obj
+    }
+
+    // Clone elements in array recursively
+    if (Array.isArray(obj)) {
+        return obj.map(deepClone)
+    }
+
+    // Otherwise, this is a non-array object
+    const clonedObj = {}
+
+    // Clone each value
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            clonedObj[key] = deepClone(obj[key])
+        }
+    }
+
+    return clonedObj
 }
 
 module.exports = getVariable

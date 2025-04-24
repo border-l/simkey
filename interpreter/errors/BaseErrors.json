@@ -61,6 +61,8 @@
     "AssignmentToStringCharacter": 2730,
     "ReturnWithoutValue": 2800,
     "ReturnMissingValue": 2805,
+    "InvalidInputVectorBounds": 2900,
+    "InvalidInputType": 2905,
     "NonExistentFlag": 3000,
     "NonExistentVariable": 3005,
     "NonExistentVector": 3010,
@@ -98,5 +100,6 @@
     "UnknownPropertySet": 5300,
     "InputVectorNonExistent": 5400,
     "InputVectorNonArray": 5405,
-    "InputVectorInvalidArray": "5410"
+    "InputVectorInvalidArray": 5410,
+    "InvalidTypeGetVariable": 5415
 }

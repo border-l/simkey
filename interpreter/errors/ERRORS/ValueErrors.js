@@ -36,7 +36,10 @@ const FORMAT = {
     AssignmentToStringCharacter: ({ AT }) => `Attempting to assign a specific character in string. AT: ${AT}`,
 
     ReturnWithoutValue: ({ AT }) => `Function used in return statement did not yield a value. AT : ${AT}`,
-    ReturnMissingValue: ({ AT }) => `Return statement did not have a value given after it.`
+    ReturnMissingValue: ({ AT }) => `Return statement did not have a value given after it.`,
+
+    InvalidInputVectorBounds: ({ AT, REASON }) => `Invalid bounds for input vector. REASON: ${REASON}, AT: ${AT}`,
+    InvalidInputType: ({ AT }) => `Invalid input type for variable. AT: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }
