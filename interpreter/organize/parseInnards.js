@@ -102,8 +102,8 @@ function parseInnards(context, index, depth) {
             }
 
             // Defined functions (this is somewhat repetitive later on, clean up later)
-            if (context.model.FUNCS[token]) {
-                if (context.model.FUNCS[token][1].length > 0) {
+            if (context.funcs[token]) {
+                if (context.funcs[token][1].length > 0) {
                     const [array, newIndex] = getArray(context, i + 1, false)
                     parsed.push([token, array])
                     i = newIndex

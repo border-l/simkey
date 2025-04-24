@@ -23,6 +23,7 @@ class Interpreter {
     #script
     #tokens
     #model
+    #funcs
     #fileName
 
     // References to check after organization
@@ -43,6 +44,7 @@ class Interpreter {
         this.#variables = {}
         this.#constants = []
         this.#tables = { "TABLE": [] }
+        this.#funcs = {}
         this.#model = {
             "IMPORTS": {},
             "EXPORTS": {},
@@ -59,7 +61,6 @@ class Interpreter {
                 "STRINGS": [],
                 "VECTORS": {}
             },
-            "FUNCS": {},
             "MACRO": []
         }
         this.#initContext()
@@ -105,6 +106,9 @@ class Interpreter {
                     case 'model':
                         this.#model = set
                         break
+                    case 'funcs':
+                        this.#funcs = set
+                        break
                     case 'variables':
                         this.#variables = set
                         break
@@ -130,6 +134,7 @@ class Interpreter {
         this.#context.tokens = this.#tokens
         this.#context.checkLater = this.#checkLater
         this.#context.model = this.#model
+        this.#context.funcs = this.#funcs
         this.#context.variables = this.#variables
         this.#context.constants = this.#constants
         this.#context.tables = this.#tables

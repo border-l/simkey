@@ -16,7 +16,7 @@ module.exports = (context) => {
         // Check if this token is updating sections
         if (checkSection(context, token)) {
             // Error if there's more than one macro section
-            if (passedMacroDeclaration || context.model.MACRO.length > 0) {
+            if ((passedMacroDeclaration || context.model.MACRO.length > 0) && token !== "<EXPORTS>") {
                 ThrowError(1300, {})
             }
             // Update section
@@ -30,54 +30,54 @@ module.exports = (context) => {
             continue
         }
 
-        // Handle function section
-        if (section === "FUNCS") {
-            // Conditionals to handle different errors
-            if (token.charAt(0) !== "@") {
-                ThrowError(1030, { AT: token })
-            }
-            if (token.length < 2) {
-                ThrowError(1105, { AT: token })
-            }
-            if (["@if", "@elseif", "@else", "@end"].includes(token)) {
-                ThrowError(1105, { AT: token })
-            }
-            if (i === tokens.length - 1) {
-                ThrowError(1035, { AT: token })
-            }
+        // // Handle function section
+        // if (section === "FUNCS") {
+        //     // Conditionals to handle different errors
+        //     if (token.charAt(0) !== "@") {
+        //         ThrowError(1030, { AT: token })
+        //     }
+        //     if (token.length < 2) {
+        //         ThrowError(1105, { AT: token })
+        //     }
+        //     if (["@if", "@elseif", "@else", "@end"].includes(token)) {
+        //         ThrowError(1105, { AT: token })
+        //     }
+        //     if (i === tokens.length - 1) {
+        //         ThrowError(1035, { AT: token })
+        //     }
 
-            // Block exists with no params, parse function body
-            if (context.tokens[i + 1] === "{") {
-                const [model, newIndex] = parseInnards(context, i + 1, 1)
-                context.model.FUNCS[token] = [model, []]
-                i = newIndex
-                continue
-            }
+        //     // Block exists with no params, parse function body
+        //     if (context.tokens[i + 1] === "{") {
+        //         const [model, newIndex] = parseInnards(context, i + 1, 1)
+        //         context.funcs[token] = [model, []]
+        //         i = newIndex
+        //         continue
+        //     }
 
-            // No parameters, no block, invalid structure
-            if (!context.tokens[i + 1].startsWith("[")) {
-                ThrowError(1035, { AT: token })
-            }
+        //     // No parameters, no block, invalid structure
+        //     if (!context.tokens[i + 1].startsWith("[")) {
+        //         ThrowError(1035, { AT: token })
+        //     }
 
-            // Get parameters
-            const [params, arrayIndex] = getArray(context, i + 1)
+        //     // Get parameters
+        //     const [params, arrayIndex] = getArray(context, i + 1)
 
-            // Block doesnt exist
-            if (context.tokens[arrayIndex + 1] !== '{') {
-                ThrowError(1035, { AT: token })
-            }
+        //     // Block doesnt exist
+        //     if (context.tokens[arrayIndex + 1] !== '{') {
+        //         ThrowError(1035, { AT: token })
+        //     }
 
-            // Parse the params
-            const parsedParams = parseFuncParams(context, params)
+        //     // Parse the params
+        //     const parsedParams = parseFuncParams(context, params)
 
-            // Parse function body
-            const [model, newIndex] = parseInnards(context, arrayIndex + 1, 1)
-            context.model.FUNCS[token] = [model, parsedParams]
+        //     // Parse function body
+        //     const [model, newIndex] = parseInnards(context, arrayIndex + 1, 1)
+        //     context.funcs[token] = [model, parsedParams]
 
-            // Move index along, continue
-            i = newIndex
-            continue
-        }
+        //     // Move index along, continue
+        //     i = newIndex
+        //     continue
+        // }
 
         // Handle macro section
         const [model, newIndex] = parseInnards(context, i - 1, 1)

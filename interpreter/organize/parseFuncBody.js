@@ -14,7 +14,7 @@ function parseFuncBody(context, name, index, parseInnards, depth) {
     const [block, newIndex] = parseInnards(context, nextBracket, depth)
 
     parseFuncParams(context, params)
-    context.model.FUNCS[name] = [block, params]
+    context.funcs[name] = [block, params]
 
     return newIndex
 }

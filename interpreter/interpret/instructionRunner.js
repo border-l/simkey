@@ -56,8 +56,8 @@ async function instructionRunner(passedInfo, instructionList) {
             return [passedInfo.SYMBOLS.RETURN, handleRET(passedInfo.CONTEXT, instruction)]
         }
 
-        else if (passedInfo.CONTEXT.model.FUNCS[func]) {
-            result = await instructionRunner(passedInfo, [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]), ...passedInfo.CONTEXT.model.FUNCS[func][0]])
+        else if (passedInfo.CONTEXT.funcs[func]) {
+            result = await instructionRunner(passedInfo, [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]), ...passedInfo.CONTEXT.funcs[func][0]])
             result = Array.isArray(result) ? result[1] : result // In case it's a return statement, we know it is already fulfilled as this is where it was called
         }
 

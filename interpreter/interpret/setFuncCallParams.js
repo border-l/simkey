@@ -8,7 +8,7 @@ const getString = require('../types/getString')
 // Sets all the parameter variables for simkey function
 function setFuncCallParams(context, func, args) {
     // Get parameters for function
-    const funcParams = context.model.FUNCS[func]
+    const funcParams = context.funcs[func]
 
     // List for setting to be done by instructionRunner function (will be in instruction list)
     const setList = []

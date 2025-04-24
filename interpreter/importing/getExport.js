@@ -16,8 +16,8 @@ function getExport(context, name) {
             out.IMPORTS[func] = context.model.IMPORTS[func]
             out.IMPORTS[func.slice(1)] = context.model.IMPORTS[func.slice(1)]
         }
-        else if (context.model.FUNCS[func]) {
-            out.FUNCS[func] = context.model.FUNCS[func]
+        else if (context.funcs[func]) {
+            out.FUNCS[func] = context.funcs[func]
         }
         else {
             ThrowError(4400, { AT: func })

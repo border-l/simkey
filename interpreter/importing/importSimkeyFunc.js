@@ -12,7 +12,7 @@ function importSimkeyFunc(context, path, name) {
 
     // Copy into FUNCS (need to initialize params first)
     for (const key in exports.FUNCS) {
-        context.model.FUNCS[key] = exports.FUNCS[key]
+        context.funcs[key] = exports.FUNCS[key]
         const params = exports.FUNCS[key][1]
 
         // Either already constant or will set to vector
