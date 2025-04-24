@@ -5,7 +5,7 @@ const getTableValue = require('../types/getTableValue')
 const deepClone = require('../helpers/deepClone')
 
 // Gets number value from vector
-function getVariable(context, variable, expected) {
+function getVariable(context, variable, expected = ["STR", "VECTOR", "NUM", "BOOL", "TABLE"]) {
     let solution = undefined
 
     // Each possible expected type for getting value

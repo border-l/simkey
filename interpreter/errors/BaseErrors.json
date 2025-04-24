@@ -63,6 +63,7 @@
     "ReturnMissingValue": 2805,
     "InvalidInputVectorBounds": 2900,
     "InvalidInputType": 2905,
+    "InvalidTypeInMBExpression": 2910,
     "NonExistentFlag": 3000,
     "NonExistentVariable": 3005,
     "NonExistentVector": 3010,

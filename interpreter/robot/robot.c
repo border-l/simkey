@@ -90,6 +90,10 @@ __declspec(dllexport) void setCursor(int x, int y) {
     SendInput(1, &mouseInput, sizeof(INPUT));
 }
 
+__declspec(dllexport) void setCursorR(int x, int y) {
+    SetCursorPos(x, y);
+}
+
 __declspec(dllexport) void scroll(int amount) {
     INPUT mouseInput;
     mouseInput.type = INPUT_MOUSE;
@@ -126,8 +130,7 @@ __declspec(dllexport) void getPixelColor(int x, int y, int* rgb) {
 
 #else
 #include <stdio.h>
-
-void pressAKey() {
+void keyDown() {
     // No-op on non-Windows platforms
     printf("Key press not supported on this platform.\n");
 }

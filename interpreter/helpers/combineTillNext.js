@@ -16,7 +16,7 @@ module.exports = (context, char, index, noSection = false, noComments = false) =
             return [combination, i]
         }
 
-        combination += token
+        combination += (i === index + 1 ? "" : " ") + token
     }
 
     // No character found, if section considered then return -1

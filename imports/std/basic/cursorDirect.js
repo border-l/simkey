@@ -1,5 +1,5 @@
-// Returns the pixel at x,y
-function getPixel(INFO, num1OrVector, num2) {
+// Moves cursor to location using ROBOT.cursorR
+function cursorDirect(INFO, num1OrVector, num2) {
     let x, y = 0
 
     // First input is array
@@ -12,7 +12,7 @@ function getPixel(INFO, num1OrVector, num2) {
 
         // Shouldnt happen; just in case
         else if (num1OrVector.length < 2) {
-            throw new Error("Vector given to @getPixel is too small. AT: " + num1OrVector)
+            throw new Error("Vector given to @cursor is too small. AT: " + num1OrVector)
         }
 
         // Only vector passed in
@@ -24,7 +24,7 @@ function getPixel(INFO, num1OrVector, num2) {
 
     // Second input does not exist & first was not an array
     else if (num2 === undefined) {
-        throw new Error("Did not specify the second number in @getPixel call even though no vector was passed. AT: " + num1OrVector)
+        throw new Error("Did not specify the second number for @cursor even though no vector was passed. AT: " + num1OrVector)
     }
 
     // Straightforward
@@ -34,7 +34,7 @@ function getPixel(INFO, num1OrVector, num2) {
     }
 
     // Move to rounded x,y
-    return INFO.ROBOT.getPixel(x, y)
+    INFO.ROBOT.cursorR(Math.round(x), Math.round(y))
 }
 
-module.exports = { FUNCTION: getPixel, TAKES: { PARAMS: "[VECTOR | NUM, NUM:OPTIONAL]" }}
+module.exports = { FUNCTION: cursorDirect, TAKES: { PARAMS: "[VECTOR | NUM, NUM:OPTIONAL]", BLOCK: false } }

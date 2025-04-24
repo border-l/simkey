@@ -39,7 +39,8 @@ const FORMAT = {
     ReturnMissingValue: ({ AT }) => `Return statement did not have a value given after it.`,
 
     InvalidInputVectorBounds: ({ AT, REASON }) => `Invalid bounds for input vector. REASON: ${REASON}, AT: ${AT}`,
-    InvalidInputType: ({ AT }) => `Invalid input type for variable. AT: ${AT}`
+    InvalidInputType: ({ AT }) => `Invalid input type for variable. AT: ${AT}`,
+    InvalidTypeInMBExpression: ({ AT }) => `Math or boolean expression received an object that the parser cannot handle. AT: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

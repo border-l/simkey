@@ -5,7 +5,7 @@ const parseFuncParams = require("./parseFuncParams")
 // Parses the body of a simkey func
 function parseFuncBody(context, name, index, parseInnards, depth) {
     const [paramString, nextBracket] = combineTillNext(context, "{", index)
-    const params = paramString === "none" ? [] : paramString.split(",")
+    const params = paramString === "none" ? [] : paramString.split(",").map(x => x.trim())
 
     if (nextBracket === -1) {
         ThrowError(1035, { AT: name })

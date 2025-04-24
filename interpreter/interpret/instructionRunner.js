@@ -52,7 +52,7 @@ async function instructionRunner(passedInfo, instructionList) {
         }
 
         else if (func === "RET") {
-            if (instruction[3] instanceof NEXT_INSTRUCTION) continue
+            if (instruction[1] instanceof NEXT_INSTRUCTION) continue
             return [passedInfo.SYMBOLS.RETURN, handleRET(passedInfo.CONTEXT, instruction)]
         }
 
@@ -106,18 +106,31 @@ async function instructionRunner(passedInfo, instructionList) {
             return result
         }
 
-        // Assignment statement that required result from this function call
-        if (i > 0 && instructionList[i - 1][3] instanceof NEXT_INSTRUCTION) {
-            // Return statement
-            if (instructionList[i - 1][0] === "RET") {
-                if (result === undefined) ThrowError(2800, { AT: instruction[0] })
-                return [passedInfo.SYMBOLS.RETURN, result]
-            }
+        // RET next
+        if (i > 0 && instructionList[i - 1][0] === "RET" && instructionList[i - 1][1] instanceof NEXT_INSTRUCTION) {
+            if (result === undefined) ThrowError(2800, { AT: instruction[0] })
+            return [passedInfo.SYMBOLS.RETURN, result]
+        }
 
+        // ASSN next
+        if (i > 0 && instructionList[i - 1][3] instanceof NEXT_INSTRUCTION && instructionList[i - 1][0] === "ASSN") {
             // Assignment statement (could be const)
             if (result === undefined) ThrowError(2715, { AT: instruction[0] })
             handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result, instructionList[i - 1][0].at(-1) === "C")
         }
+
+        // // Assignment statement that required result from this function call
+        // if (i > 0 && (instructionList[i - 1][3] instanceof NEXT_INSTRUCTION && instructionList[i - 1][0] === "RET" || instructionList[i - 1][3] instanceof NEXT_INSTRUCTION && instructionList[i - 1][0] === "ASSN")) {
+        //     // Return statement
+        //     if (instructionList[i - 1][0] === "RET") {
+        //         if (result === undefined) ThrowError(2800, { AT: instruction[0] })
+        //         return [passedInfo.SYMBOLS.RETURN, result]
+        //     }
+
+        //     // Assignment statement (could be const)
+        //     if (result === undefined) ThrowError(2715, { AT: instruction[0] })
+        //     handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result, instructionList[i - 1][0].at(-1) === "C")
+        // }
 
         // No result, continue
         else if (result === undefined) {
