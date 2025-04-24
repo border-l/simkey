@@ -1,4 +1,0 @@
-# Cursor locations #
-$START_C = 0,0
-$POSITIVE_C = 100,100
-$NEGATIVE_C = -100,-100

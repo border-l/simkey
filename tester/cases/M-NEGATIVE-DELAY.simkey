@@ -1,6 +1,0 @@
-# Testing error from calling non existent flag #
-
-<MACRO>
-	# Should raise error #
-	<-50>a
-

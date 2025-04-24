@@ -1,8 +1,0 @@
-# Testing settings mode attribute #
-
-<SETTINGS>
-	# Name testing (for testing strings) #
-	name = "Regular string with spaces"
-	name = " Start with a space, end with a space "
-	name = "NoSpaceAtAll"
-

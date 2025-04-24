@@ -1,5 +1,0 @@
-# Testing switches (for testing arrays), Requires S.commands/std #
-switches = [ $REPEAT ]
-switches = [$REPEAT,$END,$DO_A]
-switches = [ $REPEAT, $DO_A, $DO_B ]
-switches = [$REPEAT, $DO_A,$DO_B ]

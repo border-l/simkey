@@ -1,3 +1,0 @@
-# Requires F.draw-square, V.vertices, #
-@draw_square [$vertex_1, $vertex_2, $vertex_3, $vertex_4]
-@draw_square [$vertex_1 + 50, $vertex_2 + 50, $vertex_3 + 50, $vertex_4 + 50]

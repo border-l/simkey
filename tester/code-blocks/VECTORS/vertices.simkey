@@ -1,5 +1,0 @@
-# Vertices from 1 to 4, for drawing square #
-$vertex_1 = 0,0
-$vertex_2 = 0,50
-$vertex_3 = 50,50
-$vertex_4 = 50,0

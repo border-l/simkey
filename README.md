@@ -1,5 +1,5 @@
 # What is Simkey?
-![Test Status](https://img.shields.io/badge/Tests-Passed-brightgreen)
+<!-- ![Test Status](https://img.shields.io/badge/Tests-Passed-brightgreen) -->
 
 Simkey is a simple language to write repetitive macros. While there are certainly more powerful options, Simkey strives to make repetitive tasks that don't require active inputs or screen readers exceptionally easy and efficient to automate. 
 

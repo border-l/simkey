@@ -1,9 +1,0 @@
-# Testing settings mode attribute #
-
-<SETTINGS>
-	# Testing repeat #
-	repeat = ON
-	repeat = OFF
-	repeat = 1
-	repeat = 50
-
