@@ -142,12 +142,14 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, dept
 
                 // Try to get the string, if error, not a string
                 try {
+                    console.log(value)
                     const [string, finalIndex] = getString(context, x, value, ",")
                     finalArray.push(string)
                     x = finalIndex
                     break
                 }
                 catch (error) {
+                    console.log(error)
                     continue
                 }
             }
