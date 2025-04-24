@@ -2,6 +2,7 @@ const parseSection = require("./parseSection")
 const getArray = require('../types/getArray')
 const getString = require('../types/getString')
 const ThrowError = require("../errors/ThrowError")
+const evaluateExpr = require('../helpers/evaluateExpr')
 const checkVariableName = require("../helpers/checkVariableName")
 
 // Handles inputs section
