@@ -1,9 +1,5 @@
-*.class
 *.exe
 *.dll
 /*.simkey
-/*.keyc
-/.autoimport
 /node_modules
-/tester/results/keyc-output/*
-!tester/results/keyc-output/keep.keyc
+/cli
