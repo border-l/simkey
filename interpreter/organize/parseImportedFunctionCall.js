@@ -21,7 +21,7 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, dept
     }
 
     // No arguments
-    else if (!context.tokens[i + 1].startsWith("[")) {
+    else if (!context.tokens[i + 1] || !context.tokens[i + 1].startsWith("[")) {
         if (importParams.length !== 0 && !importParams[0][0].endsWith(":OPTIONAL")) {
             ThrowError(2100, { AT: token })
         }

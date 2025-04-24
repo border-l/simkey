@@ -1,5 +1,3 @@
-const deepClone = require("../../../interpreter/helpers/deepClone")
-
 // Repeats block num times
 async function repeat(INFO, BLOCK, num) {
     // Clone block and add it to LIST
@@ -7,7 +5,6 @@ async function repeat(INFO, BLOCK, num) {
         const ended = await INFO.RUN(INFO, BLOCK)
         if (INFO.YIELD.END(ended)) break
         if (INFO.YIELD.RETURN(ended)) return ended
-        BLOCK = deepClone(BLOCK)
     }
 }
 

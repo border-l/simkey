@@ -1,11 +1,7 @@
 const checkVariableName = require("../../../interpreter/helpers/checkVariableName")
-const deepClone = require("../../../interpreter/helpers/deepClone")
 
 // Loop through block from start to end with step, with variable holding index
 async function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
-    // Keep track of where to add instructions
-    let INDEX = INFO.INDEX + 1
-
     let [element, index] = elementAndIndex.split(",")
 
     if (element + "," + index !== elementAndIndex) {
@@ -15,13 +11,6 @@ async function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
     // Get rid of extra spaces
     element = element.trim()
     index = index.trim()
-
-    // if (INFO.CONTEXT.variables[element]) {
-    //     throw new Error("Element variable is already a boolean: " + element)
-    // }
-    // if (INFO.CONTEXT.variables[index]) {
-    //     throw new Error("Index variable is already a boolean: " + index)
-    // }
 
     // Check that variable name is valid
     if (!checkVariableName(element)) {
@@ -42,13 +31,7 @@ async function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
     // Loop through with compare, incrementing by step
     for (let i = 0; i < loopVector.length; i++) {
         let value = loopVector[i]
-
-        // Add block and deep clone it for next time
         await INFO.RUN(INFO, [["SET", element, 0, () => value], ["SET", index, 0, () => i], ...BLOCK])
-        BLOCK = deepClone(BLOCK)
-
-        // Move forward accordingly
-        INDEX += BLOCK.length + 2
     }
 }
 

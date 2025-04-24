@@ -1,6 +1,6 @@
 // Sets a subtable, regardless of whether the subtable exists or not
 function set(INFO, table, key, value) {
-    if (isNaN(key) && (key === "" || key.indexOf(":") > -1 || key.indexOf(" ") > -1)) {
+    if (isNaN(key) && (key === "" || key.replace(/(\w+)/g, "").length !== 0 || key.indexOf(" ") > -1)) {
         throw new Error("Invalid name for subtable. Cannot contain colons or spaces. AT: " + key)
     }
 

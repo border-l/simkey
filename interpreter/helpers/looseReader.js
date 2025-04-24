@@ -1,6 +1,7 @@
 const getArray = require("../types/getArray")
 const getString = require('../types/getString')
 const getVariable = require('../types/getVariable')
+const evaluateExpr = require("./evaluateExpr")
 const checkVariableName = require('../helpers/checkVariableName')
 
 // Utility for reading args from a LOOSE string
@@ -33,11 +34,25 @@ function looseReader(context, looseString, types) {
                 finalArgs.push(Number(arg.trim()))
                 continue
             }
+
+            const value = evaluateExpr(context, arg, true, true)
+
+            if (!isNaN(value) || (typeof value === "boolean" && types.indexOf("BOOL") > -1)) {
+                finalArgs.push(value)
+                continue
+            }
         }
 
         if (types.indexOf("BOOL") > -1) {
             if (arg.trim() === "TRUE" || arg.trim() === "FALSE") {
                 finalArgs.push(arg.trim() === "TRUE")
+                continue
+            }
+
+            const value = evaluateExpr(context, arg, true, true)
+
+            if ((!isNaN(value) && types.indexOf("NUM") > -1) || typeof value === "boolean") {
+                finalArgs.push(value)
                 continue
             }
         }
