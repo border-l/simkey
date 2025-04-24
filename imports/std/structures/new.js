@@ -1,4 +1,4 @@
-const looseReader = require("../../interpreter/helpers/looseReader")
+const looseReader = require("../../../interpreter/helpers/looseReader")
 
 // Creates a new table (instance)
 function newTable(INFO, args) {

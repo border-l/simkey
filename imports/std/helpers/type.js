@@ -1,4 +1,4 @@
-const getVectorNumber = require("../../interpreter/types/getVectorNumber")
+const getVectorNumber = require("../../../interpreter/types/getVectorNumber")
 
 // Types a string out (this overcomes the restriction of not being able to have repeats)
 async function type(INFO, string, time = 10) {

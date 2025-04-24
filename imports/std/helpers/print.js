@@ -1,4 +1,4 @@
-const looseReader = require("../../interpreter/helpers/looseReader")
+const looseReader = require("../../../interpreter/helpers/looseReader")
 
 // Simply prints the input
 function print(INFO, input) {

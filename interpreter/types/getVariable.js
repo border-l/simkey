@@ -2,6 +2,7 @@ const ThrowError = require("../errors/ThrowError")
 const getVectorNumber = require("../types/getVectorNumber")
 const getStringValue = require('../types/getStringValue')
 const getTableValue = require('../types/getTableValue')
+const deepClone = require('../helpers/deepClone')
 
 // Gets number value from vector
 function getVariable(context, variable, expected) {
@@ -61,31 +62,6 @@ function getVariable(context, variable, expected) {
 
     // Solution exists
     return solution
-}
-
-// Function to deep clone object
-function deepClone(obj) {
-    // Nothing to clone
-    if (obj === null || typeof obj !== 'object') {
-        return obj
-    }
-
-    // Clone elements in array recursively
-    if (Array.isArray(obj)) {
-        return obj.map(deepClone)
-    }
-
-    // Otherwise, this is a non-array object
-    const clonedObj = {}
-
-    // Clone each value
-    for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            clonedObj[key] = deepClone(obj[key])
-        }
-    }
-
-    return clonedObj
 }
 
 module.exports = getVariable

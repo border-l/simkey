@@ -66,7 +66,7 @@ class Interpreter {
         this.#initContext()
 
         // Call functions to fill model information (#organize is called in compile)
-        autoImport(this.#context, `${__dirname}/simkey-imports/std/.autoimport`)
+        autoImport(this.#context, `${__dirname}/imports/std/.autoimport`)
         autoImport(this.#context, `${process.cwd()}/.autoimport`)
 
         // Tokenize and clear all the comments

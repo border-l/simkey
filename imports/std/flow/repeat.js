@@ -1,4 +1,4 @@
-const deepClone = require("./helpers/deepClone")
+const deepClone = require("../../../interpreter/helpers/deepClone")
 
 // Repeats block num times
 async function repeat(INFO, BLOCK, num) {

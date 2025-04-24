@@ -1,4 +1,4 @@
-const deepClone = require("./helpers/deepClone")
+const deepClone = require("../../../interpreter/helpers/deepClone")
 
 // Loop until broken or returned
 async function loop(INFO, BLOCK) {

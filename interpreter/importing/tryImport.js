@@ -44,6 +44,7 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
     else {
         importLocation = array[1]
         name = array[0]
+        returnIndex = 1
     }
 
     // Format import location to be an actual JS file location
@@ -51,7 +52,7 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
         importLocation = path.join(currentPath, importLocation)
     }
     else if (!path.isAbsolute(importLocation)) {
-        importLocation = path.join(path.resolve(__dirname, "..", ".."), 'simkey-imports', importLocation)
+        importLocation = path.join(path.resolve(__dirname, "..", ".."), 'imports', importLocation)
     }
     else {
         importLocation = path.resolve(currentPath, importLocation)
@@ -70,7 +71,7 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
     // .autoimport handling
     if (importLocation.endsWith(".autoimport")) {
         autoImport(context, importLocation)
-        return 1
+        return 0
     }
 
     // Load imported functions into model
@@ -102,5 +103,5 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
 
     // Load params into model and return incremented
     context.model.IMPORTS[name] = params
-    return returnIndex > -1 ? returnIndex : 1 // Keep an eye on this
+    return returnIndex > -1 ? returnIndex : 0 // Keep an eye on this
 }

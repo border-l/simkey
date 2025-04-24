@@ -1,5 +1,5 @@
-const checkVariableName = require("../../interpreter/helpers/checkVariableName")
-const deepClone = require("./helpers/deepClone")
+const checkVariableName = require("../../../interpreter/helpers/checkVariableName")
+const deepClone = require("../../../interpreter/helpers/deepClone")
 
 // Loop through block from start to end with step, with variable holding index
 async function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
