@@ -28,7 +28,7 @@ const FORMAT = {
     KeyNotExist: ({ AT }) => `Key is invalid (not mapped by Simkey). AT: ${AT}`,
 
     AssignmentToConstant: ({ AT }) => `Attempted to assign to a constant. AT: ${AT}`,
-    AssignmentTypeMismatch: ({ AT }) => `Attempted to assign to a value with mismatched type. AT: ${AT}`,
+    AssignmentTypeMismatch: ({ AT, VAR }) => `Attempted to assign to a value with mismatched type. AT: ${AT}, VAR: ${VAR}`,
     AssignmentDivideByZero: ({ AT }) => `Attempted to divide by zero in assignment. AT: ${AT}`,
     AssignmentNoReturnValue: ({ AT }) => `Function used in assignment did not yield a value. AT: ${AT}`,
     AssignmentNonExistent: ({ AT }) => `Assigning with non \`=\` on a non-existent variable.`,

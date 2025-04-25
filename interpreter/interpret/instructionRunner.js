@@ -24,6 +24,11 @@ async function instructionRunner(passedInfo, instructionList) {
             return passedInfo.SYMBOLS.END
         }
 
+        // Next
+        if (instruction === "@next") {
+            return passedInfo.SYMBOLS.NEXT
+        }
+
         // Otherwise, handle imported function call
         let result
 
@@ -137,7 +142,7 @@ async function instructionRunner(passedInfo, instructionList) {
             continue
         }
 
-        else if (passedInfo.YIELD.END(result)) {
+        else if (passedInfo.YIELD.END(result) || passedInfo.YIELD.NEXT(result)) {
             return result
         }
     }

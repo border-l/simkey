@@ -20,7 +20,7 @@ function parseFuncParams(context, params) {
 
         // Doesnt exist, set it to [0,0] by default
         if (!Array.isArray(context.variables[param])) {
-            context.variables[param] = [0, 0]
+            context.variables[param] = [0]
         }
 
         // Add param name and type to parsedParams

@@ -119,6 +119,11 @@ function parseInnards(context, index, depth) {
                 return [parsed, finalIndex]
             }
 
+            if (token === "@next") {
+                parsed.push("@next")
+                return [parsed, finalIndex]
+            }
+
             // Imported functions
             if (context.model.IMPORTS[token]) {
                 i = parseImportedFunctionCall(context, token, parsed, i, parseInnards, depth + 1)

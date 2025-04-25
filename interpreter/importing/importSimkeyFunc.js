@@ -18,7 +18,7 @@ function importSimkeyFunc(context, path, name) {
         // Either already constant or will set to vector
         for (const param of params) {
             if (context.constants.includes(param)) ThrowError(4310, { MODE: param, FUNC: key })
-            if (!Array.isArray(param)) context.variables[param] = [0, 0]
+            if (!Array.isArray(param)) context.variables[param] = [0]
         }
     }
 }

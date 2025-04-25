@@ -40,27 +40,28 @@ function handleASSN(context, instruction, input, constant = false) {
     }
 
     let result = resultHandler(context, exprValue, input)
+    result = assnFunction(result, variable, varName)
 
     // Table with key(s)
     if (Array.isArray(index)) {
         let root = context.variables[varName]
         for (const key of index.slice(0, -1)) root = root[key]
-        root[index.at(-1)] = assnFunction(result, variable, varName)
+        root[index.at(-1)] = result
     }
 
     // Vector with index
     else if (index !== null) {
-        context.variables[varName][index] = assnFunction(result, variable, varName)
+        context.variables[varName][index] = result
     }
 
     // Vector without index (could or could not already be vector)
     else if (typeof result === "number") {
-        if (Array.isArray(variable)) context.variables[varName][0] = assnFunction(result, variable, varName)
-        else context.variables[varName] = [assnFunction(result, variable, varName), 0]
+        if (Array.isArray(variable)) context.variables[varName][0] = result
+        else context.variables[varName] = [result, 0]
     }
 
     // Misc, will assign directly
-    else context.variables[varName] = assnFunction(result, variable, varName)
+    else context.variables[varName] = result
 
 
     // Move into constants

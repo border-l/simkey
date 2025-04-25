@@ -14,7 +14,7 @@ function handleSET(context, instruction) {
     // Setting entire vector array to be something else (or anything else now)
     if (index === "ALL") {
         if (typeof value === "number") {
-            context.variables[varName] = [value, 0]
+            context.variables[varName] = [value]
             return
         }
 
