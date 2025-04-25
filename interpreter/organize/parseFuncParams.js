@@ -18,7 +18,7 @@ function parseFuncParams(context, params) {
             ThrowError(2205, { AT: param })
         }
 
-        // Doesnt exist, set it to [0,0] by default
+        // Doesnt exist, set it to [0] by default
         if (!Array.isArray(context.variables[param])) {
             context.variables[param] = [0]
         }

@@ -57,7 +57,7 @@ function handleASSN(context, instruction, input, constant = false) {
     // Vector without index (could or could not already be vector)
     else if (typeof result === "number") {
         if (Array.isArray(variable)) context.variables[varName][0] = result
-        else context.variables[varName] = [result, 0]
+        else context.variables[varName] = [result]
     }
 
     // Misc, will assign directly

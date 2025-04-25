@@ -20,7 +20,7 @@ async function forEachLoop(INFO, BLOCK, loopVector, elementAndIndex) {
         throw new Error("Variable name given to @forEach loop is not valid: " + index)
     }
 
-    //  Set to default [0,0] if doesnt exist
+    //  Set to default [0] if doesnt exist
     if (!Array.isArray(INFO.CONTEXT.variables[element])) {
         INFO.CONTEXT.variables[element] = [0]
     }
