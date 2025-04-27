@@ -102,5 +102,6 @@
     "InputVectorNonExistent": 5400,
     "InputVectorNonArray": 5405,
     "InputVectorInvalidArray": 5410,
-    "InvalidTypeGetVariable": 5415
+    "InvalidTypeGetVariable": 5500,
+    "StackSizeExceeded": 5600
 }

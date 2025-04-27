@@ -52,7 +52,7 @@ function getVariable(context, variable, expected = ["STR", "VECTOR", "NUM", "BOO
         }
 
         // Expected an invalid type
-        else ThrowError(5415, { AT: expect })
+        else ThrowError(5500, { AT: expect })
     }
 
     // No value found compliant with expected types

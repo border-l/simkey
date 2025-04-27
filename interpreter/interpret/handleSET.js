@@ -6,10 +6,11 @@ function handleSET(context, instruction) {
     const [_, varName, index, valueFunc] = instruction
     const value = valueFunc(context)
 
-    // Check it isn't a constant
-    if (context.constants.includes(varName)) {
-        ThrowError(5120, { AT: varName })
-    }
+    // No longer care since it's guaranteed to be a local variable
+    // // Check it isn't a constant
+    // if (context.constants.includes(varName)) {
+    //     ThrowError(5120, { AT: varName })
+    // }
 
     // Setting entire vector array to be something else (or anything else now)
     if (index === "ALL") {

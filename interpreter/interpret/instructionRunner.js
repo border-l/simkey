@@ -7,7 +7,12 @@ const handleASSN = require("./handleASSN")
 const handleRET = require("./handleRET")
 const NEXT_INSTRUCTION = require('../helpers/NEXT_INSTRUCTION')
 
+// Runs the instructions one by one
 async function instructionRunner(passedInfo, instructionList, instantReturn = false) {
+    // To manage variable scoping
+    const keepTracked = Object.keys(passedInfo.CONTEXT.variables)
+    const preserve = {}
+
     for (let i = 0; i < instructionList.length; i++) {
         const instruction = instructionList[i]
 
@@ -42,44 +47,62 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
                     }
 
                     // Call to JS or Simkey function
-                    else if (typeof instruction[1][x] === "object") {
-                        if (!(await instructionRunner(passedInfo, [instruction[1][x]], true))) {
-                            continue
-                        }
+                    else if (typeof instruction[1][x] === "object" && !(await instructionRunner(passedInfo, [instruction[1][x]], true))) {
+                        continue
                     }
                 }
 
-                // // Branch should not be run
-                // if (func[x] !== "@else" && !evaluateExpr(passedInfo.CONTEXT, instruction[1][x], true)) {
-                //     continue
-                // }
-
+                // Run block and clean up variables
                 result = await instructionRunner(passedInfo, instruction[2][x])
+                cleanUp(passedInfo.CONTEXT.variables, keepTracked, preserve)
                 break
             }
         }
 
-        // Special case, SET function
+        // Special case, SET function, used only for parameters
         else if (func === "SET") {
+            addTracked(instruction[1], keepTracked)
             handleSET(passedInfo.CONTEXT, instruction)
         }
 
         // Assignment statement
         else if (func === "ASSN" || func === "ASSNC") {
             if (instruction[3] instanceof NEXT_INSTRUCTION) continue
+            addTracked(instruction[1], keepTracked)
             handleASSN(passedInfo.CONTEXT, instruction, undefined, func.at(-1) === "C")
         }
 
+        // Return statement
         else if (func === "RET") {
             if (instruction[1] instanceof NEXT_INSTRUCTION) continue
             return [passedInfo.SYMBOLS.RETURN, handleRET(passedInfo.CONTEXT, instruction)]
         }
 
+        // Simkey function call
         else if (passedInfo.CONTEXT.funcs[func]) {
-            result = await instructionRunner(passedInfo, [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]), ...passedInfo.CONTEXT.funcs[func][0]])
-            result = Array.isArray(result) ? result[1] : result // In case it's a return statement, we know it is already fulfilled as this is where it was called
+            try {
+                prepareForParams(passedInfo.CONTEXT.funcs[func][1], passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants, keepTracked, preserve)
+
+                result = await instructionRunner(passedInfo,
+                    [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]), 
+                    ...passedInfo.CONTEXT.funcs[func][0]])
+                result = Array.isArray(result) ? result[1] : result
+
+                cleanUp(passedInfo.CONTEXT.variables, keepTracked, passedInfo.CONTEXT.constants, preserve)
+            }
+
+            // Check if the stack exceeded
+            catch (err) {
+                if (err instanceof RangeError) {
+                    ThrowError(5600, { AT: func })
+                }
+                else {
+                    throw err
+                }
+            }
         }
 
+        // Must be but is not JS function
         else if (!passedInfo.CONTEXT.model.IMPORTS[func]) {
             ThrowError(5210, { AT: func })
         }
@@ -118,6 +141,8 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
             else {
                 result = await passedInfo.CONTEXT.model.IMPORTS[func.substring(1)](passedInfo, ...newInstructions)
             }
+
+            cleanUp(passedInfo.CONTEXT.variables, keepTracked)
         }
 
         // Caller wanted instant result
@@ -140,31 +165,58 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
         if (i > 0 && instructionList[i - 1][3] instanceof NEXT_INSTRUCTION && instructionList[i - 1][0] === "ASSN") {
             // Assignment statement (could be const)
             if (result === undefined) ThrowError(2715, { AT: instruction[0] })
+            addTracked(instructionList[i - 1][1], keepTracked)
             handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result, instructionList[i - 1][0].at(-1) === "C")
         }
-
-        // // Assignment statement that required result from this function call
-        // if (i > 0 && (instructionList[i - 1][3] instanceof NEXT_INSTRUCTION && instructionList[i - 1][0] === "RET" || instructionList[i - 1][3] instanceof NEXT_INSTRUCTION && instructionList[i - 1][0] === "ASSN")) {
-        //     // Return statement
-        //     if (instructionList[i - 1][0] === "RET") {
-        //         if (result === undefined) ThrowError(2800, { AT: instruction[0] })
-        //         return [passedInfo.SYMBOLS.RETURN, result]
-        //     }
-
-        //     // Assignment statement (could be const)
-        //     if (result === undefined) ThrowError(2715, { AT: instruction[0] })
-        //     handleASSN(passedInfo.CONTEXT, instructionList[i - 1], result, instructionList[i - 1][0].at(-1) === "C")
-        // }
 
         // No result, continue
         else if (result === undefined) {
             continue
         }
 
+        // End now or move to next
         else if (passedInfo.YIELD.END(result) || passedInfo.YIELD.NEXT(result)) {
             return result
         }
     }
 }
+
+
+// Adds variable to tracked after checking if it is already there and getting the "root" name
+function addTracked(variableFull, tracked) {
+    const variableName = variableFull.indexOf(":") > -1 ? variableFull.slice(0, variableFull.indexOf(":")) : variableFull
+    tracked.includes(variableName) ? 0 : tracked.push(variableName)
+}
+
+// Sets up variables and constants under context to prepare for Simkey call
+function prepareForParams(vars, values, constants, tracked, preserved) {
+    for (const variable of vars) {
+        if (tracked.includes(variable) && preserved[variable] === undefined) {
+            const isConst = constants.includes(variable)
+            preserved[variable] = [values[variable], isConst]
+
+            if (isConst) {
+                constants.splice(constants.indexOf(variable), 1)
+            }
+        }
+    }
+}
+
+// Removes the variables that are now out of scope
+function cleanUp(variables, tracked, constants, preserve = {}) {
+    for (const key in variables) {
+        if (!tracked.includes(key)) {
+            delete variables[key]
+        }
+    }
+
+    for (const key in preserve) {
+        variables[key] = preserve[key][0]
+        if (preserve[key][1]) {
+            constants.push(key)
+        }
+    }
+}
+
 
 module.exports = instructionRunner
