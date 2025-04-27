@@ -7,7 +7,7 @@ const handleASSN = require("./handleASSN")
 const handleRET = require("./handleRET")
 const NEXT_INSTRUCTION = require('../helpers/NEXT_INSTRUCTION')
 
-async function instructionRunner(passedInfo, instructionList) {
+async function instructionRunner(passedInfo, instructionList, instantReturn = false) {
     for (let i = 0; i < instructionList.length; i++) {
         const instruction = instructionList[i]
 
@@ -35,10 +35,24 @@ async function instructionRunner(passedInfo, instructionList) {
         // Handle conditional
         if (Array.isArray(func)) {
             for (let x = 0; x < func.length; x++) {
-                // Branch should not be run
-                if (func[x] !== "@else" && !evaluateExpr(passedInfo.CONTEXT, instruction[1][x], true)) {
-                    continue
+                if (func[x] !== "@else") {
+                    // Simple expression
+                    if (typeof instruction[1][x] === "string" && !evaluateExpr(passedInfo.CONTEXT, instruction[1][x], true)) {
+                        continue
+                    }
+
+                    // Call to JS or Simkey function
+                    else if (typeof instruction[1][x] === "object") {
+                        if (!(await instructionRunner(passedInfo, [instruction[1][x]], true))) {
+                            continue
+                        }
+                    }
                 }
+
+                // // Branch should not be run
+                // if (func[x] !== "@else" && !evaluateExpr(passedInfo.CONTEXT, instruction[1][x], true)) {
+                //     continue
+                // }
 
                 result = await instructionRunner(passedInfo, instruction[2][x])
                 break
@@ -104,6 +118,11 @@ async function instructionRunner(passedInfo, instructionList) {
             else {
                 result = await passedInfo.CONTEXT.model.IMPORTS[func.substring(1)](passedInfo, ...newInstructions)
             }
+        }
+
+        // Caller wanted instant result
+        if (instantReturn) {
+            return result
         }
 
         // Return further up

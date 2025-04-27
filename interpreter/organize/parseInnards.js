@@ -126,7 +126,9 @@ function parseInnards(context, index, depth) {
 
             // Imported functions
             if (context.model.IMPORTS[token]) {
-                i = parseImportedFunctionCall(context, token, parsed, i, parseInnards, depth + 1)
+                const [instruction, newIndex] = parseImportedFunctionCall(context, i, parseInnards, depth + 1)
+                parsed.push(instruction)
+                i = newIndex
                 continue
             }
 

@@ -14,7 +14,7 @@ const FORMAT = {
 
     InstructionIllegal: ({ AT, CONTEXT }) => `Invalid instruction present. AT: ${AT}, CONTEXT: ${CONTEXT}`, // Honestly not entirely sure, but it's in getInstructionList (now removed)
     InstructionMissingArguments: ({ AT }) => `Instruction for imported function call is missing arguments. AT: ${AT}`,
-    InstructionMissingFunction: ({ AT }) => `Instruction with non-existent imported function (this is most likely from forgetting to include in <EXPORTS>). AT: ${AT}`,
+    InstructionMissingFunction: ({ AT }) => `Instruction with non-existent imported function. AT: ${AT}`,
 
     UnknownPropertySet: ({ AT }) => `Attempted to set unknown property in context (Internal Error). PROPERTY: ${AT}`,
 

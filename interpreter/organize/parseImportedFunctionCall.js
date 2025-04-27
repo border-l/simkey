@@ -8,12 +8,13 @@ const findBracket = require("../helpers/findBracket")
 const ThrowError = require("../errors/ThrowError")
 
 // Parse imported function call for #parseInnards
-function parseImportedFunctionCall(context, token, parsed, i, parseInnards, depth) {
+function parseImportedFunctionCall(context, i, parseInnards, depth, ignoreBlock = false) {
     // Get parameters for function
+    const token = context.tokens[i]
     const importParams = context.model.IMPORTS[token]["PARAMS"]
 
     // Block required, wrap arguments in brackets
-    if (context.model.IMPORTS[token].BLOCK && context.tokens[i + 1] !== "{") {
+    if (context.model.IMPORTS[token].BLOCK && context.tokens[i + 1] !== "{" && !ignoreBlock) {
         const nextBracket = context.tokens.indexOf("{", i + 1)
         if (nextBracket === -1) ThrowError(1035, { AT: token })
         context.tokens[i + 1] = "[" + context.tokens[i + 1]
@@ -27,7 +28,7 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, dept
         }
 
         if (context.model.IMPORTS[token].BLOCK) {
-            if (context.tokens[i + 1] !== "{") {
+            if (context.tokens[i + 1] !== "{" || ignoreBlock) {
                 ThrowError(1035, { AT: token })
             }
 
@@ -35,17 +36,20 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, dept
                 const closeIndex = findBracket(context, i + 1)
                 if (closeIndex == -1) ThrowError(1015, { AT: token })
 
-                parsed.push([token, { args: [], block: context.tokens.slice(i + 2, closeIndex) }])
-                return closeIndex
+                return [[token, { args: [], block: context.tokens.slice(i + 2, closeIndex) }], closeIndex]
+                // parsed.push([token, { args: [], block: context.tokens.slice(i + 2, closeIndex) }])
+                // return closeIndex
             }
 
             const [parsedBlock, newerIndex] = parseInnards(context, i + 1, depth)
-            parsed.push([token, { args: [], block: parsedBlock }])
-            return newerIndex
+            return [[token, { args: [], block: parsedBlock }], newerIndex]
+            // parsed.push([token, { args: [], block: parsedBlock }])
+            // return newerIndex
         }
 
-        parsed.push([token, { args: [], block: [] }])
-        return i
+        return [[token, { args: [], block: [] }], i]
+        // parsed.push([token, { args: [], block: [] }])
+        // return i
     }
 
     // Values & final
@@ -186,12 +190,13 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, dept
 
     // No block necessary
     if (!context.model.IMPORTS[token]["BLOCK"]) {
-        parsed.push([token, { args: finalArray, block: [] }])
-        return newIndex
+        return [[token, { args: finalArray, block: [] }], newIndex]
+        // parsed.push([token, { args: finalArray, block: [] }])
+        // return newIndex
     }
 
     // Doesnt have block even though required
-    if (context.tokens[newIndex + 1] !== "{") {
+    if (context.tokens[newIndex + 1] !== "{" || ignoreBlock) {
         ThrowError(1035, { AT: token })
     }
 
@@ -201,21 +206,23 @@ function parseImportedFunctionCall(context, token, parsed, i, parseInnards, dept
         const closeIndex = findBracket(context, newIndex + 1)
         if (closeIndex == -1) ThrowError(1015, { AT: token })
 
-        // Give tokens in block
-        parsed.push([token, { args: finalArray, block: context.tokens.slice(newIndex + 2, closeIndex) }])
+        return [[token, { args: finalArray, block: context.tokens.slice(newIndex + 2, closeIndex) }], closeIndex]
+        // // Give tokens in block
+        // parsed.push([token, { args: finalArray, block: context.tokens.slice(newIndex + 2, closeIndex) }])
 
-        // Move index along
-        return closeIndex
+        // // Move index along
+        // return closeIndex
     }
 
     // Parse insides of block
     const [parsedBlock, newerIndex] = parseInnards(context, newIndex + 1, depth)
 
-    // Give parsed block
-    parsed.push([token, { args: finalArray, block: parsedBlock }])
+    return [[token, { args: finalArray, block: parsedBlock }], newerIndex]
+    // // Give parsed block
+    // parsed.push([token, { args: finalArray, block: parsedBlock }])
 
-    // Move index along
-    return newerIndex
+    // // Move index along
+    // return newerIndex
 }
 
 module.exports = parseImportedFunctionCall

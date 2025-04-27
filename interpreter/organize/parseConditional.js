@@ -1,6 +1,8 @@
+const parseImportedFunctionCall = require('./parseImportedFunctionCall')
 const combineTillNext = require("../helpers/combineTillNext")
 const findBracket = require("../helpers/findBracket")
 const ThrowError = require("../errors/ThrowError")
+const getArray = require('../types/getArray')
 
 // Parses conditional models, using #parseConditionExpression for expressions
 function parseConditional(context, index, parseInnards, depth) {
@@ -25,10 +27,49 @@ function parseConditional(context, index, parseInnards, depth) {
                 ThrowError(1025, { AT: conditionFunction + " " + context.tokens[i + 1] })
             }
 
-            // Add function and parsed condition
+            // Add function, parsed condition gets pushed later
             parsed[0].push(conditionFunction)
-            parsed[1].push(condition)
-            
+
+            // Function as condition
+            if (condition[0] === "@") {
+                const funcName = condition.slice(0, condition.indexOf(" ") > -1 ? condition.indexOf(" ") : condition.length)
+
+                // Imported JS function
+                if (context.model.IMPORTS[funcName]) {
+                    const [instruction, newIndex] = parseImportedFunctionCall(context, i + 1, parseInnards, depth, true)
+
+                    // Extended past bracket
+                    if (newIndex > nextBracket) {
+                        ThrowError(1005, { AT: condition })
+                    }
+
+                    parsed[1].push(instruction)
+                }
+
+                // Native simkey function
+                else {
+                    if (nextBracket === i + 2) {
+                        parsed[1].push([funcName, []])
+                    }
+
+                    else {
+                        const [array, newIndex] = getArray(context, i + 2, false)
+
+                        // Extended past bracket
+                        if (newIndex > nextBracket) {
+                            ThrowError(1005, { AT: condition })
+                        }
+
+                        parsed[1].push([funcName, array])
+                    }
+                }
+            }
+
+            // Just a regular expression
+            else {
+                parsed[1].push(condition)
+            }
+
             // Add conditional branch block
             parsed[2].push(parseInnards(context, nextBracket, depth)[0])
         }

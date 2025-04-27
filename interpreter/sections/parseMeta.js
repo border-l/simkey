@@ -25,7 +25,7 @@ module.exports = (context) => {
             }
 
             // Move along index
-            return i + 2
+            return i + 1
         }
 
         else if (token === "NAME") {
@@ -35,7 +35,7 @@ module.exports = (context) => {
             }
 
             // Get string for the name
-            const [value, newIndex] = getString(context, i + 2)
+            const [value, newIndex] = getString(context, i + 1)
 
             // Update meta in model
             context.model.META.NAME = value
@@ -53,7 +53,7 @@ module.exports = (context) => {
             context.model.META.MODE = firstIn
 
             // Move index along
-            return i + 2
+            return i + 1
         }
 
         else if (token === "SWITCHES") {
@@ -63,7 +63,7 @@ module.exports = (context) => {
             }
 
             // Get array and check valid elements
-            const [value, newIndex] = getArray(context, i + 2)
+            const [value, newIndex] = getArray(context, i + 1)
 
             // Check if each variable is validly named
             value.forEach((val) => 
@@ -79,7 +79,7 @@ module.exports = (context) => {
         // Handle shortcut assignment
         else if (token === "SHORTCUT") {
             context.model.META.SHORTCUT = firstIn
-            return i + 2
+            return i + 1
         }
 
         // Invalid attribute named in assignment
