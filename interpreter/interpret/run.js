@@ -1,5 +1,6 @@
 const instructionRunner = require("./instructionRunner")
 const robot = require("../robot/robot")
+const debugRobot = require("../robot/debugRobot")
 
 const endSymbol = Symbol("END_STRING")
 const nextSymbol = Symbol("NEXT_SYMBOL")
@@ -14,6 +15,7 @@ async function run(context) {
 
     // Setup functions
     for (const key in context.model.IMPORTS) {
+        if (key[0] !== "@") continue
         await context.model.IMPORTS[key].SETUP()
     }
 
@@ -21,7 +23,7 @@ async function run(context) {
         DEF: def,
         HELD: heldKeys,
         CONTEXT: context,
-        ROBOT: robot,
+        ROBOT: !context.debug ? robot : debugRobot,
         RUN: instructionRunner,
         SYMBOLS: { END: endSymbol, NEXT: nextSymbol, RETURN: returnSymbol },
         YIELD: {
@@ -53,8 +55,11 @@ async function run(context) {
 
     // Cleanup functions
     for (const key in context.model.IMPORTS) {
+        if (key[0] !== "@") continue
         await context.model.IMPORTS[key].CLEANUP(passedInfo)
     }
+
+    return context.debug ? debugRobot.getString() : undefined
 }
 
 module.exports = run

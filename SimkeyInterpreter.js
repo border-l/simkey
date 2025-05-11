@@ -21,8 +21,9 @@ const deepClone = require("./interpreter/helpers/deepClone")
 class Interpreter {
     #Interpreter
 
-    // Interrupt signal
+    // Interrupt signal, debug flag
     #SIGNAL
+    #debug
 
     // Script information and built-in functions
     #script
@@ -40,9 +41,10 @@ class Interpreter {
     // For passing private fields to other functions
     #context
 
-    constructor(fileName) {
+    constructor(fileName, debug = false) {
         this.#Interpreter = Interpreter
         this.#SIGNAL = false
+        this.#debug = debug
         this.#fileName = fileName
         this.#script = fs.readFileSync(fileName, 'utf-8')
         this.#tokens = []
@@ -138,6 +140,7 @@ class Interpreter {
 
     #getContext() {
         this.#context.Interpreter = this.#Interpreter
+        this.#context.debug = this.#debug
         this.#context.SIGNAL = this.#SIGNAL
         this.#context.fileName = this.#fileName
         this.#context.script = this.#script
@@ -150,8 +153,8 @@ class Interpreter {
         this.#context.tables = this.#tables
     }
 
-    run() {
-        run(this.#context)
+    async run() {
+        return await run(this.#context)
     }
 
     getExport(name) {
