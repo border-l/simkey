@@ -78,10 +78,12 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
     if (first === "CALL.BEFORE") {
         params = require(importLocation)
     }
+
     else if (importLocation.endsWith(".simkey")) {
         name = name.endsWith(".simkey") ? path.parse(name).name : name
         importSimkeyFunc(context, importLocation, name)
     }
+
     else {
         // Parameters are now given by the function files themselves
         const { FUNCTION, TAKES } = require(importLocation)
@@ -96,12 +98,12 @@ module.exports = (context, array, autoImport, currentPath = path.dirname(path.re
             ThrowError(4025, { AT: name })
         }
 
-        const { PARAMS, BLOCK = false, DONT_PARSE_BLOCK = false } = TAKES
+        const { PARAMS, BLOCK = false, DONT_PARSE_BLOCK = false, SETUP = () => {}, CLEANUP = () => {} } = TAKES
 
-        params = { PARAMS: getParameters(context, PARAMS), BLOCK, DONT_PARSE_BLOCK }
+        params = { PARAMS: getParameters(context, PARAMS), BLOCK, DONT_PARSE_BLOCK, SETUP, CLEANUP }
     }
 
     // Load params into model and return incremented
-    context.model.IMPORTS[name] = params
+    name === "CALL.BEFORE" ? context.model.IMPORTS[name].push(params) : context.model.IMPORTS[name] = params
     return returnIndex > -1 ? returnIndex : 0 // Keep an eye on this
 }

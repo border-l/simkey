@@ -82,6 +82,10 @@ function parseInnards(context, index, depth) {
 
             // Return statement
             if (token === "@return") {
+                if (depth < 2) {
+                    ThrowError(1700, { AT: token + " " + context.tokens[i + 1] })
+                }
+
                 if (i >= finalIndex - 1) {
                     ThrowError(2805, {})
                 }
@@ -93,7 +97,7 @@ function parseInnards(context, index, depth) {
             }
 
             // Function definition
-            if (context.tokens[i + 1] === "uses") {
+            if (context.tokens[i + 1] === "takes") {
                 if (depth !== 1) {
                     ThrowError(1515, { AT: token })
                 }

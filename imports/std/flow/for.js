@@ -19,6 +19,8 @@ async function forLoop(INFO, BLOCK, start, end, step, variable) {
     //     throw new Error("Index variable is already a boolean: " + variable)
     // }
 
+    // Check constant instead later
+
     //  Set to default [0] if doesnt exist
     if (!Array.isArray(INFO.CONTEXT.variables[variable])) {
         INFO.CONTEXT.variables[variable] = [0]

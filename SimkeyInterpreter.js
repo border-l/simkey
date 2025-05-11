@@ -6,6 +6,7 @@ const parseImports = require("./interpreter/sections/parseImports")
 const parseExports = require("./interpreter/sections/parseExports")
 const parseMeta = require("./interpreter/sections/parseMeta")
 const parseInputs = require('./interpreter/sections/parseInputs')
+const setInputs = require('./interpreter/sections/setInputs')
 
 const organize = require("./interpreter/organize/organize")
 const checkFunctionReferences = require("./interpreter/helpers/checkFunctionReferences")
@@ -15,9 +16,13 @@ const getExport = require("./interpreter/importing/getExport")
 const ThrowError = require("./interpreter/errors/ThrowError")
 const fs = require("fs")
 
+const deepClone = require("./interpreter/helpers/deepClone")
 
 class Interpreter {
     #Interpreter
+
+    // Interrupt signal
+    #SIGNAL
 
     // Script information and built-in functions
     #script
@@ -37,16 +42,17 @@ class Interpreter {
 
     constructor(fileName) {
         this.#Interpreter = Interpreter
+        this.#SIGNAL = false
         this.#fileName = fileName
         this.#script = fs.readFileSync(fileName, 'utf-8')
         this.#tokens = []
         this.#checkLater = []
-        this.#variables = {}
-        this.#constants = []
+        this.#variables = { "$DEFAULT": false }
+        this.#constants = ["$DEFAULT"]
         this.#tables = { "TABLE": [] }
         this.#funcs = {}
         this.#model = {
-            "IMPORTS": {},
+            "IMPORTS": { "CALL.BEFORE": [] },
             "EXPORTS": {},
             "META": {
                 "NAME": "",
@@ -82,9 +88,9 @@ class Interpreter {
         organize(this.#context)
         checkFunctionReferences(this.#context)
 
-        // Imported function to scan over document and parse before this handling
-        if (this.#model.IMPORTS["CALL.BEFORE"]) {
-            this.#model.IMPORTS["CALL.BEFORE"](this.#tokens, this.#model)
+        // Imported functions to scan over document and parse before this handling
+        for (const func of this.#model.IMPORTS["CALL.BEFORE"]) {
+            func(this.#context)
         }
     }
 
@@ -92,6 +98,9 @@ class Interpreter {
         this.#context = {
             update: (property, set) => {
                 switch (property) {
+                    case 'SIGNAL':
+                        this.#SIGNAL = set
+                        break
                     case 'fileName':
                         this.#fileName = set
                         break
@@ -129,6 +138,7 @@ class Interpreter {
 
     #getContext() {
         this.#context.Interpreter = this.#Interpreter
+        this.#context.SIGNAL = this.#SIGNAL
         this.#context.fileName = this.#fileName
         this.#context.script = this.#script
         this.#context.tokens = this.#tokens
@@ -146,6 +156,19 @@ class Interpreter {
 
     getExport(name) {
         return getExport(this.#context, name)
+    }
+
+    getInputs() {
+        return { INPUTS: deepClone(this.#model.INPUTS), VARIABLES: deepClone(this.#variables) }
+    }
+
+    setInputs(inputs) {
+        setInputs(this.#context, inputs)
+    }
+
+    stop() {
+        this.#SIGNAL = true
+        this.#context.SIGNAL = true
     }
 }
 

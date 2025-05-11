@@ -84,7 +84,7 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
                 prepareForParams(passedInfo.CONTEXT.funcs[func][1], passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants, keepTracked, preserve)
 
                 result = await instructionRunner(passedInfo,
-                    [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]), 
+                    [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]),
                     ...passedInfo.CONTEXT.funcs[func][0]])
                 result = Array.isArray(result) ? result[1] : result
 

@@ -18,7 +18,7 @@ async function runExpressionObject (context, expression, heldKeys, def, { send, 
     if (hold < 0 || wait < 0) {
         ThrowError(2500, { VALUES: hold + "," + wait })
     }
-    
+
     // Simple wait expression
     if (expression.keysHeld.length === 0 && expression.keysPressed.length === 0 && expression.wait === 'DEF') { 
         await sleep(hold)

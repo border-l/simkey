@@ -12,14 +12,8 @@ function importSimkeyFunc(context, path, name) {
 
     // Copy into FUNCS (need to initialize params first (not anymore))
     for (const key in exports.FUNCS) {
-        context.funcs[key] = exports.FUNCS[key]
-        // const params = exports.FUNCS[key][1]
-
-        // Either already constant or will set to vector
-        // for (const param of params) {
-        //     if (context.constants.includes(param)) ThrowError(4310, { MODE: param, FUNC: key })
-        //     if (!Array.isArray(param)) context.variables[param] = [0]
-        // }
+        if (key === "@init") context.model.MACRO.push(...exports.FUNCS[key])
+        else context.funcs[key] = exports.FUNCS[key]
     }
 }
 

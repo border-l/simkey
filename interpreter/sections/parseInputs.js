@@ -28,7 +28,7 @@ function parseInputs(context) {
         if (token === "VECTOR") {
             const bounds = tokens[i + 2].split(",").map(x => x === "" ? null : Number(x))
 
-            // Bound validation (0 <= 1, 0 && 1 nums (so long as 1 not null), length < 2)
+            // Bound validation (0 <= 1, 0 && 1 nums (so long as 1 not null), length > 2)
             if (bounds.length > 2) ThrowError(2900, { AT: tokens[i + 2], REASON: "more than 2 values given." })
             if (isNaN(bounds[0]) || (isNaN(bounds[1]) && bounds[1] !== null)) ThrowError(2900, { AT: tokens[i + 2], REASON: "value given is not a number." })
             if (bounds[0] < 1 || (bounds[0] > bounds[1] && bounds[1] !== null)) ThrowError(2900, { AT: tokens[i + 2], REASON: "first bound is bigger than second." })
@@ -40,7 +40,9 @@ function parseInputs(context) {
                 for (let x = 0; x < array.length; x++) {
                     array[x] = evaluateExpr(context, array[x])
                 }
-            } catch (err) { ThrowError(1115, { AT: varn }) }  
+            } catch (err) { ThrowError(1115, { AT: varn }) }
+
+            if (bounds.length < 2) bounds.push(bounds[0])
 
             context.model.INPUTS[type][varn] = bounds
             context.variables[varn] = array
