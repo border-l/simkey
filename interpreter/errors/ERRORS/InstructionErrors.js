@@ -27,7 +27,9 @@ const FORMAT = {
 
     InvalidTypeGetVariable: ({ AT }) => `Invalid type given to getVariable (Internal Error, likely from imported function). AT: ${AT}`,
 
-    StackSizeExceeded: ({ AT }) => `Function resulted in exceeding JS maximum stack size. AT: ${AT}`
+    StackSizeExceeded: ({ AT }) => `Function resulted in exceeding JS maximum stack size. AT: ${AT}`,
+
+    InvalidRepeatValue: ({ AT }) => `Invalid REPEAT argument passed into SimkeyInterpreter.run; not a number or boolean. AT: ${AT}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }

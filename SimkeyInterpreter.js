@@ -153,8 +153,8 @@ class Interpreter {
         this.#context.tables = this.#tables
     }
 
-    async run() {
-        return await run(this.#context)
+    async run(repeat = false) {
+        return await run(this.#context, repeat)
     }
 
     getExport(name) {
