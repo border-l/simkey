@@ -216,7 +216,6 @@ function parseImportedFunctionCall(context, i, parseInnards, depth, ignoreBlock 
 
     // Parse insides of block
     const [parsedBlock, newerIndex] = parseInnards(context, newIndex + 1, depth)
-
     return [[token, { args: finalArray, block: parsedBlock }], newerIndex]
     // // Give parsed block
     // parsed.push([token, { args: finalArray, block: parsedBlock }])

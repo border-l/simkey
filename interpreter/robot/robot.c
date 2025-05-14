@@ -90,6 +90,18 @@ __declspec(dllexport) void setCursor(int x, int y) {
     SendInput(1, &mouseInput, sizeof(INPUT));
 }
 
+__declspec(dllexport) void setCursorNA(int x, int y) {
+    INPUT mouseInput;
+    mouseInput.type = INPUT_MOUSE;
+    mouseInput.mi.dx = x;
+    mouseInput.mi.dy = y;
+    mouseInput.mi.mouseData = 0;
+    mouseInput.mi.time = 0;
+    mouseInput.mi.dwExtraInfo = 0;
+    mouseInput.mi.dwFlags = MOUSEEVENTF_MOVE;
+    SendInput(1, &mouseInput, sizeof(INPUT));
+}
+
 __declspec(dllexport) void setCursorR(int x, int y) {
     SetCursorPos(x, y);
 }

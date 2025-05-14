@@ -14,6 +14,7 @@ const robot = ffi.Library(libPath, {
     'mouseUp': ['void', ['int']],
     'setCursor': ['void', ['int', 'int']],
     'setCursorR': ['void', ['int', 'int']],
+    'setCursorNA': ['void', ['int', 'int']],
     'scroll': ['void', ['int']],
     'getCursor': ['void', [intArrayType]],
     'getScreenSize': ['void', [intArrayType]],
@@ -72,4 +73,4 @@ function BufferToArray(buff) {
     return res
 }
 
-module.exports = {send, cursor: robot.setCursor, cursorR: robot.setCursorR, scroll: robot.scroll, sleep, getCursor, getPixel, getScreenSize}
+module.exports = {send, cursor: robot.setCursor, cursorR: robot.setCursorR, cursorNA: robot.setCursorNA, scroll: robot.scroll, sleep, getCursor, getPixel, getScreenSize}

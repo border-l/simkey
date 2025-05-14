@@ -135,7 +135,7 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
             }
 
             // Get result with arguments
-            if (instruction[1].block.length > 0) {
+            if (passedInfo.CONTEXT.model.IMPORTS[func].BLOCK) {
                 result = await passedInfo.CONTEXT.model.IMPORTS[func.substring(1)](passedInfo, instruction[1].block, ...(newInstructions.length > 0 ? newInstructions : []))
             }
             else {

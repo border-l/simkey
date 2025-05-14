@@ -1,5 +1,6 @@
+@cursor_direct ./cursorDirect
+@cursor_relative ./cursorRelative
 @./cursor
-@./cursorDirect
 @./delay
 @./hold
 @./wait
