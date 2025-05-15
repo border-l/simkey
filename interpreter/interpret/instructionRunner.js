@@ -84,15 +84,19 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
         // Simkey function call
         else if (passedInfo.CONTEXT.funcs[func]) {
             try {
-                // prepareForParams(passedInfo.CONTEXT.funcs[func][1], passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants, keepTracked, preserve)
+                const setters = setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1])
+                setters.forEach(val => {
+                    const value = val[3](passedInfo.CONTEXT)
+                    val[3] = () => value
+                })
+
                 const preserveNonGlobal = nonGlobals(passedInfo.CONTEXT.globals, passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
 
                 removeNonGlobals(passedInfo.CONTEXT.globals, passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
                 const forgottenFromParams = prepareForParams(passedInfo.CONTEXT.funcs[func][1], passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
 
                 result = await instructionRunner(passedInfo,
-                    [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]),
-                    ...passedInfo.CONTEXT.funcs[func][0]])
+                    [...setters, ...passedInfo.CONTEXT.funcs[func][0]])
                 result = Array.isArray(result) ? result[1] : result
 
                 removeNonGlobals(passedInfo.CONTEXT.globals, passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)

@@ -1,4 +1,4 @@
-const specials = ["for", "loop", "repeat", "if", "elseif", "else", "return", "next"]
+const specials = ["for", "loop", "repeat", "if", "elseif", "else", "return", "next", "with", "async"]
 
 // Splits the script into tokens
 function tokenize(context) {
@@ -8,7 +8,7 @@ function tokenize(context) {
 
     const brackets = []
 
-    // Each "token"
+    // Each "token", currently redundant
     for (let i = 0; i < split.length; i++) {
         const token = split[i]
         let collect = ""
@@ -52,19 +52,21 @@ function tokenize(context) {
                 continue
             }
 
-            // 
+            // Starting array
             else if (char === "[" && x === 0) {
                 collect += "["
                 brackets.push("[")
                 continue
             }
 
+            // Ending array
             else if (char === "]" && x === token.length - 1 && last === "[") {
                 collect += "]"
                 brackets.pop()
                 continue
             }
 
+            // Start of string
             else if (char === '"' && (x === 0 && brackets.length === 0 || last === "[")) {
                 collect += '"'
                 brackets.push('"')
@@ -74,14 +76,17 @@ function tokenize(context) {
             collect += char
         }
 
+        // Escape end in string
         if (token === "end" && brackets.at(-1) === '"') {
             final.push("\\" + collect)
         }
 
+        // Add @ to special functions
         else if (brackets.at(-1) !== '"' && specials.includes(token)) {
             final.push("@" + token)
         }
 
+        // Not sure?
         else if (collect.length > 0) {
             final.push(collect)
         }

@@ -3,7 +3,7 @@ const evaluateExpr = require("../helpers/evaluateExpr")
 const getBalancedExpression = require("../helpers/getBalancedExpression")
 
 // Gets number value from vector
-function getVectorNumber(context, vector, noError = false, errorIndex = false, defaultIndex = 0) {
+function getVectorNumber(context, vector, noError = false, errorIndex = false) {
     // Get colon's index and vector, finalNumber will be figured
     const colonIndex = vector.indexOf(":")
     const vectorArray = context.variables[vector.substring(0, colonIndex > -1 ? colonIndex : vector.length)]
@@ -32,7 +32,13 @@ function getVectorNumber(context, vector, noError = false, errorIndex = false, d
     }
     // Get vector index
     else {
-        ind = colonIndex > -1 ? Number(vector.substring(colonIndex + 1)) : defaultIndex
+        ind = colonIndex > -1 ? Number(vector.substring(colonIndex + 1)) : undefined
+    }
+
+    if (ind === undefined) {
+        console.log("temp, no index")
+        if (!errorIndex) ThrowError(3200, { AT: vector })
+        return false
     }
 
     // Check it is not out of range

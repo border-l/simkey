@@ -22,6 +22,12 @@ function getVariable(context, variable, expected = ["STR", "VECTOR", "NUM", "BOO
 
         // Check for type num
         if (expect === "NUM") {
+            const num = context.variables[variable]
+            if (!isNaN(num) && num !== "") {
+                solution = num
+                break
+            }
+
             const vectorNum = getVectorNumber(context, variable, true)
             if (vectorNum === false) continue
             solution = vectorNum

@@ -13,20 +13,15 @@ function evaluateExpr(context, expression, bool = false, asIs = false) {
         // rid of it before.
     expression = expression.replaceAll(/(?:"\\]\s|\s\\]\s)/g, "]")
 
-    // Replace variables with value from getVariable
+    // Replace variables with random variable name from getVariable
     const expr = expression.replaceAll(/\$\w+(?::[:\w]+)?/g, (varName) => {
         const variable = getVariable(context, varName)
 
-        // Not a number, boolean, or num array (at least first index)
-        if ((variable instanceof Object || typeof variable === "string") && (!Array.isArray(variable) || isNaN(variable[0]))) {
-            if (!stored.get(variable)) {
-                stored.set(variable, "a".repeat(stored.size + 1))
-                return "a".repeat(stored.size)
-            }
-            else return stored.get(variable)
+        if (!stored.get(variable)) {
+            stored.set(variable, "a".repeat(stored.size + 1))
+            return "a".repeat(stored.size)
         }
-
-        return Array.isArray(variable) ? variable[0] : variable
+        else return stored.get(variable)
     })
 
     const variables = { "FALSE": false, "TRUE": true }
@@ -45,5 +40,28 @@ function evaluateExpr(context, expression, bool = false, asIs = false) {
     // Return according to bool arg
     return !bool ? Number(evaluate) : !(!evaluate)
 }
+
+parser.functions.veccmp = (arg1, arg2) => {
+    if (!Array.isArray(arg1) || !Array.isArray(arg2)) {
+
+    }
+
+    if (arg1.some(val => isNaN(val) || val === "") || arg2.some(val => isNaN(val) || val === "")) {
+
+    }
+
+    if (arg1.length !== arg2.length) return false
+
+    for (let i = 0; i < Math.max(arg1.length, arg2.length); i++) {
+        if (arg1[i] !== arg2[i]) return false
+    }
+
+    return true
+}
+
+parser.consts.TRUE = true
+parser.consts.FALSE = false
+delete parser.consts.true
+delete parser.consts.false
 
 module.exports = evaluateExpr

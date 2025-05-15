@@ -1,6 +1,6 @@
 const isEscaped = require("../helpers/isEscaped")
 const findStringBracket = require("../helpers/findStringBracket")
-const getVectorNumber = require("../types/getVectorNumber")
+const getVariable = require("../types/getVariable")
 const evaluateExpr = require("../helpers/evaluateExpr")
 const checkVariableName = require("../helpers/checkVariableName")
 const checkValidExpr = require("../helpers/checkValidExpr")
@@ -45,8 +45,8 @@ module.exports = (context, expression) => {
             }
 
             else {
-                // Let getVectorNumber handle it
-                parsedExpression.hold = (context) => getVectorNumber(context, value)
+                // Let getVariable "NUM" handle it
+                parsedExpression.hold = (context) => getVariable(context, value, ["NUM"])
             }
         }
     }
@@ -78,8 +78,8 @@ module.exports = (context, expression) => {
             }
 
             else {
-                // Let getVectorNumber handle it
-                parsedExpression.wait = (context) => getVectorNumber(context, value, false, false, 1)
+                // Let getVariable "NUM" handle it
+                parsedExpression.wait = (context) => getVariable(context, value, ["NUM"])
             }
         }
     }

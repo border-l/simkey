@@ -24,6 +24,14 @@ async function type(INFO, string, time = 10) {
                 continue
             }
 
+
+
+            const num = INFO.CONTEXT.variables[variable]
+            if (!isNaN(num) && num !== "") {
+                await typeString(INFO.ROBOT, String(num), time)
+                continue
+            }
+
             // Check vector
             const vector = getVectorNumber(INFO.CONTEXT, variable, true, true) // getVariable instead (when adjusted)
             if (vector !== false) {

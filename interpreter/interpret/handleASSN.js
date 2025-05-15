@@ -1,6 +1,5 @@
 const ThrowError = require("../errors/ThrowError")
 const evaluateExpr = require('../helpers/evaluateExpr')
-const getVectorNumber = require("../types/getVectorNumber")
 const resultHandler = require('./resultHandler')
 const getVariable = require('../types/getVariable')
 
@@ -54,11 +53,12 @@ function handleASSN(context, instruction, input, constant = false) {
         context.variables[varName][index] = result
     }
 
-    // Vector without index (could or could not already be vector)
-    else if (typeof result === "number") {
-        if (Array.isArray(variable)) context.variables[varName][0] = result
-        else context.variables[varName] = [result]
-    }
+    // // Vector without index (could or could not already be vector)
+    // else if (typeof result === "number") {
+        // if (Array.isArray(variable)) context.variables[varName][0] = result
+        // else context.variables[varName] = [result]
+    //     context.variables[varName] = result
+    // }
 
     // Misc, will assign directly
     else context.variables[varName] = result
