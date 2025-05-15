@@ -47,7 +47,7 @@ async function run(context, REPEAT) {
         let completed = false
 
         // Interpret list
-        instructionRunner(passedInfo, instructionList).then(() => {
+        instructionRunner(passedInfo, instructionList, false, true).then(() => {
             completed = true
         })
 

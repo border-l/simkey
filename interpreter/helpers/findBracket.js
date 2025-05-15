@@ -3,8 +3,8 @@ module.exports = (context, index, searchArray = context.tokens) => {
     let search = []
 
     // Find pair of brackets
-    if (searchArray[index] === "{") {
-        search = ["{", "}"]
+    if (searchArray[index] === "start") {
+        search = ["start", "end"]
     }
     else if (searchArray[index] === "[") {
         search = ["[", "]"]

@@ -14,8 +14,8 @@ function parseImportedFunctionCall(context, i, parseInnards, depth, ignoreBlock 
     const importParams = context.model.IMPORTS[token]["PARAMS"]
 
     // Block required, wrap arguments in brackets
-    if (context.model.IMPORTS[token].BLOCK && context.tokens[i + 1] !== "{" && !ignoreBlock) {
-        const nextBracket = context.tokens.indexOf("{", i + 1)
+    if (context.model.IMPORTS[token].BLOCK && context.tokens[i + 1] !== "start" && !ignoreBlock) {
+        const nextBracket = context.tokens.indexOf("start", i + 1)
         if (nextBracket === -1) ThrowError(1035, { AT: token })
         context.tokens[i + 1] = "[" + context.tokens[i + 1]
         context.tokens[nextBracket - 1] += "]"
@@ -28,7 +28,7 @@ function parseImportedFunctionCall(context, i, parseInnards, depth, ignoreBlock 
         }
 
         if (context.model.IMPORTS[token].BLOCK) {
-            if (context.tokens[i + 1] !== "{" || ignoreBlock) {
+            if (context.tokens[i + 1] !== "start" || ignoreBlock) {
                 ThrowError(1035, { AT: token })
             }
 
@@ -196,7 +196,7 @@ function parseImportedFunctionCall(context, i, parseInnards, depth, ignoreBlock 
     }
 
     // Doesnt have block even though required
-    if (context.tokens[newIndex + 1] !== "{" || ignoreBlock) {
+    if (context.tokens[newIndex + 1] !== "start" || ignoreBlock) {
         ThrowError(1035, { AT: token })
     }
 

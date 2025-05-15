@@ -15,7 +15,7 @@ module.exports = (context, index, trimmed = true, searchArray = context.tokens) 
 
     // Loop from index to length
     for (; i < searchArray.length; i++) {
-        const token = searchArray[i]
+        let token = searchArray[i]
 
         // If there's a section token then the array has no end
         if (checkSection(context, token)) {

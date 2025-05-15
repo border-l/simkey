@@ -19,7 +19,7 @@ function parseInnards(context, index, depth) {
     let finalIndex
 
     // Find final index depending on bracket
-    if (firstToken === "{") {
+    if (firstToken === "start") {
         finalIndex = findBracket(context, index)
     }
     else {

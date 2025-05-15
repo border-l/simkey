@@ -8,10 +8,13 @@ const handleRET = require("./handleRET")
 const NEXT_INSTRUCTION = require('../helpers/NEXT_INSTRUCTION')
 
 // Runs the instructions one by one
-async function instructionRunner(passedInfo, instructionList, instantReturn = false) {
+async function instructionRunner(passedInfo, instructionList, instantReturn = false, global = false) {
     // To manage variable scoping
     const keepTracked = Object.keys(passedInfo.CONTEXT.variables)
-    const preserve = {}
+    // const preserve = {}
+    if (global) {
+        passedInfo.CONTEXT.update("globals", keepTracked)
+    }
 
     for (let i = 0; i < instructionList.length; i++) {
         const instruction = instructionList[i]
@@ -54,7 +57,7 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
 
                 // Run block and clean up variables
                 result = await instructionRunner(passedInfo, instruction[2][x])
-                cleanUp(passedInfo.CONTEXT.variables, keepTracked, preserve)
+                cleanUp(passedInfo.CONTEXT.variables, keepTracked)
                 break
             }
         }
@@ -81,14 +84,21 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
         // Simkey function call
         else if (passedInfo.CONTEXT.funcs[func]) {
             try {
-                prepareForParams(passedInfo.CONTEXT.funcs[func][1], passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants, keepTracked, preserve)
+                // prepareForParams(passedInfo.CONTEXT.funcs[func][1], passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants, keepTracked, preserve)
+                const preserveNonGlobal = nonGlobals(passedInfo.CONTEXT.globals, passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
+
+                removeNonGlobals(passedInfo.CONTEXT.globals, passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
+                const forgottenFromParams = prepareForParams(passedInfo.CONTEXT.funcs[func][1], passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
 
                 result = await instructionRunner(passedInfo,
                     [...setFuncCallParams(passedInfo.CONTEXT, instruction[0], instruction[1]),
                     ...passedInfo.CONTEXT.funcs[func][0]])
                 result = Array.isArray(result) ? result[1] : result
 
-                cleanUp(passedInfo.CONTEXT.variables, keepTracked, passedInfo.CONTEXT.constants, preserve)
+                removeNonGlobals(passedInfo.CONTEXT.globals, passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
+
+                addBackIn(preserveNonGlobal, passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
+                addBackIn(forgottenFromParams, passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
             }
 
             // Check if the stack exceeded
@@ -189,33 +199,78 @@ function addTracked(variableFull, tracked) {
 }
 
 // Sets up variables and constants under context to prepare for Simkey call
-function prepareForParams(vars, values, constants, tracked, preserved) {
-    for (const variable of vars) {
-        if (tracked.includes(variable) && preserved[variable] === undefined) {
-            const isConst = constants.includes(variable)
-            preserved[variable] = [values[variable], isConst]
+// function prepareForParams(vars, values, constants, tracked, preserved) {
+//     for (const variable of vars) {
+//         if (tracked.includes(variable) && preserved[variable] === undefined) {
+//             const isConst = constants.includes(variable)
+//             preserved[variable] = [values[variable], isConst]
 
-            if (isConst) {
-                constants.splice(constants.indexOf(variable), 1)
-            }
+//             if (isConst) {
+//                 constants.splice(constants.indexOf(variable), 1)
+//             }
+//         }
+//     }
+// }
+
+function nonGlobals(globals, variables, constants) {
+    const result = {}
+    for (const varName in variables) {
+        if (globals.includes(varName)) continue
+        result[varName] = [variables[varName], constants.includes(varName)]
+    }
+    return result
+}
+
+
+// Sets up variables and constants under context to prepare for Simkey call
+function prepareForParams(params, variables, constants) {
+    const result = {}
+    for (const param of params) {
+        if (variables[param] === undefined) continue
+        result[param] = [variables[param], constants.includes(param)]
+        delete variables[param]
+        if (constants.includes(param)) constants.splice(constants.indexOf(param), 1)
+    }
+    return result
+}
+
+
+// Removes all non globals from variables and constants
+function removeNonGlobals(globals, variables, constants) {
+    for (const varName in variables) {
+        if (globals.includes(varName)) continue
+        delete variables[varName]
+        if (constants.includes(varName)) {
+            constants.splice(constants.indexOf(varName), 1)
         }
     }
 }
 
+
+// Adds variables back and considers whether they are constant
+function addBackIn(toAdd, variables, constants) {
+    for (const varName in toAdd) {
+        const [value, isConst] = toAdd[varName]
+        variables[varName] = value
+        if (isConst && !constants.includes(varName)) constants.push(varName)
+    }
+}
+
+
 // Removes the variables that are now out of scope
-function cleanUp(variables, tracked, constants, preserve = {}) {
+function cleanUp(variables, tracked, /*constants, preserve = {}*/) {
     for (const key in variables) {
         if (!tracked.includes(key)) {
             delete variables[key]
         }
     }
 
-    for (const key in preserve) {
-        variables[key] = preserve[key][0]
-        if (preserve[key][1]) {
-            constants.push(key)
-        }
-    }
+    // for (const key in preserve) {
+    //     variables[key] = preserve[key][0]
+    //     if (preserve[key][1]) {
+    //         constants.push(key)
+    //     }
+    // }
 }
 
 

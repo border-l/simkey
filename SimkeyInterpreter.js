@@ -36,6 +36,7 @@ class Interpreter {
     #checkLater
     #variables
     #constants
+    #globals
     #tables
 
     // For passing private fields to other functions
@@ -51,6 +52,7 @@ class Interpreter {
         this.#checkLater = []
         this.#variables = { "$DEFAULT": false }
         this.#constants = ["$DEFAULT"]
+        this.#globals = []
         this.#tables = { "TABLE": [] }
         this.#funcs = {}
         this.#model = {
@@ -126,6 +128,9 @@ class Interpreter {
                     case 'constants':
                         this.#constants = set
                         break
+                    case 'globals':
+                        this.#globals = set
+                        break
                     case 'tables':
                         this.#tables = set
                         break
@@ -150,6 +155,7 @@ class Interpreter {
         this.#context.funcs = this.#funcs
         this.#context.variables = this.#variables
         this.#context.constants = this.#constants
+        this.#context.globals = this.#globals
         this.#context.tables = this.#tables
     }
 

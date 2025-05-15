@@ -5,6 +5,14 @@ const ThrowError = require("../errors/ThrowError")
 function evaluateExpr(context, expression, bool = false, asIs = false) {
     const stored = new Map()
 
+    // Deal with escaped brackets
+        // These are done due to the parser's
+        // bad design.
+        // expr-eval deems this an "invalid escape
+        // sequence", so when evaluating, get
+        // rid of it before.
+    expression = expression.replaceAll(/(?:"\\]\s|\s\\]\s)/g, "]")
+
     // Replace variables with value from getVariable
     const expr = expression.replaceAll(/\$\w+(?::[:\w]+)?/g, (varName) => {
         const variable = getVariable(context, varName)

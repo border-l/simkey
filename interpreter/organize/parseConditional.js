@@ -13,7 +13,7 @@ function parseConditional(context, index, parseInnards, depth) {
     while (true) {
         // Get condition, function, and both brackets
         const conditionFunction = context.tokens[i]
-        const [condition, nextBracket] = combineTillNext(context, "{", i, false)
+        const [condition, nextBracket] = combineTillNext(context, "start", i, false)
         const closeBracket = findBracket(context, nextBracket)
 
         if (nextBracket === -1) {
