@@ -40,6 +40,7 @@ const FORMAT = {
 
     InvalidInputVectorBounds: ({ AT, REASON }) => `Invalid bounds for input vector. REASON: ${REASON}, AT: ${AT}`,
     InvalidInputType: ({ AT }) => `Invalid input type for variable. AT: ${AT}`,
+    InvalidInputDefaultValue: ({ AT, REASON }) => `Invalid default value given. AT: ${AT}, REASON: ${REASON}`,
     InvalidTypeInMBExpression: ({ AT }) => `Math or boolean expression received an object that the parser cannot handle. AT: ${AT}`
 }
 
