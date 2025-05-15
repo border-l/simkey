@@ -1,6 +1,7 @@
 const checkSection = require("./checkSection")
 
 // Combine tokens till character into string (noSection for not considering section tokens)
+// If it is more than a character, whole token must be the string
 module.exports = (context, char, index, noSection = false, noComments = false) => {
     let combination = ""
 
@@ -13,6 +14,10 @@ module.exports = (context, char, index, noSection = false, noComments = false) =
 
         // Combine till character is found or section
         if (token.charAt(0) === char || (token === "#" && noComments) || (!noSection && checkSection(context, token))) {
+            return [combination, i]
+        }
+
+        if (token === char || (token === "#" && noComments) || (!noSection && checkSection(context, token))) {
             return [combination, i]
         }
 

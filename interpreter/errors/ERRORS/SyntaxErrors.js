@@ -10,7 +10,7 @@ const FORMAT = {
     MissingKeyBracket: ({ AT }) => `Key in expression is missing closing bracket. AT: ${AT}`, // For parseExpression no closing brackets
     MissingConditional: ({ AT }) => `Missing conditional expression for @if or @elseif. AT: ${AT}`,
     MissingAtFunc: ({ AT }) => `Function declaration is missing @. AT ${AT}`,
-    MissingBlockFuncDeclaration: ({ AT }) => `Missing block for Func body. AT: ${ AT }`,
+    MissingBlockFuncDeclaration: ({ AT }) => `Missing block for Simkey function body. AT: ${ AT }`,
     MissingBlockConditionOrCall: ({ AT }) => `Missing block for imported function call or conditional. AT: ${ AT }`,
     MissingFirstIf: ({ AT }) => `Conditional is missing the initial @if. AT: ${AT}`,
 
