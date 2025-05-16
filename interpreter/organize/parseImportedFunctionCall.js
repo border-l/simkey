@@ -3,7 +3,7 @@ const getString = require("../types/getString")
 const getVariable = require("../types/getVariable")
 const checkVariableName = require("../helpers/checkVariableName")
 const checkValidExpr = require("../helpers/checkValidExpr")
-const evaluateExpr = require("../helpers/evaluateExpr")
+const evaluateExpr = require("../evaluator/evaluateExpr")
 const findBracket = require("../helpers/findBracket")
 const ThrowError = require("../errors/ThrowError")
 

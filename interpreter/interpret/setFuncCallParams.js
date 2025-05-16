@@ -1,5 +1,5 @@
 const getVariable = require("../types/getVariable")
-const evaluateExpr = require("../helpers/evaluateExpr")
+const evaluateExpr = require("../evaluator/evaluateExpr")
 const checkVariableName = require("../helpers/checkVariableName")
 const ThrowError = require("../errors/ThrowError")
 const STRING_MARKER = require("../helpers/STRING_MARKER")

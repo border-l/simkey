@@ -2,6 +2,9 @@ const parser = new (require("expr-eval").Parser)()
 const getVariable = require("../types/getVariable")
 const ThrowError = require("../errors/ThrowError")
 
+const loadIntoParser = require("./loadIntoParser")
+loadIntoParser(parser)
+
 function evaluateExpr(context, expression, bool = false, asIs = false) {
     const stored = new Map()
 
@@ -44,28 +47,5 @@ function evaluateExpr(context, expression, bool = false, asIs = false) {
     // Return according to bool arg
     return !bool ? Number(evaluate) : !(!evaluate)
 }
-
-parser.functions.vector_equal = (arg1, arg2) => {
-    if (!Array.isArray(arg1) || !Array.isArray(arg2)) {
-
-    }
-
-    if (arg1.some(val => isNaN(val) || val === "") || arg2.some(val => isNaN(val) || val === "")) {
-
-    }
-
-    if (arg1.length !== arg2.length) return false
-
-    for (let i = 0; i < Math.max(arg1.length, arg2.length); i++) {
-        if (arg1[i] !== arg2[i]) return false
-    }
-
-    return true
-}
-
-parser.consts.TRUE = true
-parser.consts.FALSE = false
-delete parser.consts.true
-delete parser.consts.false
 
 module.exports = evaluateExpr

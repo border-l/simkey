@@ -1,7 +1,7 @@
 const getArray = require("../types/getArray")
 const getString = require('../types/getString')
 const getVariable = require('../types/getVariable')
-const evaluateExpr = require("./evaluateExpr")
+const evaluateExpr = require("../evaluator/evaluateExpr")
 const checkVariableName = require('../helpers/checkVariableName')
 
 // Utility for reading args from a LOOSE string

@@ -1,4 +1,4 @@
-const evaluateExpr = require('../helpers/evaluateExpr')
+const evaluateExpr = require('../evaluator/evaluateExpr')
 const STRING_MARKER = require("../helpers/STRING_MARKER")
 const getVariable = require("../types/getVariable")
 

@@ -1,5 +1,5 @@
 const ThrowError = require("../errors/ThrowError")
-const evaluateExpr = require("../helpers/evaluateExpr")
+const evaluateExpr = require("../evaluator/evaluateExpr")
 const getBalancedExpression = require("../helpers/getBalancedExpression")
 
 // Gets value value from string (char or whole string)

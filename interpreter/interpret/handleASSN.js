@@ -1,5 +1,5 @@
 const ThrowError = require("../errors/ThrowError")
-const evaluateExpr = require('../helpers/evaluateExpr')
+const evaluateExpr = require('../evaluator/evaluateExpr')
 const resultHandler = require('./resultHandler')
 const getVariable = require('../types/getVariable')
 
