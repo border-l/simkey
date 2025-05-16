@@ -2,6 +2,11 @@ const getVectorNumber = require("../../../interpreter/types/getVectorNumber")
 
 // Types a string out (this overcomes the restriction of not being able to have repeats)
 async function type(INFO, string, time = 10) {
+    if (!isNaN(string) && string !== "") {
+        await typeString(INFO.ROBOT, String(string), time)
+        return
+    }
+
     segments = String(string).split(" ").map((val, i, arr) => i < arr.length - 1 ? val += " " : val)
 
     // Loop through each segment
@@ -24,16 +29,8 @@ async function type(INFO, string, time = 10) {
                 continue
             }
 
-
-
-            const num = INFO.CONTEXT.variables[variable]
-            if (!isNaN(num) && num !== "") {
-                await typeString(INFO.ROBOT, String(num), time)
-                continue
-            }
-
             // Check vector
-            const vector = getVectorNumber(INFO.CONTEXT, variable, true, true) // getVariable instead (when adjusted)
+            const vector = getVectorNumber(INFO.CONTEXT, variable, true, true)
             if (vector !== false) {
                 await typeString(INFO.ROBOT, String(vector), time)
                 continue

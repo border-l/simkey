@@ -3,7 +3,7 @@ const ThrowError = require("../errors/ThrowError")
 
 // Get the parameter types for next imported function in array, returns new index and types
 module.exports = (context, array) => {
-    const VALID = ["VECTOR", "NUM", "BOOL", "STR", "LOOSE", "TABLE"]    
+    const VALID = ["VECTOR", "NUM", "BOOL", "STR", "LOOSE", "TABLE"]
     const OPT = ":OPTIONAL"
 
     const [value, _] = getArray(context, 0, true, array)

@@ -66,6 +66,7 @@
     "InvalidInputType": 2905,
     "InvalidInputDefaultValue": 2910,
     "InvalidTypeInMBExpression": 2915,
+    "TypeMismatch": 2950,
     "NonExistentFlag": 3000,
     "NonExistentVariable": 3005,
     "NonExistentVector": 3010,

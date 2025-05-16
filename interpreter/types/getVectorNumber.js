@@ -36,8 +36,7 @@ function getVectorNumber(context, vector, noError = false, errorIndex = false) {
     }
 
     if (ind === undefined) {
-        console.log("temp, no index")
-        if (!errorIndex) ThrowError(3200, { AT: vector })
+        // if (!errorIndex) ThrowError(3200, { AT: vector + " (no index given)" })
         return false
     }
 

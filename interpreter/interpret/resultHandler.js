@@ -13,9 +13,11 @@ function resultHandler(context, exprValue, input) {
             result.push(evaluateExpr(context, expr))
         }
     }
+
     else if (exprValue instanceof STRING_MARKER) {
         result = exprValue.get()
     }
+
     else if (result === undefined) {
         try {
             result = getVariable(context, exprValue, ["TABLE", "STR", "NUM", "BOOL", "VECTOR"])

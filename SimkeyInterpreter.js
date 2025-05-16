@@ -67,6 +67,7 @@ class Interpreter {
             },
             "INPUTS": {
                 "MODES": [],
+                "NUMS": [],
                 "SWITCHES": [],
                 "STRINGS": [],
                 "VECTORS": {}

@@ -171,7 +171,7 @@ function parseImportedFunctionCall(context, i, parseInnards, depth, ignoreBlock 
 
         // No new element added so nothing matched, invalid type
         if (finalArray.length === prevSize) {
-            ThrowError(2110, { AT: token, ARG: arg, EXPECTED: expectedArray })
+            ThrowError(2110, { AT: `${token} as argument to ${token}`, ARG: arg, EXPECTED: expectedArray })
         }
     }
 

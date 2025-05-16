@@ -28,7 +28,7 @@ function getVariable(context, variable, expected = ["STR", "VECTOR", "NUM", "BOO
                 break
             }
 
-            const vectorNum = getVectorNumber(context, variable, true)
+            const vectorNum = getVectorNumber(context, variable, true, true)
             if (vectorNum === false) continue
             solution = vectorNum
             break
@@ -63,7 +63,7 @@ function getVariable(context, variable, expected = ["STR", "VECTOR", "NUM", "BOO
 
     // No value found compliant with expected types
     if (solution === undefined) {
-        ThrowError(2110, { AT: variable, ARG: variable, EXPECTED: expected })
+        ThrowError(2950, { AT: variable, EXPECTED: expected })
     }
 
     // Solution exists

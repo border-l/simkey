@@ -75,6 +75,7 @@ function parseInputs(context) {
             const defaultNum = Number(tokens[i + 2])
             if (isNaN(defaultNum)) ThrowError(2910, { AT: tokens[i + 2], REASON: "value given is not a number." })
 
+            context.model.INPUTS[type].push(varn)
             context.variables[varn] = defaultNum
             context.constants.push(varn)
             return i + 2

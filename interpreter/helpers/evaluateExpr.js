@@ -18,14 +18,18 @@ function evaluateExpr(context, expression, bool = false, asIs = false) {
         const variable = getVariable(context, varName)
 
         if (!stored.get(variable)) {
-            stored.set(variable, "a".repeat(stored.size + 1))
+            stored.set("a".repeat(stored.size + 1), variable)
             return "a".repeat(stored.size)
         }
         else return stored.get(variable)
     })
 
     const variables = { "FALSE": false, "TRUE": true }
-    stored.forEach((val, key) => variables[val] = key)
+    stored.forEach((val, key) => variables[key] = val)
+
+    if (stored.get(expr.trim()) !== undefined) {
+        return stored.get(expr.trim())
+    }
 
     // expr-eval evaluater
     const evaluate = parser.evaluate(expr, variables)
@@ -41,7 +45,7 @@ function evaluateExpr(context, expression, bool = false, asIs = false) {
     return !bool ? Number(evaluate) : !(!evaluate)
 }
 
-parser.functions.veccmp = (arg1, arg2) => {
+parser.functions.vector_equal = (arg1, arg2) => {
     if (!Array.isArray(arg1) || !Array.isArray(arg2)) {
 
     }

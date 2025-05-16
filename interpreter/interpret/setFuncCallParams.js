@@ -35,7 +35,7 @@ function setFuncCallParams(context, func, args) {
         // Simple variable to handle
         if (checkVariableName(arg, true)) {
             if (arg.indexOf(":") > -1) setList.push(["SET", varName, "ALL", (context) => getVariable(context, arg, ["NUM", "TABLE", "STR"])])
-            else setList.push(["SET", varName, "ALL", (context) => getVariable(context, arg, ["VECTOR", "BOOL", "STR", "TABLE"])])
+            else setList.push(["SET", varName, "ALL", (context) => getVariable(context, arg, ["NUM", "VECTOR", "BOOL", "STR", "TABLE"])])
             continue
         }
 
