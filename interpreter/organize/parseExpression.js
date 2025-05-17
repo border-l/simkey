@@ -108,7 +108,7 @@ module.exports = (context, expression) => {
         }
 
         // Key that requires phrase
-        if (key === "[") {
+        if (key === "{") {
             const closeBracket = findStringBracket(context, keyExpression.substring(i)) + i
 
             // No closing bracket

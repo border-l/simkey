@@ -9,6 +9,9 @@ module.exports = (context, index, searchArray = context.tokens) => {
     else if (searchArray[index] === "[") {
         search = ["[", "]"]
     }
+    else if (searchArray[index] === "{") {
+        search = ["{", "}"]
+    }
 
     // No pair
     else {

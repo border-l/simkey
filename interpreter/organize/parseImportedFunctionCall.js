@@ -105,11 +105,11 @@ function parseImportedFunctionCall(context, i, parseInnards, depth, ignoreBlock 
                 }
 
                 // Not a literal boolean
-                if (arg !== "TRUE" && arg !== "FALSE") {
+                if (arg !== "true" && arg !== "false") {
                     continue
                 }
 
-                finalArray.push(arg === "TRUE")
+                finalArray.push(arg === "true")
                 break
             }
 

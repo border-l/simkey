@@ -21,8 +21,8 @@ function setFuncCallParams(context, func, args) {
         const varName = funcParams[1][i]
 
         // Literal boolean
-        if (arg === "TRUE" || arg === "FALSE") {
-            setList.push(["SET", varName, "ALL", () => arg === "TRUE"])
+        if (arg === "true" || arg === "false") {
+            setList.push(["SET", varName, "ALL", () => arg === "true"])
             continue
         }
 

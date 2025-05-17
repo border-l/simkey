@@ -1,4 +1,3 @@
-const combineTillNext = require("../helpers/combineTillNext")
 const findNextSection = require("../helpers/findNextSection")
 const checkSection = require("../helpers/checkSection")
 

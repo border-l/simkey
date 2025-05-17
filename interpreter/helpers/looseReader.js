@@ -44,8 +44,8 @@ function looseReader(context, looseString, types) {
         }
 
         if (types.indexOf("BOOL") > -1) {
-            if (arg.trim() === "TRUE" || arg.trim() === "FALSE") {
-                finalArgs.push(arg.trim() === "TRUE")
+            if (arg.trim() === "true" || arg.trim() === "false") {
+                finalArgs.push(arg.trim() === "true")
                 continue
             }
 

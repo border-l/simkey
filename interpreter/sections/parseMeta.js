@@ -16,8 +16,8 @@ module.exports = (context) => {
                 context.model.META.REPEAT = Number(firstIn)
             }
             // Literal repeat (boolean)
-            else if (firstIn === "OFF" || firstIn === "ON") {
-                context.model.META.REPEAT = firstIn
+            else if (firstIn === "true" || firstIn === "false") {
+                context.model.META.REPEAT = firstIn === "true"
             }
             // Not a valid value
             else {

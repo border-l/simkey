@@ -27,7 +27,7 @@ function evaluateExpr(context, expression, bool = false, asIs = false) {
         else return stored.get(variable)
     })
 
-    const variables = { "FALSE": false, "TRUE": true }
+    const variables = {}
     stored.forEach((val, key) => variables[key] = val)
 
     if (stored.get(expr.trim()) !== undefined) {
