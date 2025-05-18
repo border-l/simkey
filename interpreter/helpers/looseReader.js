@@ -30,7 +30,7 @@ function looseReader(context, looseString, types) {
         }
 
         if (types.indexOf("NUM") > -1) {
-            if (!isNaN(Number(arg.trim()) && arg !== "")) {
+            if (!isNaN(Number(arg.trim()) && typeof arg === "number")) {
                 finalArgs.push(Number(arg.trim()))
                 continue
             }

@@ -43,8 +43,8 @@ function parseInnards(context, index, depth) {
         }
 
         // Variable assignment
-        if (token === "const" || (token[0] === "$" && asnOperators[context.tokens[i + 1]])) {
-            const [isConst, varName, opToken, next] = token === "const" ?
+        if (token === "final" || (token[0] === "$" && asnOperators[context.tokens[i + 1]])) {
+            const [isConst, varName, opToken, next] = token === "final" ?
                 [true, context.tokens[i + 1], context.tokens[i + 2], i + 3] :
                 [false, token, context.tokens[i + 1], i + 2]
 

@@ -2,7 +2,7 @@ const getVectorNumber = require("../../../interpreter/types/getVectorNumber")
 
 // Types a string out (this overcomes the restriction of not being able to have repeats)
 async function type(INFO, string, time = 10) {
-    if (!isNaN(string) && string !== "") {
+    if (!isNaN(string) && typeof string === "number") {
         await typeString(INFO.ROBOT, String(string), time)
         return
     }

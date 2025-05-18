@@ -30,7 +30,7 @@ function setInputs(context, inputs) {
                 ThrowError(5010, { AT: input, REASON: `given array does not fit bounds, length ${value.length}, minimum ${bounds[0]}, maximum ${bounds[1]}` })
             }
 
-            if (value.some(val => isNaN(val) || val === "")) {
+            if (value.some(val => isNaN(val) || typeof val !== "number")) {
                 ThrowError(5010, { AT: input, REASON: "given array that has non-numbers." })
             }
 

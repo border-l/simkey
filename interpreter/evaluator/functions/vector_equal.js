@@ -3,7 +3,7 @@ function vector_equal (arg1, arg2) {
 
     }
 
-    if (arg1.some(val => isNaN(val) || val === "") || arg2.some(val => isNaN(val) || val === "")) {
+    if (arg1.some(val => isNaN(val) || typeof val !== "number") || arg2.some(val => isNaN(val) || typeof val !== "number")) {
 
     }
 

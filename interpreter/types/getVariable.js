@@ -23,7 +23,7 @@ function getVariable(context, variable, expected = ["STR", "VECTOR", "NUM", "BOO
         // Check for type num
         if (expect === "NUM") {
             const num = context.variables[variable]
-            if (!isNaN(num) && num !== "") {
+            if (!isNaN(num) && typeof num === "number") {
                 solution = num
                 break
             }

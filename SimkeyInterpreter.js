@@ -7,6 +7,7 @@ const parseExports = require("./interpreter/sections/parseExports")
 const parseMeta = require("./interpreter/sections/parseMeta")
 const parseInputs = require('./interpreter/sections/parseInputs')
 const setInputs = require('./interpreter/sections/setInputs')
+const getInputs = require('./interpreter/sections/getInputs')
 
 const organize = require("./interpreter/organize/organize")
 const checkFunctionReferences = require("./interpreter/helpers/checkFunctionReferences")
@@ -15,8 +16,6 @@ const run = require("./interpreter/interpret/run")
 const getExport = require("./interpreter/importing/getExport")
 const ThrowError = require("./interpreter/errors/ThrowError")
 const fs = require("fs")
-
-const deepClone = require("./interpreter/helpers/deepClone")
 
 class Interpreter {
     #Interpreter
@@ -50,8 +49,8 @@ class Interpreter {
         this.#script = fs.readFileSync(fileName, 'utf-8')
         this.#tokens = []
         this.#checkLater = []
-        this.#variables = { "$DEFAULT": false }
-        this.#constants = ["$DEFAULT"]
+        this.#variables = {}
+        this.#constants = []
         this.#globals = []
         this.#tables = { "TABLE": [] }
         this.#funcs = {}
@@ -59,15 +58,14 @@ class Interpreter {
             "IMPORTS": { "CALL.BEFORE": [] },
             "EXPORTS": {},
             "META": {
-                "NAME": "",
-                "MODE": "$DEFAULT",
-                "SWITCHES": [],
-                "REPEAT": "OFF",
-                "SHORTCUT": "NONE"
+                "TITLE": "",
+                "REPEAT": false,
+                "VERSION": "1.0",
+                "SHORTCUT": null
             },
             "INPUTS": {
                 "MODES": [],
-                "NUMS": [],
+                "NUMBERS": [],
                 "SWITCHES": [],
                 "STRINGS": [],
                 "VECTORS": {}
@@ -164,12 +162,16 @@ class Interpreter {
         return await run(this.#context, repeat)
     }
 
+    getMeta() {
+        return this.#context.model.META
+    }
+
     getExport(name) {
         return getExport(this.#context, name)
     }
 
     getInputs() {
-        return { INPUTS: deepClone(this.#model.INPUTS), VARIABLES: deepClone(this.#variables) }
+        return getInputs(this.#context)
     }
 
     setInputs(inputs) {

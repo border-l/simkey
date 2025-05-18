@@ -7,7 +7,12 @@ const checkVariableName = require("../helpers/checkVariableName")
 
 // Handles inputs section
 function parseInputs(context) {
+    let modeOn = false
+    let hasPassed = false
+
     parseSection(context, (tokens, token, i, section, next) => {
+        hasPassed = true
+
         // variable name and type of input (as a key in model.INPUTS)
         const varn = tokens[i + 1]
         const type = token === "SWITCH" ? token + "ES" : token + "S"
@@ -21,8 +26,17 @@ function parseInputs(context) {
         // Same handling
         if (token === "MODE" || token === "SWITCH") {
             context.model.INPUTS[type].push(varn)
-            context.variables[varn] = false
             context.constants.push(varn)
+
+            if (tokens.length > i + 2 && tokens[i + 2] === "DEFAULT") {
+                if (modeOn) ThrowError(...[])
+                modeOn = true
+
+                context.variables[varn] = true
+                return i + 2
+            }
+
+            context.variables[varn] = false
             return i + 1
         }
 
@@ -69,7 +83,8 @@ function parseInputs(context) {
             return index
         }
 
-        if (token === "NUM") {
+        // Takes num
+        if (token === "NUMBER") {
             if (tokens.length < 2) ThrowError(2910, { AT: varn, REASON: "no value given." })
 
             const defaultNum = Number(tokens[i + 2])
@@ -83,6 +98,8 @@ function parseInputs(context) {
 
         ThrowError(2905, { AT: token })
     }, (section) => section === "INPUTS")
+
+    if (!modeOn && hasPassed) ThrowError(...[])
 }
 
 module.exports = parseInputs
