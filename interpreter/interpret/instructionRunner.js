@@ -10,6 +10,8 @@ const NEXT_INSTRUCTION = require('../helpers/NEXT_INSTRUCTION')
 
 // Runs the instructions one by one
 async function instructionRunner(passedInfo, instructionList, instantReturn = false, global = false) {
+    if (passedInfo.CONTEXT.ABORT.signal.aborted) return
+
     // Add to RUNNING
     const thisUUID = passedInfo.UUID()
     passedInfo.RUNNING.add(thisUUID)
@@ -24,6 +26,8 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
     let resolvedValue
 
     for (let i = 0; i < instructionList.length; i++) {
+        if (passedInfo.CONTEXT.ABORT.signal.aborted) return
+
         const instruction = instructionList[i]
 
         // Key expression object
@@ -66,6 +70,7 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
 
                 // Run block and clean up variables
                 result = await instructionRunner(passedInfo, instruction[2][x])
+                if (passedInfo.CONTEXT.ABORT.signal.aborted) return
                 cleanUp(passedInfo.CONTEXT.variables, keepTracked)
                 break
             }
@@ -107,6 +112,7 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
 
                 result = await instructionRunner(passedInfo,
                     [...setters, ...passedInfo.CONTEXT.funcs[func][0]])
+                if (passedInfo.CONTEXT.ABORT.signal.aborted) return
                 result = Array.isArray(result) ? result[1] : result
 
                 removeNonGlobals(passedInfo.CONTEXT.globals, passedInfo.CONTEXT.variables, passedInfo.CONTEXT.constants)
@@ -166,6 +172,7 @@ async function instructionRunner(passedInfo, instructionList, instantReturn = fa
                 result = await passedInfo.CONTEXT.model.IMPORTS[func.substring(1)](passedInfo, ...newInstructions)
             }
 
+            if (passedInfo.CONTEXT.ABORT.signal.aborted) return
             cleanUp(passedInfo.CONTEXT.variables, keepTracked)
         }
 

@@ -59,7 +59,7 @@ async function run(context, REPEAT) {
         // Check if completed or interrupted
         while (true) {
             await new Promise(r => setTimeout(r, 10))
-            if (context.SIGNAL) process.exit()
+            if (context.ABORT.signal.aborted) return
             if (passedInfo.ERROR[0] !== null) throw new Error(passedInfo.ERROR)
             if (passedInfo.RUNNING.size === 0) break
         }
