@@ -7,7 +7,7 @@ const version = "1.0.0"
 
 // Runs the KeyC file
 async function run(fileName, repeat) {
-    exec(`RunKeyC.exe ${fileName} ${repeat ? repeat : 1}`, (error) => {
+    exec(`${path}/RunKeyC.exe ${fileName} ${repeat ? repeat : 1}`, (error) => {
         if (error) {
             console.error("Error: " + error.message)
         }
