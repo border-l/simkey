@@ -63,7 +63,7 @@
     "AssignmentToStringCharacter": 2730,
     "ReturnWithoutValue": 2800,
     "ReturnMissingValue": 2805,
-    "InvalidInputVectorBounds": 2900,
+    "InvalidInputBounds": 2900,
     "InvalidInputType": 2905,
     "InvalidInputDefaultValue": 2910,
     "InvalidTypeInMBExpression": 2915,

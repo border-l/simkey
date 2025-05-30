@@ -39,7 +39,7 @@ const FORMAT = {
     ReturnWithoutValue: ({ AT }) => `Function used in return statement did not yield a value. AT : ${AT}`,
     ReturnMissingValue: ({ AT }) => `Return statement did not have a value given after it.`,
 
-    InvalidInputVectorBounds: ({ AT, REASON }) => `Invalid bounds for input vector. REASON: ${REASON}, AT: ${AT}`,
+    InvalidInputBounds: ({ AT, REASON }) => `Invalid bounds for input vector/number. AT: ${AT}, REASON: ${REASON}`,
     InvalidInputType: ({ AT }) => `Invalid input type for variable. AT: ${AT}`,
     InvalidInputDefaultValue: ({ AT, REASON }) => `Invalid default value given. AT: ${AT}, REASON: ${REASON}`,
     InvalidTypeInMBExpression: ({ AT }) => `Math or boolean expression received an object that the parser cannot handle. AT: ${AT}`,
