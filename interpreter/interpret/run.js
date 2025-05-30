@@ -2,7 +2,7 @@ const instructionRunner = require("./instructionRunner")
 const robot = require("../robot/robot")
 const debugRobot = require("../robot/debugRobot")
 
-const endSymbol = Symbol("END_STRING")
+const breakSymbol = Symbol("BREAK_STRING")
 const nextSymbol = Symbol("NEXT_SYMBOL")
 const returnSymbol = Symbol("RETURN_STRING")
 
@@ -27,9 +27,9 @@ async function run(context) {
         CONTEXT: context,
         ROBOT: !context.debug ? robot : debugRobot,
         RUN: instructionRunner,
-        SYMBOLS: { END: endSymbol, NEXT: nextSymbol, RETURN: returnSymbol },
+        SYMBOLS: { BREAK: breakSymbol, NEXT: nextSymbol, RETURN: returnSymbol },
         YIELD: {
-            END: (val) => val === endSymbol,
+            BREAK: (val) => val === breakSymbol,
             NEXT: (val) => val === nextSymbol,
             RETURN: (val) => Array.isArray(val) && val[0] === returnSymbol
         },
