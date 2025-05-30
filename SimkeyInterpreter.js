@@ -59,16 +59,16 @@ class Interpreter {
             "EXPORTS": {},
             "META": {
                 "TITLE": "",
-                "REPEAT": false,
                 "VERSION": "1.0",
                 "SHORTCUT": null
             },
             "INPUTS": {
                 "MODES": [],
-                "NUMBERS": [],
                 "SWITCHES": [],
                 "STRINGS": [],
-                "VECTORS": {}
+                "NUMBERS": {},
+                "VECTORS": {},
+                "META": {}
             },
             "MACRO": []
         }
@@ -158,8 +158,8 @@ class Interpreter {
         this.#context.tables = this.#tables
     }
 
-    async run(repeat = false) {
-        return await run(this.#context, repeat)
+    async run() {
+        return await run(this.#context)
     }
 
     getMeta() {

@@ -6,7 +6,8 @@ const FORMAT = {
     MetaNameAssignment: ({ AT }) => `Invalid value assignment of \`name\` \`Meta\` attribute. AT: ${AT}`,
     MetaModeAssignment: ({ AT }) => `Invalid value assignment of \`mode\` \`Meta\` attribute. AT: ${AT}`,
     MetaSwitchesAssignment: ({ AT }) => `Invalid value assignment of \`switches\` \`Meta\` attribute. Invalid \`switch\` Name. AT: ${AT}`,
-    MetaNonAttribute: ({ AT }) => `Attempted to set \`Meta\` atribute that does not exist. AT: ${AT}`,
+    MetaNonAttribute: ({ AT }) => `Attempted to set \`Meta\` attribute that does not exist. AT: ${AT}`,
+    MetaNoValue: ({ AT }) => `No value given in meta assignment. AT: ${AT}`,
 
     ArgumentMissing: ({ AT }) => `Function call (native or imported) is missing arguments. AT: ${AT}`,
     ArgumentExtra: ({ AT }) => `Function call (native or imported) received extra arguments. AT: ${AT}`,

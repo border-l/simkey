@@ -40,6 +40,7 @@
     "MetaModeAssignment": 2010,
     "MetaSwitchesAssignment": 2015,
     "MetaNonAttribute": 2020,
+    "MetaNoValue": 2025,
     "ArgumentMissing": 2100,
     "ArgumentExtra": 2105,
     "ArgumentTypeMismatch": 2110,
