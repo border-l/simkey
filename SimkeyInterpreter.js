@@ -52,7 +52,7 @@ class Interpreter {
         this.#debug = debug
         this.#fileName = fileName
         this.#script = fs.readFileSync(fileName, 'utf-8')
-        this.#repeat = 0
+        this.#repeat = 1
         this.#tokens = []
         this.#checkLater = []
         this.#variables = {}
