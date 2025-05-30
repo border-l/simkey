@@ -44,7 +44,8 @@ const FORMAT = {
     InvalidInputDefaultValue: ({ AT, REASON }) => `Invalid default value given. AT: ${AT}, REASON: ${REASON}`,
     InvalidTypeInMBExpression: ({ AT }) => `Math or boolean expression received an object that the parser cannot handle. AT: ${AT}`,
 
-    TypeMismatch: ({ AT, EXPECTED }) => `Attempted to get variable conforming to accepted types. AT: ${AT}, EXPECTED TYPES: ${EXPECTED}`
+    TypeMismatch: ({ AT, EXPECTED }) => `Variable referred to does not exist. AT: ${AT}, EXPECTED TYPES: ${EXPECTED}`,
+    TypeMismatchVariableExists: ({ AT, EXPECTED }) => `Variable exists but does not conform to the expected types. AT: ${AT}, EXPECTED TYPES: ${EXPECTED}`
 }
 
 module.exports = { ERROR, CODE, FORMAT }
