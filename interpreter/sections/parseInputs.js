@@ -47,24 +47,23 @@ function parseInputs(context) {
             if (tokens.length <= i + 2) ThrowError(2900, { AT: varn, REASON: "no bounds given." })
 
             const bounds = tokens[i + 2].split(",").map(x => x === "" ? null : Number(x))
+            if (bounds.length < 2) bounds.push(bounds[0])
 
             // Bound validation (0 <= 1, 0 && 1 nums (so long as 1 not null), length > 2)
             if (bounds.length > 2) ThrowError(2900, { AT: tokens[i + 2], REASON: "more than 2 bounds given." })
             if (isNaN(bounds[0]) || (isNaN(bounds[1]) && bounds[1] !== null)) ThrowError(2900, { AT: tokens[i + 2], REASON: "bound given is not a number." })
             if (bounds[0] < 1 || (bounds[0] > bounds[1] && bounds[1] !== null)) ThrowError(2900, { AT: tokens[i + 2], REASON: "first bound is less than one or bigger than second." })
 
-            if (bounds.length < 2) bounds.push(bounds[0])
-
             if (!tokens[i + 3].startsWith("[")) ThrowError(2910, { AT: varn, REASON: "no opening bracket." })
 
             const [array, index] = getArray(context, i + 3)
             if (index >= next) ThrowError(1400, { AT: varn })
+            if (array.length < bounds[0] || (array.length > bounds[1] && bounds[1] !== null))
+                ThrowError(2910, { AT: tokens[i + 3], REASON: "vector length exceeds bounds." })
 
             try {
                 for (let x = 0; x < array.length; x++) {
                     array[x] = evaluateExpr(context, array[x])
-                    if (array[x] < bounds[0] || (array[x] > bounds[1] && bounds[1] !== null))
-                        ThrowError(2910, { AT: array[x], REASON: "value does not fit within bounds." })
                 }
             } catch (err) { ThrowError(1115, { AT: varn }) }
 
@@ -92,13 +91,12 @@ function parseInputs(context) {
             if (tokens.length <= i + 2) ThrowError(2910, { AT: varn, REASON: "no bounds given." })
 
             const bounds = tokens[i + 2].split(",").map(x => x === "" ? null : Number(x))
+            if (bounds.length < 2) bounds.push(bounds[0])
 
             // Bound validation (0 <= 1, 0 && 1 nums (so long as 1 not null), length > 2)
             if (bounds.length > 2) ThrowError(2900, { AT: tokens[i + 2], REASON: "more than 2 bounds given." })
             if (isNaN(bounds[0]) || (isNaN(bounds[1]) && bounds[1] !== null)) ThrowError(2900, { AT: tokens[i + 2], REASON: "bound given is not a number." })
             if (bounds[0] > bounds[1] && bounds[1] !== null) ThrowError(2900, { AT: tokens[i + 2], REASON: "first bound is bigger than second." })
-
-            if (bounds.length < 2) bounds.push(bounds[0])
 
             if (tokens.length <= i + 3) ThrowError(2910, { AT: varn, REASON: "no value given." })
 
